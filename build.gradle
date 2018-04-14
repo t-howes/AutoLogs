@@ -25,3 +25,8 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    supportLibraryVersion = '27.1.0'
+    architectureComponentsVersion = '1.1.1'
+}
