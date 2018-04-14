@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Auto Service</string>
+    <string name="miles">Miles: %d</string>
+    <string name="last_update">Last update: %s</string>
 </resources>
