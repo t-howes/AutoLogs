@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_car_list.*
 import sample.thowes.autoservice.R
 
@@ -16,15 +17,35 @@ class CarListActivity : AppCompatActivity() {
     setContentView(R.layout.activity_car_list)
 
     carsViewModel = ViewModelProviders.of(this).get(CarsViewModel::class.java)
-    carsViewModel.getObservableCars().observe(this, Observer<CarsViewModel.CarsState> {
-
+    carsViewModel.state.observe(this, Observer<CarsViewModel.CarDetailsState> {
+      it?.let { state ->
+        updateFromStatus(state)
+      }
     })
-
-    // TODO: mvvm and use view model to get cars
-    val adapter = CarAdapter(this, cars)
 
     add.setOnClickListener {
       // TODO: show dialog or something
+    }
+  }
+
+  private fun updateFromStatus(state: CarsViewModel.CarDetailsState) {
+    when (state.status) {
+      CarsViewModel.CarsStatus.LOADING -> {
+
+      }
+      CarsViewModel.CarsStatus.ERROR -> {
+
+      }
+      CarsViewModel.CarsStatus.EMPTY -> {
+
+      }
+      CarsViewModel.CarsStatus.SUCCESS -> {
+        state.cars?.let { cars ->
+          val adapter = CarAdapter(this, cars)
+          carsList.adapter = adapter
+          carsList.layoutManager = LinearLayoutManager(this)
+        }
+      }
     }
   }
 }
