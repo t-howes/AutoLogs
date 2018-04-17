@@ -1,24 +1,27 @@
 package sample.thowes.autoservice.dagger.module
 
+import android.arch.persistence.room.Room
+import android.content.Context
 import dagger.Module
 import dagger.Provides
-import io.realm.Realm
-import sample.thowes.autoservice.database.realm.helpers.CarHelper
-import sample.thowes.autoservice.database.stub.CarDb
+import sample.thowes.autoservice.database.AutoDatabase
+import sample.thowes.autoservice.database.CarDb
 import javax.inject.Singleton
 
 @Module
-class DatabaseModule {
+@Singleton
+class DatabaseModule(val context: Context) {
+
+  private val db: AutoDatabase = Room.databaseBuilder(context,
+        AutoDatabase::class.java, "auto-service").fallbackToDestructiveMigration().build()
 
   @Singleton
   @Provides
-  fun provideRealm(): Realm {
-    return Realm.getDefaultInstance()
-  }
+  fun provideDatabase(): AutoDatabase = db
 
   @Singleton
   @Provides
-  fun provideCarDb(realm: Realm): CarDb {
-    return CarHelper(realm)
+  fun provideCarDb(autoDatabase: AutoDatabase): CarDb {
+    return autoDatabase.carDb()
   }
 }

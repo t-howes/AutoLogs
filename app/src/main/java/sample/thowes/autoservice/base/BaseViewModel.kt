@@ -2,7 +2,7 @@ package sample.thowes.autoservice.base
 
 import android.arch.lifecycle.ViewModel
 import sample.thowes.autoservice.application.AutoServiceApplication
-import sample.thowes.autoservice.database.stub.CarDb
+import sample.thowes.autoservice.database.CarDb
 import javax.inject.Inject
 
 open class BaseViewModel : ViewModel() {
