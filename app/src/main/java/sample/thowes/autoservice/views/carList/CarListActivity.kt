@@ -5,10 +5,15 @@ import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import kotlinx.android.synthetic.main.activity_car_list.*
 import sample.thowes.autoservice.R
+import sample.thowes.autoservice.base.BaseActivity
+import sample.thowes.autoservice.extensions.showToast
+import sample.thowes.autoservice.views.carDetails.CarDetailsFragment
+import sample.thowes.autoservice.views.carList.CarsViewModel.CarsStatus.*
 
-class CarListActivity : AppCompatActivity() {
+class CarListActivity : BaseActivity() {
 
   private lateinit var carsViewModel: CarsViewModel
 
@@ -24,26 +29,30 @@ class CarListActivity : AppCompatActivity() {
     })
 
     add.setOnClickListener {
-      // TODO: show dialog or something
+      supportFragmentManager
+          .beginTransaction()
+          .add(R.id.addCarContainer, CarDetailsFragment.newInstance(false))
+          .addToBackStack("add_car")
+          .commit()
     }
   }
 
   private fun updateFromStatus(state: CarsViewModel.CarDetailsState) {
     when (state.status) {
-      CarsViewModel.CarsStatus.LOADING -> {
-
+      IDLE -> showLoading(false)
+      LOADING -> showLoading()
+      EMPTY -> emptyResults.visibility = View.VISIBLE
+      ERROR -> {
+        state.error?.let {
+          showToast(it.localizedMessage)
+        }
       }
-      CarsViewModel.CarsStatus.ERROR -> {
-
-      }
-      CarsViewModel.CarsStatus.EMPTY -> {
-
-      }
-      CarsViewModel.CarsStatus.SUCCESS -> {
+      SUCCESS -> {
         state.cars?.let { cars ->
           val adapter = CarAdapter(this, cars)
           carsList.adapter = adapter
           carsList.layoutManager = LinearLayoutManager(this)
+          emptyResults.visibility = View.GONE
         }
       }
     }

@@ -2,4 +2,6 @@
     <string name="app_name">Auto Service</string>
     <string name="miles">Miles: %d</string>
     <string name="last_update">Last update: %s</string>
+    <string name="no_cars">You don\'t have any cars added.</string>
+    <string name="loading">Loading&#8230;</string>
 </resources>

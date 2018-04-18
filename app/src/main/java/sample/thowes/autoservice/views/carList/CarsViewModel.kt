@@ -8,6 +8,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import sample.thowes.autoservice.base.BaseViewModel
+import sample.thowes.autoservice.extensions.applySchedulers
 import sample.thowes.autoservice.models.Car
 
 class CarsViewModel : BaseViewModel() {
@@ -15,6 +16,7 @@ class CarsViewModel : BaseViewModel() {
   var state: MutableLiveData<CarDetailsState> = MutableLiveData()
 
   enum class CarsStatus {
+    IDLE,
     LOADING,
     ERROR,
     EMPTY,
@@ -23,9 +25,9 @@ class CarsViewModel : BaseViewModel() {
 
   fun getCars() {
     carDb.getCars()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+        .applySchedulers()
         .doOnSubscribe { state.postValue(CarDetailsState.loading()) }
+        .doAfterTerminate { state.postValue(CarDetailsState.idle()) }
         .subscribe({ cars ->
           if (cars.isEmpty()) {
             state.postValue(CarDetailsState.empty())
@@ -43,6 +45,10 @@ class CarsViewModel : BaseViewModel() {
                              val cars: List<Car>? = null) {
 
     companion object {
+      fun idle(): CarDetailsState {
+        return CarDetailsState(CarsStatus.IDLE)
+      }
+
       fun loading(): CarDetailsState {
         return CarDetailsState(CarsStatus.LOADING)
       }
