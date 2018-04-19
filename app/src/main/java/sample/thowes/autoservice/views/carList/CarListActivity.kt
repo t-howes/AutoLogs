@@ -2,7 +2,6 @@ package sample.thowes.autoservice.views.carList
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -22,11 +21,12 @@ class CarListActivity : BaseActivity() {
     setContentView(R.layout.activity_car_list)
 
     carsViewModel = ViewModelProviders.of(this).get(CarsViewModel::class.java)
-    carsViewModel.state.observe(this, Observer<CarsViewModel.CarDetailsState> {
+    carsViewModel.state.observe(this, Observer<CarsViewModel.CarResultsState> {
       it?.let { state ->
         updateFromStatus(state)
       }
     })
+    carsViewModel.getCars()
 
     add.setOnClickListener {
       supportFragmentManager
@@ -37,7 +37,7 @@ class CarListActivity : BaseActivity() {
     }
   }
 
-  private fun updateFromStatus(state: CarsViewModel.CarDetailsState) {
+  private fun updateFromStatus(state: CarsViewModel.CarResultsState) {
     when (state.status) {
       IDLE -> showLoading(false)
       LOADING -> showLoading()

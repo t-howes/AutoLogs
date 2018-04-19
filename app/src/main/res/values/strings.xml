@@ -4,4 +4,12 @@
     <string name="last_update">Last update: %s</string>
     <string name="no_cars">You don\'t have any cars added.</string>
     <string name="loading">Loading&#8230;</string>
+    <string name="name">Name</string>
+    <string name="year">Year</string>
+    <string name="make">Make</string>
+    <string name="model">Model</string>
+    <string name="notes">Notes</string>
+    <string name="done">Done</string>
+    <string name="add">Add</string>
+    <string name="save">Save</string>
 </resources>

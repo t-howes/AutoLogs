@@ -1,19 +1,13 @@
 package sample.thowes.autoservice.views.carList
 
-import android.arch.core.util.Function
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
 import sample.thowes.autoservice.models.Car
 
 class CarsViewModel : BaseViewModel() {
 
-  var state: MutableLiveData<CarDetailsState> = MutableLiveData()
+  var state: MutableLiveData<CarResultsState> = MutableLiveData()
 
   enum class CarsStatus {
     IDLE,
@@ -24,45 +18,45 @@ class CarsViewModel : BaseViewModel() {
   }
 
   fun getCars() {
-    carDb.getCars()
-        .applySchedulers()
-        .doOnSubscribe { state.postValue(CarDetailsState.loading()) }
-        .doAfterTerminate { state.postValue(CarDetailsState.idle()) }
-        .subscribe({ cars ->
-          if (cars.isEmpty()) {
-            state.postValue(CarDetailsState.empty())
-          } else {
-            state.postValue(CarDetailsState.success(cars))
-          }
-        }, { error ->
-          state.postValue(CarDetailsState.error(error))
-        })
-
+    addSub(
+      carDb.getCars()
+          .applySchedulers()
+          .doOnSubscribe { state.postValue(CarResultsState.loading()) }
+          .doAfterTerminate { state.postValue(CarResultsState.idle()) }
+          .subscribe({ cars ->
+            if (cars.isEmpty()) {
+              state.postValue(CarResultsState.empty())
+            } else {
+              state.postValue(CarResultsState.success(cars))
+            }
+          }, { error ->
+            state.postValue(CarResultsState.error(error))
+          }))
   }
 
-  data class CarDetailsState(val status: CarsStatus,
-                             val error: Throwable? = null,
-                             val cars: List<Car>? = null) {
+  class CarResultsState(val status: CarsStatus,
+                        val error: Throwable? = null,
+                        val cars: List<Car>? = null) {
 
     companion object {
-      fun idle(): CarDetailsState {
-        return CarDetailsState(CarsStatus.IDLE)
+      fun idle(): CarResultsState {
+        return CarResultsState(CarsStatus.IDLE)
       }
 
-      fun loading(): CarDetailsState {
-        return CarDetailsState(CarsStatus.LOADING)
+      fun loading(): CarResultsState {
+        return CarResultsState(CarsStatus.LOADING)
       }
 
-      fun error(error: Throwable): CarDetailsState {
-        return CarDetailsState(CarsStatus.ERROR, error)
+      fun error(error: Throwable): CarResultsState {
+        return CarResultsState(CarsStatus.ERROR, error)
       }
 
-      fun empty(): CarDetailsState {
-        return CarDetailsState(CarsStatus.EMPTY)
+      fun empty(): CarResultsState {
+        return CarResultsState(CarsStatus.EMPTY)
       }
 
-      fun success(cars: List<Car>): CarDetailsState {
-        return CarDetailsState(CarsStatus.SUCCESS, cars = cars)
+      fun success(cars: List<Car>): CarResultsState {
+        return CarResultsState(CarsStatus.SUCCESS, cars = cars)
       }
     }
   }
