@@ -1,6 +1,9 @@
 package sample.thowes.autoservice.views.carList
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Observer
+import io.reactivex.Single
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
 import sample.thowes.autoservice.models.Car
@@ -8,6 +11,8 @@ import sample.thowes.autoservice.models.Car
 class CarsViewModel : BaseViewModel() {
 
   var state: MutableLiveData<CarResultsState> = MutableLiveData()
+  private lateinit var carsLiveData: LiveData<List<Car>>
+  private lateinit var carsObserver: Observer<List<Car>>
 
   enum class CarsStatus {
     IDLE,
@@ -18,12 +23,14 @@ class CarsViewModel : BaseViewModel() {
   }
 
   fun getCars() {
-    addSub(
-      carDb.getCars()
+    carsLiveData = carDb.getCars()
+    carsObserver = Observer {
+      Single.just(it)
           .applySchedulers()
           .doOnSubscribe { state.postValue(CarResultsState.loading()) }
           .doAfterTerminate { state.postValue(CarResultsState.idle()) }
           .subscribe({ cars ->
+            if (cars == null) throw NullPointerException("cars list from Room is null")
             if (cars.isEmpty()) {
               state.postValue(CarResultsState.empty())
             } else {
@@ -31,7 +38,10 @@ class CarsViewModel : BaseViewModel() {
             }
           }, { error ->
             state.postValue(CarResultsState.error(error))
-          }))
+          })
+    }
+
+    carsLiveData.observeForever(carsObserver)
   }
 
   class CarResultsState(val status: CarsStatus,
