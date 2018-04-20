@@ -1,6 +1,7 @@
 package sample.thowes.autoservice.views.carDetails
 
 import android.arch.lifecycle.MutableLiveData
+import io.reactivex.Observable
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
 import sample.thowes.autoservice.models.Car
@@ -13,20 +14,33 @@ class CarViewModel : BaseViewModel() {
     IDLE,
     LOADING,
     ERROR,
-    SUCCESS
+    CAR_RETRIEVED,
+    SUBMIT
   }
 
-  fun getCar(year: Int, make: String, model: String) {
-    addSub(
-        carDb.getCar(year, make, model)
-            .applySchedulers()
-            .doOnSubscribe { state.postValue(CarDetailsState.loading()) }
-            .doAfterTerminate { state.postValue(CarDetailsState.idle()) }
-            .subscribe({ car ->
-              state.postValue(CarDetailsState.success(car))
-            }, { error ->
-              state.postValue(CarDetailsState.error(error))
-            }))
+  fun getCar(carId: Int? = null) {
+    carId?.let {
+      addSub(carDb.getCar(carId)
+          .applySchedulers()
+          .doOnSubscribe { state.postValue(CarDetailsState.loading()) }
+          .subscribe({ car ->
+            state.postValue(CarDetailsState.carRetrieved(car))
+          }, { error ->
+            state.postValue(CarDetailsState.error(error))
+          }))
+    } ?: state.postValue(CarDetailsState.idle())
+  }
+
+  fun updateCar(car: Car) {
+    addSub(Observable.fromCallable {
+        carDb.saveCar(car)
+      }.applySchedulers()
+        .doOnSubscribe { state.postValue(CarDetailsState.loading()) }
+        .subscribe({
+          state.postValue(CarDetailsState.submit())
+        }, {
+          state.postValue(CarDetailsState.error(it))
+        }))
   }
 
   class CarDetailsState(val status: CarStatus,
@@ -46,8 +60,12 @@ class CarViewModel : BaseViewModel() {
         return CarDetailsState(CarStatus.ERROR, error)
       }
 
-      fun success(car: Car): CarDetailsState {
-        return CarDetailsState(CarStatus.SUCCESS, car = car)
+      fun carRetrieved(car: Car): CarDetailsState {
+        return CarDetailsState(CarStatus.CAR_RETRIEVED, car = car)
+      }
+
+      fun submit(): CarDetailsState {
+        return CarDetailsState(CarStatus.SUBMIT)
       }
     }
   }

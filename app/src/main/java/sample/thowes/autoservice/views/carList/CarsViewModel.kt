@@ -28,10 +28,8 @@ class CarsViewModel : BaseViewModel() {
       Single.just(it)
           .applySchedulers()
           .doOnSubscribe { state.postValue(CarResultsState.loading()) }
-          .doAfterTerminate { state.postValue(CarResultsState.idle()) }
           .subscribe({ cars ->
-            if (cars == null) throw NullPointerException("cars list from Room is null")
-            if (cars.isEmpty()) {
+            if (cars == null || cars.isEmpty()) {
               state.postValue(CarResultsState.empty())
             } else {
               state.postValue(CarResultsState.success(cars))

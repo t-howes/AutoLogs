@@ -10,8 +10,8 @@ interface CarDb {
   @Query("SELECT * FROM ${Car.TABLE_NAME}")
   fun getCars(): LiveData<List<Car>>
 
-  @Query("SELECT * FROM ${Car.TABLE_NAME} WHERE year=:year AND make=:make AND model=:model")
-  fun getCar(year: Int, make: String, model: String): Single<Car>
+  @Query("SELECT * FROM ${Car.TABLE_NAME} WHERE id = :id")
+  fun getCar(id: Int?): Single<Car>
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   fun saveCar(car: Car)

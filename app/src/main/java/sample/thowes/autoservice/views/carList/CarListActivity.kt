@@ -9,10 +9,11 @@ import kotlinx.android.synthetic.main.activity_car_list.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseActivity
 import sample.thowes.autoservice.extensions.showToast
-import sample.thowes.autoservice.views.carDetails.CarDetailsFragment
+import sample.thowes.autoservice.models.Car
+import sample.thowes.autoservice.views.carDetails.CarDetailsActivity
 import sample.thowes.autoservice.views.carList.CarsViewModel.CarsStatus.*
 
-class CarListActivity : BaseActivity() {
+class CarListActivity : BaseActivity(), CarClickListener {
 
   private lateinit var carsViewModel: CarsViewModel
 
@@ -29,11 +30,7 @@ class CarListActivity : BaseActivity() {
     carsViewModel.getCars()
 
     add.setOnClickListener {
-      supportFragmentManager
-          .beginTransaction()
-          .add(R.id.addCarContainer, CarDetailsFragment.newInstance(false))
-          .addToBackStack("add_car")
-          .commit()
+      navigateToCarDetails()
     }
   }
 
@@ -49,12 +46,26 @@ class CarListActivity : BaseActivity() {
       }
       SUCCESS -> {
         state.cars?.let { cars ->
-          val adapter = CarAdapter(this, cars)
-          carsList.adapter = adapter
-          carsList.layoutManager = LinearLayoutManager(this)
-          emptyResults.visibility = View.GONE
+          showCars(cars)
         }
       }
     }
+
+    showLoading(false)
+  }
+
+  private fun showCars(cars: List<Car>) {
+    val adapter = CarAdapter(this, cars)
+    carsList.adapter = adapter
+    carsList.layoutManager = LinearLayoutManager(this)
+    emptyResults.visibility = View.GONE
+  }
+
+  private fun navigateToCarDetails(id: Int? = null) {
+    startActivity(CarDetailsActivity.newIntent(this, id))
+  }
+
+  override fun onCarClicked(car: Car) {
+    navigateToCarDetails(car.id)
   }
 }

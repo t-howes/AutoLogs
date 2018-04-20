@@ -27,14 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:elevation="4dp"
+        android:elevation="3dp"
         android:layout_margin="15dp"
         android:src="@android:drawable/ic_input_add"/>
-
-    <FrameLayout
-        android:id="@+id/addCarContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
     <sample.thowes.autoservice.views.custom.LoadingView
         android:id="@+id/loading"
