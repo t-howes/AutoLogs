@@ -5,9 +5,10 @@ import android.view.MenuItem
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import sample.thowes.autoservice.R
+import sample.thowes.autoservice.models.SubscriptionHandler
 import sample.thowes.autoservice.views.custom.LoadingView
 
-abstract class BaseActivity : AppCompatActivity(), BaseView {
+abstract class BaseActivity : AppCompatActivity(), BaseView, SubscriptionHandler {
 
   private var loadingView: LoadingView? = null
   private val disposables = CompositeDisposable()
@@ -39,11 +40,11 @@ abstract class BaseActivity : AppCompatActivity(), BaseView {
     loadingView?.show(show)
   }
 
-  protected fun addSub(disposable: Disposable) {
+  override fun addSub(disposable: Disposable) {
     disposables.add(disposable)
   }
 
-  private fun clearDisposables() {
+  override fun clearDisposables() {
     if (!disposables.isDisposed) {
       disposables.dispose()
     }

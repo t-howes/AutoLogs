@@ -19,4 +19,9 @@
     <string name="error_invalid_length">Invalid length</string>
     <string name="add_car">Add a Car</string>
     <string name="total_cost_placeholder">Total cost: %s</string>
+
+    <string name="details">Details</string>
+    <string name="maintenance">Maintenance</string>
+    <string name="modifications">Modifications</string>
+    <string name="other">Other</string>
 </resources>

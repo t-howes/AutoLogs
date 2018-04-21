@@ -30,6 +30,8 @@ fun Car.totalCost(): Double {
   return maintenanceCost + modificationCost
 }
 
+fun Car.yearMakeModel() = "$year $make $model"
+
 abstract class CarWork(var name: String,
                        var date: String,
                        var cost: Double? = 0.0,
