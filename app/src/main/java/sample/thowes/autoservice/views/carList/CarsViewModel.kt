@@ -27,6 +27,9 @@ class CarsViewModel : BaseViewModel() {
     carsObserver = Observer {
       Single.just(it)
           .applySchedulers()
+          .flatMap {
+            Single.just(it.sortedByDescending { it.year })
+          }
           .doOnSubscribe { state.postValue(CarResultsState.loading()) }
           .subscribe({ cars ->
             if (cars == null || cars.isEmpty()) {

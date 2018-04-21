@@ -18,4 +18,5 @@
     <string name="error_field_required">Required field</string>
     <string name="error_invalid_length">Invalid length</string>
     <string name="add_car">Add a Car</string>
+    <string name="total_cost_placeholder">Total cost: %s</string>
 </resources>

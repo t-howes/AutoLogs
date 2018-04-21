@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_row_car.view.*
 import sample.thowes.autoservice.R
+import sample.thowes.autoservice.extensions.formatMoney
 import sample.thowes.autoservice.models.Car
+import sample.thowes.autoservice.models.totalCost
 
 class CarAdapter(context: Context, private val cars: List<Car>) : RecyclerView.Adapter<CarViewHolder>() {
   private val inflater = LayoutInflater.from(context)
@@ -28,13 +30,14 @@ class CarViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
   fun bind(car: Car?) {
     car?.let {
+      val context = itemView.context
       itemView.name.text = car.name
       itemView.name.visibility = if (car.name.isNullOrBlank()) View.GONE else View.VISIBLE
-      itemView.year.text = car.year.toString()
-      itemView.make.text = car.make
-      itemView.model.text = car.model
-      itemView.miles.text = itemView.context.getString(R.string.x_miles, car.miles)
-      itemView.container.setOnClickListener { (itemView.context as? CarClickListener)?.onCarClicked(car) }
+      val yearMakeModel = "${car.year} ${car.make} ${car.model}"
+      itemView.yearMakeModel.text = yearMakeModel
+      itemView.miles.text = context.getString(R.string.x_miles, car.miles)
+      itemView.cost.text = context.getString(R.string.total_cost_placeholder, car.totalCost().formatMoney())
+      itemView.container.setOnClickListener { (context as? CarClickListener)?.onCarClicked(car) }
     }
   }
 }

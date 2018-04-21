@@ -5,13 +5,17 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.jakewharton.rxbinding2.widget.RxTextView
+import io.reactivex.Observable
+import io.reactivex.functions.Function3
 import kotlinx.android.synthetic.main.activity_car_details.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseActivity
 import sample.thowes.autoservice.extensions.showToast
 import sample.thowes.autoservice.models.Car
 import sample.thowes.autoservice.validation.FormValidator
+import java.util.concurrent.TimeUnit
 
 class CarDetailsActivity : BaseActivity() {
 
@@ -40,6 +44,7 @@ class CarDetailsActivity : BaseActivity() {
 
   private fun initUi() {
     supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    lastUpdate.visibility = View.GONE
 
     if (carId == null) {
       setTitle(R.string.add_car)
@@ -57,10 +62,25 @@ class CarDetailsActivity : BaseActivity() {
   }
 
   private fun setupInlineValidations() {
+    //TODO: fix this shit
     val yearObservable = RxTextView.textChanges(yearInput)
+        .skip(1)
         .map { inputText -> inputText.toString().length == 4 }
 
-    addSub(yearObservable.subscribe({ isValid -> }))
+    val makeObservable = RxTextView.textChanges(makeInput)
+        .skip(1)
+        .map { inputText -> inputText.isNotEmpty() }
+
+    val modelObservable = RxTextView.textChanges(modelInput)
+        .skip(1)
+        .map { inputText -> inputText.isNotEmpty() }
+
+    addSub(Observable.zip(yearObservable, makeObservable, modelObservable,
+        Function3<Boolean, Boolean, Boolean, Boolean> { isYearValid, isMakeValid, isModelValid ->
+          isYearValid && isMakeValid && isModelValid
+        }).subscribe{ isValid ->
+          submit.isEnabled = isValid
+        })
   }
 
   private fun updateFromState(state: CarViewModel.CarDetailsState) {
@@ -91,6 +111,7 @@ class CarDetailsActivity : BaseActivity() {
     modelInput.setText(car.model)
     milesInput.setText(car.miles.toString())
     notesInput.setText(car.notes)
+    lastUpdate.visibility = View.VISIBLE
     lastUpdate.text = getString(R.string.last_updated, car.lastUpdate)
   }
 
