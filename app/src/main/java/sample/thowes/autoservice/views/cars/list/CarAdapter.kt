@@ -1,4 +1,4 @@
-package sample.thowes.autoservice.views.carList
+package sample.thowes.autoservice.views.cars.list
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -7,9 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_row_car.view.*
 import sample.thowes.autoservice.R
-import sample.thowes.autoservice.extensions.formatMoney
 import sample.thowes.autoservice.models.Car
-import sample.thowes.autoservice.models.totalCost
 
 class CarAdapter(context: Context, private val cars: List<Car>) : RecyclerView.Adapter<CarViewHolder>() {
   private val inflater = LayoutInflater.from(context)
@@ -36,7 +34,7 @@ class CarViewHolder(view: View) : RecyclerView.ViewHolder(view) {
       val yearMakeModel = "${car.year} ${car.make} ${car.model}"
       itemView.yearMakeModel.text = yearMakeModel
       itemView.miles.text = context.getString(R.string.x_miles, car.miles)
-      itemView.cost.text = context.getString(R.string.total_cost_placeholder, car.totalCost().formatMoney())
+//      itemView.cost.text = context.getString(R.string.total_cost_placeholder, car.totalCost().formatMoney())
       itemView.container.setOnClickListener { (context as? CarClickListener)?.onCarClicked(car) }
     }
   }

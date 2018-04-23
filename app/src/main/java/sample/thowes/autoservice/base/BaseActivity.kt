@@ -49,4 +49,8 @@ abstract class BaseActivity : AppCompatActivity(), BaseView, SubscriptionHandler
       disposables.dispose()
     }
   }
+
+  protected fun setDisplayHomeAsUpEnabled(show: Boolean = true) {
+    supportActionBar?.setDisplayHomeAsUpEnabled(show)
+  }
 }

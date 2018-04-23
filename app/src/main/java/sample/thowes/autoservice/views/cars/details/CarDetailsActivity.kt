@@ -1,4 +1,4 @@
-package sample.thowes.autoservice.views.carDetails
+package sample.thowes.autoservice.views.cars.details
 
 import android.content.Context
 import android.content.Intent
@@ -15,9 +15,9 @@ class CarDetailsActivity : BaseActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_car_details)
 
-    val id = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
+    val id = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT)
 
-    if (id != CAR_ID_DEFAULT) {
+    if (CAR_ID_DEFAULT != id) {
       carId = id
     }
 
@@ -25,7 +25,7 @@ class CarDetailsActivity : BaseActivity() {
   }
 
   private fun initUi() {
-    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    setDisplayHomeAsUpEnabled()
 
     carId?.let { id ->
       val detailsTabAdapter = CarDetailsTabAdapter(this, supportFragmentManager, id)

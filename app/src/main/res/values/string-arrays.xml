@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="maintenance_names">
+        <item>Oil</item>
+        <item>Air Filter</item>
+        <item>Spark Plugs/Wire</item>
+        <item>Tires</item>
+        <item>Fuel Injector Cleaning</item>
+        <item>Other</item>
+    </string-array>
+</resources>

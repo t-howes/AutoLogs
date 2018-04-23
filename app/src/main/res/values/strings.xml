@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Auto Reqords</string>
+    <string name="app_name">Auto Logs</string>
     <string name="x_miles">%d miles</string>
     <string name="last_updated">Last updated: %s</string>
     <string name="no_cars">You don\'t have any cars added.</string>
@@ -24,4 +24,9 @@
     <string name="maintenance">Maintenance</string>
     <string name="modifications">Modifications</string>
     <string name="other">Other</string>
+
+    <string name="no_car_work">You don\'t have any %s recorded.</string>
+    <string name="date">Date</string>
+    <string name="odometer_reading">Odometer reading</string>
+    <string name="add_placeholder">Add %s</string>
 </resources>

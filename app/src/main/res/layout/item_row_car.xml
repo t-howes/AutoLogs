@@ -39,7 +39,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="end">
 
             <TextView
                 android:id="@+id/miles"
@@ -47,11 +48,11 @@
                 android:layout_height="wrap_content"
                 tools:text="@string/x_miles" />
 
-            <TextView
-                android:id="@+id/cost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="$0.00" />
+            <!--<TextView-->
+                <!--android:id="@+id/cost"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--tools:text="$0.00" />-->
         </LinearLayout>
     </LinearLayout>
 

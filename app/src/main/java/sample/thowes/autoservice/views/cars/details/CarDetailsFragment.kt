@@ -1,4 +1,4 @@
-package sample.thowes.autoservice.views.carDetails
+package sample.thowes.autoservice.views.cars.details
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -16,8 +16,8 @@ import sample.thowes.autoservice.extensions.showToast
 import sample.thowes.autoservice.models.Car
 import sample.thowes.autoservice.models.yearMakeModel
 import sample.thowes.autoservice.validation.FormValidator
-import sample.thowes.autoservice.views.carDetails.CarDetailsActivity.Companion.CAR_ID
-import sample.thowes.autoservice.views.carDetails.CarDetailsActivity.Companion.CAR_ID_DEFAULT
+import sample.thowes.autoservice.views.cars.details.CarDetailsActivity.Companion.CAR_ID
+import sample.thowes.autoservice.views.cars.details.CarDetailsActivity.Companion.CAR_ID_DEFAULT
 
 class CarDetailsFragment : BaseFragment() {
 
@@ -32,7 +32,7 @@ class CarDetailsFragment : BaseFragment() {
     super.onViewCreated(view, savedInstanceState)
     val id = arguments?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
 
-    if (id != CAR_ID_DEFAULT) {
+    if (CAR_ID_DEFAULT != id) {
       carId = id
     }
 
@@ -44,6 +44,7 @@ class CarDetailsFragment : BaseFragment() {
         updateFromState(it)
       }
     })
+
     carViewModel.getCar(carId)
   }
 

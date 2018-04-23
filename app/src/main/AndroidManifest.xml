@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".views.carList.CarListActivity"
+            android:name="sample.thowes.autoservice.views.cars.list.CarListActivity"
             android:label="@string/my_cars"
             android:screenOrientation="portrait">
 
@@ -23,10 +23,17 @@
         </activity>
 
         <activity
-            android:name=".views.carDetails.CarDetailsActivity"
+            android:name="sample.thowes.autoservice.views.cars.details.CarDetailsActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".views.maintenance.details.MaintenanceDetailsActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>

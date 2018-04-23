@@ -1,10 +1,12 @@
-package sample.thowes.autoservice.views.carDetails
+package sample.thowes.autoservice.views.cars.details
 
 import android.content.Context
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import sample.thowes.autoservice.R
+import sample.thowes.autoservice.models.CarWork
+import sample.thowes.autoservice.views.maintenance.list.MaintenanceListFragment
 
 class CarDetailsTabAdapter(val context: Context,
                            fragManager: FragmentManager,
@@ -13,8 +15,8 @@ class CarDetailsTabAdapter(val context: Context,
   override fun getItem(position: Int): Fragment {
     return when (position) {
       PAGE_DETAILS -> CarDetailsFragment.newInstance(carId)
-      PAGE_MAINTENANCE -> CarDetailsFragment.newInstance(carId) // TODO
-      PAGE_MODIFICATIONS -> CarDetailsFragment.newInstance(carId) // TODO
+      PAGE_MAINTENANCE -> MaintenanceListFragment.newInstance(carId, CarWork.Type.MAINTENANCE.value)
+      PAGE_MODIFICATIONS -> MaintenanceListFragment.newInstance(carId, CarWork.Type.MODIFICATION.value)
       else -> CarDetailsFragment.newInstance(carId)
     }
   }

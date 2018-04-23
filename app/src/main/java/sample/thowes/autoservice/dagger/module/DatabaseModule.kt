@@ -6,6 +6,7 @@ import dagger.Module
 import dagger.Provides
 import sample.thowes.autoservice.database.AutoDatabase
 import sample.thowes.autoservice.database.CarDb
+import sample.thowes.autoservice.database.CarWorkDb
 import javax.inject.Singleton
 
 @Module
@@ -23,5 +24,11 @@ class DatabaseModule(val context: Context) {
   @Provides
   fun provideCarDb(autoDatabase: AutoDatabase): CarDb {
     return autoDatabase.carDb()
+  }
+
+  @Singleton
+  @Provides
+  fun provideCarWorkDb(autoDatabase: AutoDatabase): CarWorkDb {
+    return autoDatabase.carWorkDb()
   }
 }

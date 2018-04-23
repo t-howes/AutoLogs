@@ -5,11 +5,15 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import sample.thowes.autoservice.application.AutoServiceApplication
 import sample.thowes.autoservice.database.CarDb
+import sample.thowes.autoservice.database.CarWorkDb
 import javax.inject.Inject
 
 open class BaseViewModel : ViewModel() {
   @Inject
   protected lateinit var carDb: CarDb
+
+  @Inject
+  protected lateinit var carWorkDb: CarWorkDb
 
   private val disposables = CompositeDisposable()
 

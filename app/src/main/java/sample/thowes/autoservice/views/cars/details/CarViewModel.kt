@@ -1,4 +1,4 @@
-package sample.thowes.autoservice.views.carDetails
+package sample.thowes.autoservice.views.cars.details
 
 import android.arch.lifecycle.MutableLiveData
 import io.reactivex.Observable

@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v4.app.Fragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import sample.thowes.autoservice.extensions.showToast
 import sample.thowes.autoservice.models.SubscriptionHandler
 
 abstract class BaseFragment : Fragment(), BaseView, SubscriptionHandler {
@@ -41,5 +42,9 @@ abstract class BaseFragment : Fragment(), BaseView, SubscriptionHandler {
     if (!disposables.isDisposed) {
       disposables.dispose()
     }
+  }
+
+  protected fun showToast(message: String?) {
+    context.showToast(message)
   }
 }

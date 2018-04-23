@@ -1,4 +1,4 @@
-package sample.thowes.autoservice.views.carList
+package sample.thowes.autoservice.views.cars.list
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -10,8 +10,8 @@ import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseActivity
 import sample.thowes.autoservice.extensions.showToast
 import sample.thowes.autoservice.models.Car
-import sample.thowes.autoservice.views.carDetails.CarDetailsActivity
-import sample.thowes.autoservice.views.carList.CarsViewModel.CarsStatus.*
+import sample.thowes.autoservice.views.cars.details.CarDetailsActivity
+import sample.thowes.autoservice.views.cars.list.CarsViewModel.CarsStatus.*
 
 class CarListActivity : BaseActivity(), CarClickListener {
 
@@ -38,8 +38,12 @@ class CarListActivity : BaseActivity(), CarClickListener {
     when (state.status) {
       IDLE -> showLoading(false)
       LOADING -> showLoading()
-      EMPTY -> emptyResults.visibility = View.VISIBLE
+      EMPTY -> {
+        showNoResults()
+        showLoading(false)
+      }
       ERROR -> {
+        showLoading(false)
         state.error?.let {
           showToast(it.localizedMessage)
         }
@@ -48,17 +52,22 @@ class CarListActivity : BaseActivity(), CarClickListener {
         state.cars?.let { cars ->
           showCars(cars)
         }
+        showLoading(false)
       }
     }
-
-    showLoading(false)
   }
 
   private fun showCars(cars: List<Car>) {
     val adapter = CarAdapter(this, cars)
     carsList.adapter = adapter
     carsList.layoutManager = LinearLayoutManager(this)
+    carsList.visibility = View.VISIBLE
     emptyResults.visibility = View.GONE
+  }
+
+  private fun showNoResults() {
+    carsList.visibility = View.GONE
+    emptyResults.visibility = View.VISIBLE
   }
 
   private fun navigateToCarDetails(id: Int? = null) {

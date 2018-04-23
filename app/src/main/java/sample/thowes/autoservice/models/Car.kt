@@ -1,6 +1,8 @@
 package sample.thowes.autoservice.models
 
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.ForeignKey
+import android.arch.persistence.room.ForeignKey.CASCADE
 import android.arch.persistence.room.PrimaryKey
 import sample.thowes.autoservice.extensions.now
 import sample.thowes.autoservice.extensions.today
@@ -15,8 +17,6 @@ data class Car(@PrimaryKey(autoGenerate = true)
                var miles: Int? = 0,
                var name: String? = null,
                var notes: String? = null,
-               var maintenance: List<Maintenance> = arrayListOf(),
-               var modifications: List<Modification> = arrayListOf(),
                var lastUpdate: String? = Calendar.getInstance().now()) {
 
   companion object {
@@ -24,42 +24,43 @@ data class Car(@PrimaryKey(autoGenerate = true)
   }
 }
 
-fun Car.totalCost(): Double {
-  val maintenanceCost = maintenance.sumByDouble { it.cost ?: 0.0 }
-  val modificationCost = modifications.sumByDouble { it.cost ?: 0.0 }
-  return maintenanceCost + modificationCost
-}
+//fun Car.totalCost(): Double {
+//  val maintenanceCost = maintenance.sumByDouble { it.cost ?: 0.0 }
+//  val modificationCost = modifications.sumByDouble { it.cost ?: 0.0 }
+//  return maintenanceCost + modificationCost
+//}
 
 fun Car.yearMakeModel() = "$year $make $model"
 
-abstract class CarWork(var name: String,
+
+@Entity(tableName = CarWork.TABLE,
+        foreignKeys = [(ForeignKey(entity = Car::class,
+                                   parentColumns = arrayOf("id"),
+                                   childColumns = arrayOf("carId"),
+                                   onDelete = CASCADE))])
+data class CarWork(@PrimaryKey (autoGenerate = true)
+                       val id: Int,
+                       val carId: Int,
+                       val type: Int,
+                       var name: String,
                        var date: String,
                        var cost: Double? = 0.0,
-                       var milesPerformed: String,
+                       var odometerReading: Int,
                        var notes: String? = null) {
 
-  enum class Type {
-    MAINTENANCE,
-    MODIFICATION
+  enum class Type(val value: Int) {
+    MAINTENANCE(0),
+    MODIFICATION(1),
+    OTHER(3);
+
+    companion object {
+      fun from(type: Int): Type {
+        return Type.values().find { it.value == type } ?: OTHER
+      }
+    }
   }
 
-  abstract fun getType(): Type
-}
-
-class Maintenance(name: String,
-                  date: String,
-                  cost: Double? = 0.0,
-                  milesPerformed: String,
-                  notes: String? = null) : CarWork(name, date, cost, milesPerformed, notes) {
-
-  override fun getType() = Type.MAINTENANCE
-}
-
-class Modification(name: String,
-                   date: String,
-                   cost: Double? = 0.0,
-                   milesPerformed: String,
-                   notes: String? = null) : CarWork(name, date, cost, milesPerformed, notes) {
-
-  override fun getType() = Type.MODIFICATION
+  companion object {
+    const val TABLE = "car_work"
+  }
 }

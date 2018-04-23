@@ -102,7 +102,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:hint="@string/notes">
 
             <android.support.design.widget.TextInputEditText
@@ -111,7 +111,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="top"
                 android:maxLength="400"
-                android:lines="4" />
+                android:lines="2"
+                android:maxLines="4"/>
         </android.support.design.widget.TextInputLayout>
 
         <TextView
@@ -119,7 +120,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:text="@string/last_updated" />
 
         <Button

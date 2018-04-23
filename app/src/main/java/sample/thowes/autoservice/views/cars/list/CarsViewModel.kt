@@ -1,4 +1,4 @@
-package sample.thowes.autoservice.views.carList
+package sample.thowes.autoservice.views.cars.list
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData

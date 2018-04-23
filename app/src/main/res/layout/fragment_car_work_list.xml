@@ -2,12 +2,11 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".views.cars.list.CarListActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/carsList"
+        android:id="@+id/carWorkList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
@@ -17,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_margin="15dp"
-        android:text="@string/no_cars"
+        android:text="@string/no_car_work"
         android:visibility="gone"
         tools:visibility="visible"/>
 
@@ -26,13 +25,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:elevation="3dp"
         android:layout_margin="15dp"
         android:src="@android:drawable/ic_input_add"/>
 
-    <sample.thowes.autoservice.views.custom.LoadingView
-        android:id="@+id/loading"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 </RelativeLayout>
