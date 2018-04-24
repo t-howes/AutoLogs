@@ -38,7 +38,7 @@ class CarDetailsActivity : BaseActivity() {
     supportFragmentManager
         .beginTransaction()
         .add(newCarLayout.id, CarDetailsFragment.newInstance())
-        .addToBackStack("new-car")
+//        .addToBackStack("new-car")
         .commit()
   }
 

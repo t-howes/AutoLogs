@@ -67,25 +67,21 @@ class CarDetailsFragment : BaseFragment() {
   }
 
   private fun setupInlineValidations() {
-    //TODO: fix this shit
     val yearObservable = RxTextView.textChanges(yearInput)
-        .skip(1)
         .map { inputText -> inputText.toString().length == 4 }
 
     val makeObservable = RxTextView.textChanges(makeInput)
-        .skip(1)
         .map { inputText -> inputText.isNotEmpty() }
 
     val modelObservable = RxTextView.textChanges(modelInput)
-        .skip(1)
         .map { inputText -> inputText.isNotEmpty() }
 
-    addSub(Observable.zip(yearObservable, makeObservable, modelObservable,
-        Function3<Boolean, Boolean, Boolean, Boolean> { isYearValid, isMakeValid, isModelValid ->
-          isYearValid && isMakeValid && isModelValid
-        }).subscribe{ isValid ->
-      submit.isEnabled = isValid
-    })
+    addSub(Observable.combineLatest(yearObservable, makeObservable, modelObservable,
+      Function3<Boolean, Boolean, Boolean, Boolean> { isYearValid, isMakeValid, isModelValid ->
+        isYearValid && isMakeValid && isModelValid
+      }).subscribe{ isValid ->
+        submit.isEnabled = isValid
+      })
   }
 
   private fun updateFromState(state: CarViewModel.CarDetailsState) {

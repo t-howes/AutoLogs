@@ -5,7 +5,6 @@ import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.ForeignKey.CASCADE
 import android.arch.persistence.room.PrimaryKey
 import sample.thowes.autoservice.extensions.now
-import sample.thowes.autoservice.extensions.today
 import java.util.*
 
 @Entity(tableName = Car.TABLE_NAME)
@@ -39,7 +38,7 @@ fun Car.yearMakeModel() = "$year $make $model"
                                    childColumns = arrayOf("carId"),
                                    onDelete = CASCADE))])
 data class CarWork(@PrimaryKey (autoGenerate = true)
-                       val id: Int,
+                       val id: Int?,
                        val carId: Int,
                        val type: Int,
                        var name: String,

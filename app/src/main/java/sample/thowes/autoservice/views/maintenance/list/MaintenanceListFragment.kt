@@ -54,7 +54,7 @@ class MaintenanceListFragment : BaseFragment() {
     }
   }
 
-  private fun updateFromState(state: MaintenanceViewModel.MaintenanceListState) {
+  private fun updateFromState(state: MaintenanceViewModel.MaintenanceState) {
     when (state.status) {
       MaintenanceViewModel.MaintenanceStatus.IDLE -> showLoading(false)
       MaintenanceViewModel.MaintenanceStatus.LOADING -> showLoading()
@@ -80,7 +80,9 @@ class MaintenanceListFragment : BaseFragment() {
 
   private fun navigateToMaintenanceDetails(id: Int? = null) {
     context?.let { context ->
-      startActivity(MaintenanceDetailsActivity.newIntent(context, id))
+      carId?.let { carId ->
+        startActivity(MaintenanceDetailsActivity.newIntent(context, carId, id))
+      } ?: showToast(getString(R.string.error_occurred))
     }
   }
 

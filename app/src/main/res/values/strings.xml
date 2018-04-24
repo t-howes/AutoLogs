@@ -29,4 +29,7 @@
     <string name="date">Date</string>
     <string name="odometer_reading">Odometer reading</string>
     <string name="add_placeholder">Add %s</string>
+
+    <!-- Errors -->
+    <string name="error_occurred">An error has occurred. Try again later.</string>
 </resources>

@@ -6,7 +6,7 @@ import java.util.*
 const val MONTH_DAY_YEAR = "MM/dd/yyyy"
 const val MONTH_DAY_YEAR_TIME = "$MONTH_DAY_YEAR hh:mm a"
 
-fun Calendar.today(): String {
+fun Calendar.simple(): String {
   return SimpleDateFormat(MONTH_DAY_YEAR, Locale.getDefault()).format(time)
 }
 

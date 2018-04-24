@@ -40,7 +40,7 @@ abstract class BaseFragment : Fragment(), BaseView, SubscriptionHandler {
 
   override fun clearDisposables() {
     if (!disposables.isDisposed) {
-      disposables.dispose()
+      disposables.clear()
     }
   }
 
