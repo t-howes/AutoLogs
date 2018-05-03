@@ -5,6 +5,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
 import sample.thowes.autoservice.models.CarWork
@@ -32,47 +34,68 @@ class MaintenanceViewModel : BaseViewModel() {
         maintenanceObserver = Observer {
           Single.just(it)
               .applySchedulers()
-              .doOnSubscribe { state.postValue(MaintenanceState.loading()) }
+              .doOnSubscribe { state.value = MaintenanceState.loading() }
+              .doAfterTerminate { state.value = MaintenanceState.idle() }
+              .flatMap { Single.just(it.sortedByDescending { it.date }) }
               .subscribe({ maintenance ->
                 if (maintenance == null || maintenance.isEmpty()) {
-                  state.postValue(MaintenanceState.empty())
+                  state.value = MaintenanceState.empty()
                 } else {
-                  state.postValue(MaintenanceState.maintenanceListRetrieved(maintenance))
+                  state.value = MaintenanceState.maintenanceListRetrieved(maintenance)
                 }
               }, { error ->
-                state.postValue(MaintenanceState.error(error))
+                state.value = MaintenanceState.error(error)
               })
         }
 
         maintenanceLiveData.observeForever(maintenanceObserver)
 
-      } ?: state.postValue(MaintenanceState.idle())
-    } ?: state.postValue(MaintenanceState.idle())
+      } ?: { state.value = MaintenanceState.idle() }.invoke()
+    } ?: { state.value = MaintenanceState.idle() }.invoke()
   }
 
   fun getMaintenance(id: Int? = null) {
     id?.let {
       addSub(carWorkDb.getCarWork(id)
           .applySchedulers()
-          .doOnSubscribe { state.postValue(MaintenanceState.loading()) }
+          .doOnSubscribe { state.value = MaintenanceState.loading() }
+          .doAfterTerminate { state.value = MaintenanceState.idle() }
           .subscribe({ maintenance ->
-            state.postValue(MaintenanceState.maintenanceRetrieved(arrayListOf(maintenance)))
+            state.value = MaintenanceState.maintenanceRetrieved(arrayListOf(maintenance))
           }, { error ->
-            state.postValue(MaintenanceState.error(error))
+            state.value = MaintenanceState.error(error)
           }))
-    } ?: state.postValue(MaintenanceState.idle())
+    } ?: { state.value = MaintenanceState.idle() }.invoke()
   }
 
-  fun saveCarWork(carWork: CarWork) {
-    addSub(Observable.fromCallable {
-       carWorkDb.saveWork(carWork)
-      }.applySchedulers()
-        .doOnSubscribe { state.postValue(MaintenanceState.loading()) }
+  fun updateCar(carWork: CarWork) {
+    addSub(carDb.getCar(carWork.carId)
+        .applySchedulers()
+        .doOnSubscribe { state.value = MaintenanceState.loading() }
+        .doAfterTerminate { state.value = MaintenanceState.idle() }
+        .observeOn(Schedulers.io())
+        .flatMap { car ->
+          if (carWork.odometerReading > car.miles ?: 0) {
+            car.miles = carWork.odometerReading
+            Observable.fromCallable {
+              carDb.saveCar(car)
+            }.onErrorReturn {
+              // eat the error - continue on to save maintenance
+            }
+          }
+          Single.just(carWork)
+        }
+        .flatMap {
+          carWorkDb.saveWork(carWork)
+          Single.just(carWork)
+        }
+        .observeOn(AndroidSchedulers.mainThread())
         .subscribe({
-          state.postValue(MaintenanceState.submit())
+          state.value = MaintenanceState.submit()
         }, {
-          state.postValue(MaintenanceState.error(it))
+          state.value = MaintenanceState.error(it)
         }))
+
   }
 
   class MaintenanceState(val status: MaintenanceStatus,

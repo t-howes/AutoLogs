@@ -18,6 +18,7 @@ import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
 import android.widget.ArrayAdapter
 import android.app.DatePickerDialog
 import sample.thowes.autoservice.extensions.simple
+import sample.thowes.autoservice.validation.FormValidator
 import java.util.*
 
 
@@ -68,6 +69,7 @@ class MaintenanceDetailsActivity : BaseActivity() {
         CarWork.Type.MODIFICATION.value -> R.string.modifications
         else -> R.string.maintenance
       }
+
       val text = getString(textRes)
       setTitle(getString(R.string.add_placeholder, text))
     } else {
@@ -157,7 +159,6 @@ class MaintenanceDetailsActivity : BaseActivity() {
         // not implementing
       }
       MaintenanceViewModel.MaintenanceStatus.ERROR -> state.error?.let {
-        showLoading(false)
         showToast(it.localizedMessage)
       }
       MaintenanceViewModel.MaintenanceStatus.MAINTENANCE_LIST_RETRIEVED -> {
@@ -167,7 +168,6 @@ class MaintenanceDetailsActivity : BaseActivity() {
         state.maintenance?.let {
           showMaintenanceDetails(it.first())
         }
-        showLoading(false)
       }
       MaintenanceViewModel.MaintenanceStatus.SUBMIT -> finish()
     }
@@ -183,7 +183,14 @@ class MaintenanceDetailsActivity : BaseActivity() {
   }
 
   private fun validForm(): Boolean {
-    return true
+    return (validName()
+            and FormValidator.validateRequired(this, dateLayout)
+            and FormValidator.validateRequired(this, milesLayout))
+  }
+
+  private fun validName(): Boolean {
+    return nameSpinner.selectedItem.toString() != getString(R.string.other)
+            || FormValidator.validateRequired(this, nameLayout)
   }
 
   private fun saveCarWork() {
@@ -197,7 +204,7 @@ class MaintenanceDetailsActivity : BaseActivity() {
       }
       val date = dateInput.text.toString()
       val miles = milesInput.text.toString().toInt()
-      val cost = costInput.text.toString().toDouble()
+      val cost = costInput.text.toString().toDoubleOrNull()
       val notes = notesInput.text.toString()
       // null carId should auto generate an ID in Room
       val newCarWork = CarWork(
@@ -205,7 +212,7 @@ class MaintenanceDetailsActivity : BaseActivity() {
           CarWork.Type.MAINTENANCE.value,
           name, date, cost, miles, notes)
 
-      maintenanceViewModel.saveCarWork(newCarWork)
+      maintenanceViewModel.updateCar(newCarWork)
     } ?: showToast(getString(R.string.error_occurred))
   }
 
