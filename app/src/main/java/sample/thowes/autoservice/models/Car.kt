@@ -49,12 +49,11 @@ data class CarWork(@PrimaryKey (autoGenerate = true)
 
   enum class Type(val value: Int) {
     MAINTENANCE(0),
-    MODIFICATION(1),
-    OTHER(3);
+    MODIFICATION(1);
 
     companion object {
       fun from(type: Int): Type {
-        return Type.values().find { it.value == type } ?: OTHER
+        return Type.values().find { it.value == type } ?: MAINTENANCE
       }
     }
   }

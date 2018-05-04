@@ -11,6 +11,9 @@ interface CarDb {
   fun getCars(): LiveData<List<Car>>
 
   @Query("SELECT * FROM ${Car.TABLE_NAME} WHERE id = :id")
+  fun getLiveCar(id: Int?): LiveData<Car>
+
+  @Query("SELECT * FROM ${Car.TABLE_NAME} WHERE id = :id")
   fun getCar(id: Int?): Single<Car>
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)

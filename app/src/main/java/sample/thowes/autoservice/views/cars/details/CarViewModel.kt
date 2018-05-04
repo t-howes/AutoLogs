@@ -1,7 +1,10 @@
 package sample.thowes.autoservice.views.cars.details
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Observer
 import io.reactivex.Observable
+import io.reactivex.Single
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
 import sample.thowes.autoservice.models.Car
@@ -9,6 +12,8 @@ import sample.thowes.autoservice.models.Car
 class CarViewModel : BaseViewModel() {
 
   var state: MutableLiveData<CarDetailsState> = MutableLiveData()
+  private lateinit var carLiveData: LiveData<Car>
+  private lateinit var carObserver: Observer<Car>
 
   enum class CarStatus {
     IDLE,
@@ -20,14 +25,22 @@ class CarViewModel : BaseViewModel() {
 
   fun getCar(carId: Int? = null) {
     carId?.let {
-      addSub(carDb.getCar(carId)
-          .applySchedulers()
-          .doOnSubscribe { state.postValue(CarDetailsState.loading()) }
-          .subscribe({ car ->
-            state.postValue(CarDetailsState.carRetrieved(car))
-          }, { error ->
-            state.postValue(CarDetailsState.error(error))
-          }))
+      carLiveData = carDb.getLiveCar(carId)
+      carObserver = Observer {
+        Single.just(it)
+            .applySchedulers()
+            .doOnSubscribe { state.value = CarDetailsState.loading() }
+            .subscribe({ car ->
+              car?.let {
+                state.value = CarDetailsState.carRetrieved(car)
+              } ?: { state.value = CarDetailsState.error(NullPointerException("null car from Room")) }.invoke()
+            }, { error ->
+              state.value = CarDetailsState.error(error)
+            })
+
+      }
+
+      carLiveData.observeForever(carObserver)
     } ?: state.postValue(CarDetailsState.idle())
   }
 
@@ -35,11 +48,11 @@ class CarViewModel : BaseViewModel() {
     addSub(Observable.fromCallable {
         carDb.saveCar(car)
       }.applySchedulers()
-        .doOnSubscribe { state.postValue(CarDetailsState.loading()) }
+        .doOnSubscribe { state.value = CarDetailsState.loading() }
         .subscribe({
-          state.postValue(CarDetailsState.submit())
+          state.value = CarDetailsState.submit()
         }, {
-          state.postValue(CarDetailsState.error(it))
+          state.value = CarDetailsState.error(it)
         }))
   }
 

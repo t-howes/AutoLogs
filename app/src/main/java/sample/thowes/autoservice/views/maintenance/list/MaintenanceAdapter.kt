@@ -14,6 +14,7 @@ class MaintenanceAdapter(context: Context, var data: List<CarWork>)
       : RecyclerView.Adapter<MaintenanceAdapter.CarWorkViewHolder>() {
 
   private val inflater = LayoutInflater.from(context)
+  private var onClickListener: ((maintenance: CarWork) -> Unit)? = null
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarWorkViewHolder {
     return CarWorkViewHolder(inflater.inflate(R.layout.item_row_car_work, parent, false))
@@ -27,6 +28,10 @@ class MaintenanceAdapter(context: Context, var data: List<CarWork>)
   fun getItem(position: Int) = data[position]
   fun indexOf(carWork: CarWork) = data.indexOf(carWork)
 
+  fun setOnMaintenanceClickedListener(onClick: (maintenance: CarWork) -> Unit) {
+    onClickListener = onClick
+  }
+
   inner class CarWorkViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     fun bind(carWork: CarWork?) {
       carWork?.let { work ->
@@ -36,6 +41,9 @@ class MaintenanceAdapter(context: Context, var data: List<CarWork>)
         itemView.dateContainer.visibility = if (showDate) View.VISIBLE else View.GONE
         itemView.date.text = work.date
         itemView.name.text = work.name
+        itemView.container.setOnClickListener {
+          onClickListener?.invoke(carWork)
+        }
       }
     }
   }

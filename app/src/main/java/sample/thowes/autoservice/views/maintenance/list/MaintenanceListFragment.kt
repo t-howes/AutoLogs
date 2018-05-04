@@ -12,7 +12,7 @@ import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseFragment
 import sample.thowes.autoservice.models.CarWork
 import sample.thowes.autoservice.views.cars.details.CarDetailsActivity
-import sample.thowes.autoservice.views.maintenance.details.MaintenanceDetailsActivity
+import sample.thowes.autoservice.views.maintenance.details.CarWorkDetailsActivity
 import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
 
 class MaintenanceListFragment : BaseFragment() {
@@ -28,13 +28,10 @@ class MaintenanceListFragment : BaseFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     val id = arguments?.getInt(CarDetailsActivity.CAR_ID, CarDetailsActivity.CAR_ID_DEFAULT)
-    val type = arguments?.getInt(TYPE, CarWork.Type.OTHER.value)
+    type = arguments?.getInt(TYPE, CarWork.Type.MAINTENANCE.value) ?: CarWork.Type.MAINTENANCE.value
 
     if (CarDetailsActivity.CAR_ID_DEFAULT != id) {
       carId = id
-    }
-    if (CarWork.Type.OTHER.value != type) {
-      this.type = type
     }
 
     initUi()
@@ -78,10 +75,10 @@ class MaintenanceListFragment : BaseFragment() {
     }
   }
 
-  private fun navigateToMaintenanceDetails(id: Int? = null) {
+  private fun navigateToMaintenanceDetails(carWorkId: Int? = null) {
     context?.let { context ->
       carId?.let { carId ->
-        startActivity(MaintenanceDetailsActivity.newIntent(context, carId, id))
+        startActivity(CarWorkDetailsActivity.newIntent(context, carId, carWorkId, type!!))
       } ?: showToast(getString(R.string.error_occurred))
     }
   }
@@ -89,6 +86,9 @@ class MaintenanceListFragment : BaseFragment() {
   private fun showMaintenanceRecords(maintenanceRecords: List<CarWork>) {
     context?.let { context ->
       val adapter = MaintenanceAdapter(context, maintenanceRecords)
+      adapter.setOnMaintenanceClickedListener({ maintenance ->
+        navigateToMaintenanceDetails(maintenance.id)
+      })
       carWorkList.adapter = adapter
       carWorkList.layoutManager = LinearLayoutManager(context)
       carWorkList.visibility = View.VISIBLE

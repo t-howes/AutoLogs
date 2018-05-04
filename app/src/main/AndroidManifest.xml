@@ -29,7 +29,7 @@
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".views.maintenance.details.MaintenanceDetailsActivity"
+            android:name=".views.maintenance.details.CarWorkDetailsActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait"/>

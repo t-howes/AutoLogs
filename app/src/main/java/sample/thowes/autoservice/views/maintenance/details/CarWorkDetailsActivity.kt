@@ -22,30 +22,27 @@ import sample.thowes.autoservice.validation.FormValidator
 import java.util.*
 
 
-class MaintenanceDetailsActivity : BaseActivity() {
+class CarWorkDetailsActivity : BaseActivity() {
 
   private lateinit var maintenanceViewModel: MaintenanceViewModel
   private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
   private val calendar = Calendar.getInstance()
   private var carId: Int? = null
   private var maintenanceId: Int? = null
-  private var type: Int? = null
+  private var type: Int = CarWork.Type.MAINTENANCE.value
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_maintenance_details)
     val carId = intent.extras?.getInt(CAR_ID, -1)
     val id = intent.extras?.getInt(MAINTENANCE_ID, ID_DEFAULT)
-    val type = intent.extras?.getInt(TYPE, CarWork.Type.OTHER.value)
+    type = intent.extras?.getInt(TYPE, CarWork.Type.MAINTENANCE.value) ?: CarWork.Type.MAINTENANCE.value
 
     if (carId != ID_DEFAULT) {
       this.carId = carId
     }
     if (id != ID_DEFAULT) {
       this.maintenanceId = id
-    }
-    if (CarWork.Type.OTHER.value != type) {
-      this.type = type
     }
 
     initUi()
@@ -64,14 +61,18 @@ class MaintenanceDetailsActivity : BaseActivity() {
     setDisplayHomeAsUpEnabled()
 
     if (maintenanceId == null) {
-      val textRes = when (type) {
-        CarWork.Type.MAINTENANCE.value -> R.string.maintenance
-        CarWork.Type.MODIFICATION.value -> R.string.modifications
-        else -> R.string.maintenance
+      val titleRes = when (CarWork.Type.from(type)) {
+        CarWork.Type.MAINTENANCE -> R.string.maintenance
+        CarWork.Type.MODIFICATION -> {
+          nameSpinner.visibility = View.GONE
+          nameLayout.visibility = View.VISIBLE
+          R.string.modification
+        }
       }
 
-      val text = getString(textRes)
+      val text = getString(titleRes)
       setTitle(getString(R.string.add_placeholder, text))
+      dateInput.setText(Calendar.getInstance().simple())
     } else {
       submit.text = getString(R.string.save)
     }
@@ -175,7 +176,16 @@ class MaintenanceDetailsActivity : BaseActivity() {
 
   private fun showMaintenanceDetails(carWork: CarWork) {
     setTitle(carWork.name)
-    nameInput.setText(carWork.name)
+    val adapter = nameSpinner.adapter as ArrayAdapter<String>
+    val positionOfName = adapter.getPosition(carWork.name)
+
+    if (positionOfName != -1) {
+      nameSpinner.setSelection(positionOfName)
+    } else {
+      
+      nameInput.setText(carWork.name)
+    }
+
     dateInput.setText(carWork.date)
     costInput.setText(carWork.cost.formatMoney())
     milesInput.setText(carWork.odometerReading.toString())
@@ -189,7 +199,7 @@ class MaintenanceDetailsActivity : BaseActivity() {
   }
 
   private fun validName(): Boolean {
-    return nameSpinner.selectedItem.toString() != getString(R.string.other)
+    return (nameLayout.visibility == View.GONE && nameSpinner.selectedItem.toString() != getString(R.string.other))
             || FormValidator.validateRequired(this, nameLayout)
   }
 
@@ -222,10 +232,10 @@ class MaintenanceDetailsActivity : BaseActivity() {
     private const val ID_DEFAULT = -1
     private const val TYPE = "type"
 
-    fun newIntent(context: Context, carId: Int, maintenanceId: Int? = null, type: Int? = null): Intent {
-      val intent = Intent(context, MaintenanceDetailsActivity::class.java)
-      intent.putExtra(MAINTENANCE_ID, maintenanceId)
-      type?.let { intent.putExtra(TYPE, it) }
+    fun newIntent(context: Context, carId: Int, carWorkId: Int? = null, carWorkType: Int): Intent {
+      val intent = Intent(context, CarWorkDetailsActivity::class.java)
+      intent.putExtra(MAINTENANCE_ID, carWorkId)
+      intent.putExtra(TYPE, carWorkType)
       intent.putExtra(CAR_ID, carId)
       return intent
     }

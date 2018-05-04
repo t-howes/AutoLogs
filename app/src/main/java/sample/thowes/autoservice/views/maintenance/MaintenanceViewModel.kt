@@ -9,6 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
+import sample.thowes.autoservice.log.Logger
 import sample.thowes.autoservice.models.CarWork
 
 class MaintenanceViewModel : BaseViewModel() {
@@ -74,17 +75,14 @@ class MaintenanceViewModel : BaseViewModel() {
         .doOnSubscribe { state.value = MaintenanceState.loading() }
         .doAfterTerminate { state.value = MaintenanceState.idle() }
         .observeOn(Schedulers.io())
-        .flatMap { car ->
-          if (carWork.odometerReading > car.miles ?: 0) {
-            car.miles = carWork.odometerReading
-            Observable.fromCallable {
-              carDb.saveCar(car)
-            }.onErrorReturn {
-              // eat the error - continue on to save maintenance
-            }
-          }
-          Single.just(carWork)
-        }
+        // TODO
+//        .flatMap { car ->
+//          if (carWork.odometerReading > car.miles ?: 0) {
+//            car.miles = carWork.odometerReading
+//            carDb.saveCar(car)
+//          }
+//          Single.just(carWork)
+//        }
         .flatMap {
           carWorkDb.saveWork(carWork)
           Single.just(carWork)
