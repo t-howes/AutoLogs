@@ -5,10 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include layout="@layout/fragment_aggregate_data"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/carWorkList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/aggregateData"/>
 
     <TextView
         android:id="@+id/emptyResults"
@@ -17,6 +22,7 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="15dp"
         android:text="@string/no_car_work"
+        android:layout_below="@id/aggregateData"
         android:visibility="gone"
         tools:visibility="visible"/>
 

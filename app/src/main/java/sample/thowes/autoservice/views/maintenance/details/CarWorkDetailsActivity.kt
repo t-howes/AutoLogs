@@ -1,5 +1,6 @@
 package sample.thowes.autoservice.views.maintenance.details
 
+import android.app.DatePickerDialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
@@ -8,17 +9,16 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_maintenance_details.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseActivity
 import sample.thowes.autoservice.extensions.formatMoney
 import sample.thowes.autoservice.extensions.showToast
-import sample.thowes.autoservice.models.CarWork
-import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
-import android.widget.ArrayAdapter
-import android.app.DatePickerDialog
 import sample.thowes.autoservice.extensions.simple
+import sample.thowes.autoservice.models.CarWork
 import sample.thowes.autoservice.validation.FormValidator
+import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
 import java.util.*
 
 
@@ -62,12 +62,11 @@ class CarWorkDetailsActivity : BaseActivity() {
 
     if (maintenanceId == null) {
       val titleRes = when (CarWork.Type.from(type)) {
-        CarWork.Type.MAINTENANCE -> R.string.maintenance
-        CarWork.Type.MODIFICATION -> {
-          nameSpinner.visibility = View.GONE
-          nameLayout.visibility = View.VISIBLE
-          R.string.modification
+        CarWork.Type.MAINTENANCE -> {
+          setupNameSpinner()
+          R.string.maintenance
         }
+        CarWork.Type.MODIFICATION -> R.string.modification
       }
 
       val text = getString(titleRes)
@@ -77,7 +76,6 @@ class CarWorkDetailsActivity : BaseActivity() {
       submit.text = getString(R.string.save)
     }
 
-    setupNameSpinner()
     setupListeners()
     setupLiveValidations()
   }
@@ -176,13 +174,14 @@ class CarWorkDetailsActivity : BaseActivity() {
 
   private fun showMaintenanceDetails(carWork: CarWork) {
     setTitle(carWork.name)
-    val adapter = nameSpinner.adapter as ArrayAdapter<String>
-    val positionOfName = adapter.getPosition(carWork.name)
+    val adapter = nameSpinner.adapter as? ArrayAdapter<String>
+    val positionOfName = adapter?.getPosition(carWork.name) ?: -1
 
     if (positionOfName != -1) {
       nameSpinner.setSelection(positionOfName)
     } else {
-      
+      nameSpinner.visibility = View.GONE
+      nameLayout.visibility = View.VISIBLE
       nameInput.setText(carWork.name)
     }
 
@@ -207,7 +206,7 @@ class CarWorkDetailsActivity : BaseActivity() {
     carId?.let { carId ->
       val selectedName = nameSpinner.selectedItem.toString()
 
-      val name = if (selectedName == getString(R.string.other)) {
+      val name = if (nameSpinner.visibility == View.GONE || selectedName == getString(R.string.other)) {
         nameInput.text.toString()
       } else {
         selectedName
@@ -219,7 +218,7 @@ class CarWorkDetailsActivity : BaseActivity() {
       // null carId should auto generate an ID in Room
       val newCarWork = CarWork(
           maintenanceId, carId,
-          CarWork.Type.MAINTENANCE.value,
+          type,
           name, date, cost, miles, notes)
 
       maintenanceViewModel.updateCar(newCarWork)

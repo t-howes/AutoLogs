@@ -7,13 +7,14 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_aggregate_data.*
 import kotlinx.android.synthetic.main.fragment_car_work_list.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseFragment
 import sample.thowes.autoservice.models.CarWork
 import sample.thowes.autoservice.views.cars.details.CarDetailsActivity
-import sample.thowes.autoservice.views.maintenance.details.CarWorkDetailsActivity
 import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
+import sample.thowes.autoservice.views.maintenance.details.CarWorkDetailsActivity
 
 class MaintenanceListFragment : BaseFragment() {
 
@@ -72,6 +73,9 @@ class MaintenanceListFragment : BaseFragment() {
       MaintenanceViewModel.MaintenanceStatus.MAINTENANCE_RETRIEVED -> {
         // not implementing here
       }
+      MaintenanceViewModel.MaintenanceStatus.SUBMIT -> {
+        // not implementing here
+      }
     }
   }
 
@@ -89,11 +93,19 @@ class MaintenanceListFragment : BaseFragment() {
       adapter.setOnMaintenanceClickedListener({ maintenance ->
         navigateToMaintenanceDetails(maintenance.id)
       })
+
       carWorkList.adapter = adapter
       carWorkList.layoutManager = LinearLayoutManager(context)
       carWorkList.visibility = View.VISIBLE
       emptyResults.visibility = View.GONE
+
+      getAggregateData()
     }
+  }
+
+  private fun getAggregateData() {
+    //TODO: aggregate data
+    aggregateData.visibility = View.VISIBLE
   }
 
   private fun showNoResults() {
@@ -111,7 +123,7 @@ class MaintenanceListFragment : BaseFragment() {
   companion object {
     private const val TYPE = "type"
 
-    fun newInstance(carId: Int? = null, type: Int = CarWork.Type.MAINTENANCE.value): MaintenanceListFragment {
+    fun newInstance(carId: Int? = null, type: Int): MaintenanceListFragment {
       val fragment = MaintenanceListFragment()
       val args = Bundle()
       args.putInt(TYPE, type)

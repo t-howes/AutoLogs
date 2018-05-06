@@ -9,10 +9,10 @@ import sample.thowes.autoservice.models.CarWork
 interface CarWorkDb {
 
   @Query("SELECT * FROM ${CarWork.TABLE} WHERE carId = :carId AND type = :type")
-  fun getLiveCarWorkList(carId: Int, type: Int = CarWork.Type.MAINTENANCE.value): LiveData<List<CarWork>>
+  fun getLiveCarWorkList(carId: Int, type: Int): LiveData<List<CarWork>>
 
   @Query("SELECT * FROM ${CarWork.TABLE} WHERE carId = :carId AND type = :type")
-  fun getCarWorkList(carId: Int, type: Int = CarWork.Type.MAINTENANCE.value): Single<List<CarWork>>
+  fun getCarWorkList(carId: Int, type: Int): Single<List<CarWork>>
 
   @Query("SELECT * FROM ${CarWork.TABLE} WHERE id = :id")
   fun getCarWork(id: Int?): Single<CarWork>
