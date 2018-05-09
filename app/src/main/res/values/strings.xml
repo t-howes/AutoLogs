@@ -27,7 +27,7 @@
     <string name="modifications">Modifications</string>
     <string name="other">Other</string>
 
-    <string name="no_car_work">You don\'t have any %s recorded.</string>
+    <string name="no_car_work">You don\'t have any service recorded.</string>
     <string name="date">Date</string>
     <string name="odometer_reading">Odometer reading</string>
     <string name="add_placeholder">Add %s</string>

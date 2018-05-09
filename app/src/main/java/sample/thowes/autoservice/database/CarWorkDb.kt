@@ -8,11 +8,11 @@ import sample.thowes.autoservice.models.CarWork
 @Dao
 interface CarWorkDb {
 
-  @Query("SELECT * FROM ${CarWork.TABLE} WHERE carId = :carId AND type = :type")
-  fun getLiveCarWorkList(carId: Int, type: Int): LiveData<List<CarWork>>
+  @Query("SELECT * FROM ${CarWork.TABLE} WHERE carId = :carId")
+  fun getLiveCarWorkList(carId: Int): LiveData<List<CarWork>>
 
-  @Query("SELECT * FROM ${CarWork.TABLE} WHERE carId = :carId AND type = :type")
-  fun getCarWorkList(carId: Int, type: Int): Single<List<CarWork>>
+  @Query("SELECT * FROM ${CarWork.TABLE} WHERE carId = :carId")
+  fun getCarWorkList(carId: Int): Single<List<CarWork>>
 
   @Query("SELECT * FROM ${CarWork.TABLE} WHERE id = :id")
   fun getCarWork(id: Int?): Single<CarWork>

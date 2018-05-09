@@ -231,7 +231,7 @@ class CarWorkDetailsActivity : BaseActivity() {
     private const val ID_DEFAULT = -1
     private const val TYPE = "type"
 
-    fun newIntent(context: Context, carId: Int, carWorkId: Int? = null, carWorkType: Int): Intent {
+    fun newIntent(context: Context, carId: Int, carWorkId: Int? = null): Intent {
       val intent = Intent(context, CarWorkDetailsActivity::class.java)
       intent.putExtra(MAINTENANCE_ID, carWorkId)
       intent.putExtra(TYPE, carWorkType)

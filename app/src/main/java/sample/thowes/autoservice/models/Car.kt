@@ -37,15 +37,15 @@ fun Car.yearMakeModel() = "$year $make $model"
                                    parentColumns = arrayOf("id"),
                                    childColumns = arrayOf("carId"),
                                    onDelete = CASCADE))])
-data class CarWork(@PrimaryKey (autoGenerate = true)
-                       val id: Int?,
-                       val carId: Int,
-                       val type: Int,
-                       var name: String,
-                       var date: String,
-                       var cost: Double? = 0.0,
-                       var odometerReading: Int,
-                       var notes: String? = null) {
+data class CarWork(@PrimaryKey(autoGenerate = true)
+                   val id: Int?,
+                   val carId: Int,
+                   val type: Int,
+                   var name: String,
+                   var date: String,
+                   var cost: Double? = 0.0,
+                   var odometerReading: Int,
+                   var notes: String? = null) {
 
   enum class Type(val value: Int) {
     MAINTENANCE(0),

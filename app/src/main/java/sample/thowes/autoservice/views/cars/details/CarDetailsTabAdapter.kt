@@ -15,8 +15,8 @@ class CarDetailsTabAdapter(val context: Context,
   override fun getItem(position: Int): Fragment {
     return when (position) {
       PAGE_DETAILS -> CarDetailsFragment.newInstance(carId)
-      PAGE_MAINTENANCE -> MaintenanceListFragment.newInstance(carId, CarWork.Type.MAINTENANCE.value)
-      PAGE_MODIFICATIONS -> MaintenanceListFragment.newInstance(carId, CarWork.Type.MODIFICATION.value)
+      PAGE_MAINTENANCE -> MaintenanceListFragment.newInstance(carId)
+      PAGE_FUEL -> FuelListFragment.newInstance(carId)
       else -> CarDetailsFragment.newInstance(carId)
     }
   }
@@ -25,7 +25,7 @@ class CarDetailsTabAdapter(val context: Context,
     return context.getString(when (position) {
       PAGE_DETAILS -> R.string.details
       PAGE_MAINTENANCE -> R.string.maintenance
-      PAGE_MODIFICATIONS -> R.string.modifications
+      PAGE_FUEL -> R.string.modifications
       else -> R.string.other
     })
   }
@@ -36,6 +36,6 @@ class CarDetailsTabAdapter(val context: Context,
     const val COUNT = 3
     const val PAGE_DETAILS = 0
     const val PAGE_MAINTENANCE = 1
-    const val PAGE_MODIFICATIONS = 2
+    const val PAGE_FUEL = 2
   }
 }

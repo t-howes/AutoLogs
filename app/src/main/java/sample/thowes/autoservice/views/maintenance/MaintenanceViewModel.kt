@@ -3,13 +3,11 @@ package sample.thowes.autoservice.views.maintenance
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
-import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
-import sample.thowes.autoservice.log.Logger
 import sample.thowes.autoservice.models.CarWork
 
 class MaintenanceViewModel : BaseViewModel() {
@@ -28,31 +26,32 @@ class MaintenanceViewModel : BaseViewModel() {
     SUBMIT
   }
 
-  fun getLiveCarWorkRecords(carId: Int? = null, type: Int? = null) {
+  fun getLiveCarWorkRecords(carId: Int? = null) {
     carId?.let {
-      type?.let {
-        maintenanceLiveData = carWorkDb.getLiveCarWorkList(carId, type)
-        maintenanceObserver = Observer {
-          Single.just(it)
-              .applySchedulers()
-              .doOnSubscribe { state.value = MaintenanceState.loading() }
-              .doAfterTerminate { state.value = MaintenanceState.idle() }
-              .flatMap { Single.just(it.sortedByDescending { it.date }) }
-              .subscribe({ maintenance ->
-                if (maintenance == null || maintenance.isEmpty()) {
-                  state.value = MaintenanceState.empty()
-                } else {
-                  state.value = MaintenanceState.maintenanceListRetrieved(maintenance)
-                }
-              }, { error ->
-                state.value = MaintenanceState.error(error)
-              })
-        }
+      maintenanceLiveData = carWorkDb.getLiveCarWorkList(carId)
+      maintenanceObserver = Observer {
+        Single.just(it)
+            .applySchedulers()
+            .doOnSubscribe { state.value = MaintenanceState.loading() }
+            .doAfterTerminate { state.value = MaintenanceState.idle() }
+            .flatMap { Single.just(it.sortedByDescending { it.date }
+                                     .sortedByDescending { it.odometerReading }) }
+            .subscribe({ maintenance ->
+              if (maintenance == null || maintenance.isEmpty()) {
+                state.value = MaintenanceState.empty()
+              } else {
+                state.value = MaintenanceState.maintenanceListRetrieved(maintenance)
+              }
+            }, { error ->
+              state.value = MaintenanceState.error(error)
+            })
+      }
 
-        maintenanceLiveData.observeForever(maintenanceObserver)
-
-      } ?: { state.value = MaintenanceState.idle() }.invoke()
-    } ?: { state.value = MaintenanceState.idle() }.invoke()
+      maintenanceLiveData.observeForever(maintenanceObserver)
+    } ?: {
+      state.value = MaintenanceState.idle()
+      state.value = MaintenanceState.error(NullPointerException("null carId when getting car work records"))
+    }.invoke()
   }
 
   fun getMaintenance(id: Int? = null) {
