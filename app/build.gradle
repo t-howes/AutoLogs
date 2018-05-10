@@ -6,11 +6,12 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "sample.thowes.autoservice"
-        minSdkVersion 17
+        applicationId "com.thowes.autoservice"
+        minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

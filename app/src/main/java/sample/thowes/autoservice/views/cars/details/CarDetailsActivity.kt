@@ -6,9 +6,10 @@ import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_car_details.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseActivity
+import sample.thowes.autoservice.models.CAR_ID
+import sample.thowes.autoservice.models.CAR_ID_DEFAULT
 
 class CarDetailsActivity : BaseActivity() {
-
   private var carId: Int? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,11 +44,9 @@ class CarDetailsActivity : BaseActivity() {
   }
 
   companion object {
-    const val CAR_ID = "carId"
-    const val CAR_ID_DEFAULT = -1
 
     fun newIntent(context: Context, carId: Int? = null): Intent {
-      val intent = Intent(context, CarDetailsActivity::class.java)
+      val intent = Intent(context, AddCarActivity::class.java)
       intent.putExtra(CAR_ID, carId)
       return intent
     }

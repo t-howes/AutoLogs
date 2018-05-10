@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.fragment_car_work_list.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseFragment
 import sample.thowes.autoservice.models.CarWork
-import sample.thowes.autoservice.views.cars.details.CarDetailsActivity
+import sample.thowes.autoservice.views.cars.details.AddCarActivity
 import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
 import sample.thowes.autoservice.views.maintenance.details.CarWorkDetailsActivity
 
@@ -27,9 +27,9 @@ class MaintenanceListFragment : BaseFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val id = arguments?.getInt(CarDetailsActivity.CAR_ID, CarDetailsActivity.CAR_ID_DEFAULT)
+    val id = arguments?.getInt(AddCarActivity.CAR_ID, AddCarActivity.CAR_ID_DEFAULT)
 
-    if (CarDetailsActivity.CAR_ID_DEFAULT != id) {
+    if (AddCarActivity.CAR_ID_DEFAULT != id) {
       carId = id
     }
 
@@ -115,7 +115,7 @@ class MaintenanceListFragment : BaseFragment() {
       val args = Bundle()
 
       carId?.let { id ->
-        args.putInt(CarDetailsActivity.CAR_ID, id)
+        args.putInt(AddCarActivity.CAR_ID, id)
       }
 
       fragment.arguments = args

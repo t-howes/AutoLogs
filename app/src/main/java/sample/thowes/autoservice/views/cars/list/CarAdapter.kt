@@ -8,6 +8,11 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_row_car.view.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.models.Car
+import android.R.menu
+import android.support.v7.widget.PopupMenu
+import android.view.MenuInflater
+
+
 
 class CarAdapter(context: Context, private val cars: List<Car>) : RecyclerView.Adapter<CarViewHolder>() {
   private val inflater = LayoutInflater.from(context)
@@ -33,9 +38,16 @@ class CarViewHolder(view: View) : RecyclerView.ViewHolder(view) {
       itemView.name.visibility = if (car.name.isNullOrBlank()) View.GONE else View.VISIBLE
       val yearMakeModel = "${car.year} ${car.make} ${car.model}"
       itemView.yearMakeModel.text = yearMakeModel
-      itemView.miles.text = context.getString(R.string.x_miles, car.miles)
-//      itemView.cost.text = context.getString(R.string.total_cost_placeholder, car.totalCost().formatMoney())
       itemView.container.setOnClickListener { (context as? CarClickListener)?.onCarClicked(car) }
+      itemView.options.setOnClickListener {
+        val popup = PopupMenu(itemView.context, itemView.options)
+        val inflater = popup.menuInflater
+        inflater.inflate(R.menu.car_actions, popup.menu)
+        popup.setOnMenuItemClickListener{
+          (context as? CarClickListener)?.onCarActionClicked(it.itemId, car) ?: false
+        }
+        popup.show()
+      }
     }
   }
 }

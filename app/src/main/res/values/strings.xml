@@ -34,4 +34,7 @@
 
     <!-- Errors -->
     <string name="error_occurred">An error has occurred. Try again later.</string>
+    <string name="edit">Edit</string>
+    <string name="preferences">Preferences</string>
+    <string name="delete">Delete</string>
 </resources>

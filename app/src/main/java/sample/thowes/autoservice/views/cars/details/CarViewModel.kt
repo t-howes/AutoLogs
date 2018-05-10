@@ -8,20 +8,14 @@ import io.reactivex.Single
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
 import sample.thowes.autoservice.models.Car
+import sample.thowes.autoservice.models.Resource
 
 class CarViewModel : BaseViewModel() {
 
-  var state: MutableLiveData<CarDetailsState> = MutableLiveData()
+  var detailsState: MutableLiveData<Resource<Car>> = MutableLiveData()
+  var submitState: MutableLiveData<Resource<Boolean>> = MutableLiveData()
   private lateinit var carLiveData: LiveData<Car>
   private lateinit var carObserver: Observer<Car>
-
-  enum class CarStatus {
-    IDLE,
-    LOADING,
-    ERROR,
-    CAR_RETRIEVED,
-    SUBMIT
-  }
 
   fun getCar(carId: Int? = null) {
     carId?.let {
@@ -29,57 +23,32 @@ class CarViewModel : BaseViewModel() {
       carObserver = Observer {
         Single.just(it)
             .applySchedulers()
-            .doOnSubscribe { state.value = CarDetailsState.loading() }
+            .doOnSubscribe { detailsState.value = Resource.loading() }
+            .doAfterTerminate { detailsState.value = Resource.idle() }
             .subscribe({ car ->
               car?.let {
-                state.value = CarDetailsState.carRetrieved(car)
-              } ?: { state.value = CarDetailsState.error(NullPointerException("null car from Room")) }.invoke()
+                detailsState.value = Resource.success(car)
+              } ?: { detailsState.value = Resource.error(NullPointerException("null car from Room")) }.invoke()
             }, { error ->
-              state.value = CarDetailsState.error(error)
+              detailsState.value = Resource.error(error)
             })
 
       }
 
       carLiveData.observeForever(carObserver)
-    } ?: state.postValue(CarDetailsState.idle())
+    } ?: { detailsState.value = Resource.idle() }.invoke()
   }
 
   fun updateCar(car: Car) {
     addSub(Observable.fromCallable {
         carDb.saveCar(car)
       }.applySchedulers()
-        .doOnSubscribe { state.value = CarDetailsState.loading() }
+        .doOnSubscribe { detailsState.value = Resource.loading() }
+        .doAfterTerminate { detailsState.value = Resource.idle() }
         .subscribe({
-          state.value = CarDetailsState.submit()
+          submitState.value = Resource.success(true)
         }, {
-          state.value = CarDetailsState.error(it)
+          submitState.value = Resource.error(it)
         }))
-  }
-
-  class CarDetailsState(val status: CarStatus,
-                        val error: Throwable? = null,
-                        val car: Car? = null) {
-
-    companion object {
-      fun idle(): CarDetailsState {
-        return CarDetailsState(CarStatus.IDLE)
-      }
-
-      fun loading(): CarDetailsState {
-        return CarDetailsState(CarStatus.LOADING)
-      }
-
-      fun error(error: Throwable): CarDetailsState {
-        return CarDetailsState(CarStatus.ERROR, error)
-      }
-
-      fun carRetrieved(car: Car): CarDetailsState {
-        return CarDetailsState(CarStatus.CAR_RETRIEVED, car = car)
-      }
-
-      fun submit(): CarDetailsState {
-        return CarDetailsState(CarStatus.SUBMIT)
-      }
-    }
   }
 }
