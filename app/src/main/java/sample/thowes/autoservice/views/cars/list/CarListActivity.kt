@@ -71,7 +71,7 @@ class CarListActivity : BaseActivity(), CarClickListener {
     emptyResults.visibility = View.VISIBLE
   }
 
-  private fun navigateToCarDetails(id: Int? = null) {
+  private fun navigateToCarDetails(id: Int?) {
     startActivity(CarDetailsActivity.newIntent(this, id))
   }
 
@@ -90,7 +90,7 @@ class CarListActivity : BaseActivity(), CarClickListener {
   override fun onCarActionClicked(@IdRes actionId: Int?, car: Car): Boolean {
     return when (actionId) {
       R.id.menu_edit -> {
-        navigateToEditCar()
+        navigateToEditCar(car.id)
         true
       }
       R.id.menu_preferences -> {

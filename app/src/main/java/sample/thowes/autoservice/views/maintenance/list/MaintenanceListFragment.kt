@@ -11,7 +11,10 @@ import kotlinx.android.synthetic.main.fragment_aggregate_data.*
 import kotlinx.android.synthetic.main.fragment_car_work_list.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseFragment
+import sample.thowes.autoservice.models.CAR_ID
+import sample.thowes.autoservice.models.CAR_ID_DEFAULT
 import sample.thowes.autoservice.models.CarWork
+import sample.thowes.autoservice.models.Resource
 import sample.thowes.autoservice.views.cars.details.AddCarActivity
 import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
 import sample.thowes.autoservice.views.maintenance.details.CarWorkDetailsActivity
@@ -27,16 +30,16 @@ class MaintenanceListFragment : BaseFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val id = arguments?.getInt(AddCarActivity.CAR_ID, AddCarActivity.CAR_ID_DEFAULT)
+    val id = arguments?.getInt(CAR_ID, CAR_ID_DEFAULT)
 
-    if (AddCarActivity.CAR_ID_DEFAULT != id) {
+    if (CAR_ID_DEFAULT != id) {
       carId = id
     }
 
     initUi()
 
     maintenanceViewModel = ViewModelProviders.of(this).get(MaintenanceViewModel::class.java)
-    maintenanceViewModel.state.observe(this, Observer {
+    maintenanceViewModel.listState.observe(this, Observer {
       it?.let {
         updateFromState(it)
       }
@@ -50,26 +53,21 @@ class MaintenanceListFragment : BaseFragment() {
     }
   }
 
-  private fun updateFromState(state: MaintenanceViewModel.MaintenanceState) {
+  private fun updateFromState(state: Resource<List<CarWork>>) {
     when (state.status) {
-      MaintenanceViewModel.MaintenanceStatus.IDLE -> showLoading(false)
-      MaintenanceViewModel.MaintenanceStatus.LOADING -> showLoading()
-      MaintenanceViewModel.MaintenanceStatus.NO_MAINTENANCE -> {
-        showNoResults()
-      }
-      MaintenanceViewModel.MaintenanceStatus.ERROR -> state.error?.let {
+      Resource.Status.IDLE -> showLoading(false)
+      Resource.Status.LOADING -> showLoading()
+      Resource.Status.ERROR -> state.error?.let {
         showToast(it.localizedMessage)
       }
-      MaintenanceViewModel.MaintenanceStatus.MAINTENANCE_LIST_RETRIEVED -> {
-        state.maintenance?.let {
-          showMaintenanceRecords(it)
-        }
-      }
-      MaintenanceViewModel.MaintenanceStatus.MAINTENANCE_RETRIEVED -> {
-        // not implementing here
-      }
-      MaintenanceViewModel.MaintenanceStatus.SUBMIT -> {
-        // not implementing here
+      Resource.Status.SUCCESS -> {
+        state.data?.let {
+          if (it.isEmpty()) {
+            showNoResults()
+          } else {
+            showMaintenanceRecords(it)
+          }
+        } ?: showNoResults()
       }
     }
   }
@@ -115,7 +113,7 @@ class MaintenanceListFragment : BaseFragment() {
       val args = Bundle()
 
       carId?.let { id ->
-        args.putInt(AddCarActivity.CAR_ID, id)
+        args.putInt(CAR_ID, id)
       }
 
       fragment.arguments = args

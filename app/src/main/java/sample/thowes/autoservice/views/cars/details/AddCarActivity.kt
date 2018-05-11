@@ -24,6 +24,7 @@ class AddCarActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_add_car)
+    setDisplayHomeAsUpEnabled()
 
     val id = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT)
 
@@ -116,7 +117,6 @@ class AddCarActivity : BaseActivity() {
     yearInput.setText(car.year.toString())
     makeInput.setText(car.make)
     modelInput.setText(car.model)
-    milesInput.setText(car.miles.toString())
     notesInput.setText(car.notes)
     lastUpdate.visibility = View.VISIBLE
     lastUpdate.text = getString(R.string.last_updated, car.lastUpdate)
@@ -133,10 +133,9 @@ class AddCarActivity : BaseActivity() {
     val year = yearInput.text.toString().toInt()
     val make = makeInput.text.toString()
     val model = modelInput.text.toString()
-    val miles = milesInput.text.toString().toInt()
     val notes = notesInput.text.toString()
     // null carId should auto generate an ID in Room
-    val newCar = Car(carId, year, make, model, miles, name, notes)
+    val newCar = Car(carId, year, make, model, name, notes)
     carViewModel.updateCar(newCar)
   }
 
@@ -146,7 +145,7 @@ class AddCarActivity : BaseActivity() {
       val intent = Intent(context, AddCarActivity::class.java)
 
       carId?.let { id ->
-        intent.extras.putInt(CAR_ID, id)
+        intent.putExtra(CAR_ID, id)
       }
 
       return intent

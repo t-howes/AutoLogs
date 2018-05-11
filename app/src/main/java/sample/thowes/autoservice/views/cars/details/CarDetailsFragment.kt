@@ -10,10 +10,12 @@ import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseFragment
 import sample.thowes.autoservice.extensions.showToast
 import sample.thowes.autoservice.models.*
+import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
 
 class CarDetailsFragment : BaseFragment() {
 
   private lateinit var carViewModel: CarViewModel
+  private lateinit var maintenanceViewModel: MaintenanceViewModel
   private var carId: Int? = null
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -31,20 +33,29 @@ class CarDetailsFragment : BaseFragment() {
     initUi()
 
     carViewModel = ViewModelProviders.of(this).get(CarViewModel::class.java)
+    maintenanceViewModel = ViewModelProviders.of(this).get(MaintenanceViewModel::class.java)
+
     carViewModel.detailsState.observe(this, Observer {
       it?.let {
-        updateFromState(it)
+        updateCarState(it)
+      }
+    })
+
+    maintenanceViewModel.listState.observe(this, Observer {
+      it?.let {
+        updateMaintenanceState(it)
       }
     })
 
     carViewModel.getCar(carId)
+    maintenanceViewModel.getLiveCarWorkRecords(carId)
   }
 
   private fun initUi() {
     // TODO
   }
 
-  private fun updateFromState(state: Resource<Car>) {
+  private fun updateCarState(state: Resource<Car>) {
     when (state.status) {
       Resource.Status.IDLE -> showLoading(false)
       Resource.Status.LOADING -> showLoading()
@@ -56,6 +67,23 @@ class CarDetailsFragment : BaseFragment() {
       Resource.Status.SUCCESS -> {
         state.data?.let {
           showCarDetails(it)
+        }
+      }
+    }
+  }
+
+  private fun updateMaintenanceState(state: Resource<List<CarWork>>) {
+    when (state.status) {
+      Resource.Status.IDLE -> showLoading(false)
+      Resource.Status.LOADING -> showLoading()
+      Resource.Status.ERROR -> {
+        state.error?.let {
+          context.showToast(it.localizedMessage)
+        }
+      }
+      Resource.Status.SUCCESS -> {
+        state.data?.let {
+          // TODO: do stuff with maintenance (stats and whatnot)
         }
       }
     }

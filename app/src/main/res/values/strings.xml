@@ -25,6 +25,7 @@
     <string name="maintenance">Maintenance</string>
     <string name="modification">Modification</string>
     <string name="modifications">Modifications</string>
+    <string name="service">Service</string>
     <string name="other">Other</string>
 
     <string name="no_car_work">You don\'t have any service recorded.</string>

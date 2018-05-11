@@ -45,9 +45,11 @@ class CarDetailsActivity : BaseActivity() {
 
   companion object {
 
-    fun newIntent(context: Context, carId: Int? = null): Intent {
-      val intent = Intent(context, AddCarActivity::class.java)
-      intent.putExtra(CAR_ID, carId)
+    fun newIntent(context: Context, carId: Int?): Intent {
+      val intent = Intent(context, CarDetailsActivity::class.java)
+      carId?.let { id ->
+        intent.putExtra(CAR_ID, id)
+      }
       return intent
     }
   }

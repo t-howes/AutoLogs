@@ -17,6 +17,7 @@ import sample.thowes.autoservice.extensions.formatMoney
 import sample.thowes.autoservice.extensions.showToast
 import sample.thowes.autoservice.extensions.simple
 import sample.thowes.autoservice.models.CarWork
+import sample.thowes.autoservice.models.Resource
 import sample.thowes.autoservice.validation.FormValidator
 import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
 import java.util.*
@@ -29,14 +30,12 @@ class CarWorkDetailsActivity : BaseActivity() {
   private val calendar = Calendar.getInstance()
   private var carId: Int? = null
   private var maintenanceId: Int? = null
-  private var type: Int = CarWork.Type.MAINTENANCE.value
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_maintenance_details)
     val carId = intent.extras?.getInt(CAR_ID, -1)
     val id = intent.extras?.getInt(MAINTENANCE_ID, ID_DEFAULT)
-    type = intent.extras?.getInt(TYPE, CarWork.Type.MAINTENANCE.value) ?: CarWork.Type.MAINTENANCE.value
 
     if (carId != ID_DEFAULT) {
       this.carId = carId
@@ -48,9 +47,15 @@ class CarWorkDetailsActivity : BaseActivity() {
     initUi()
 
     maintenanceViewModel = ViewModelProviders.of(this).get(MaintenanceViewModel::class.java)
-    maintenanceViewModel.state.observe(this, Observer {
+    maintenanceViewModel.detailsState.observe(this, Observer {
       it?.let {
-        updateFromState(it)
+        updateDetailsState(it)
+      }
+    })
+
+    maintenanceViewModel.submitState.observe(this, Observer {
+      it?.let {
+        updateSubmitState(it)
       }
     })
 
@@ -59,17 +64,10 @@ class CarWorkDetailsActivity : BaseActivity() {
 
   private fun initUi() {
     setDisplayHomeAsUpEnabled()
+    setupNameSpinner()
 
     if (maintenanceId == null) {
-      val titleRes = when (CarWork.Type.from(type)) {
-        CarWork.Type.MAINTENANCE -> {
-          setupNameSpinner()
-          R.string.maintenance
-        }
-        CarWork.Type.MODIFICATION -> R.string.modification
-      }
-
-      val text = getString(titleRes)
+      val text = getString(R.string.service)
       setTitle(getString(R.string.add_placeholder, text))
       dateInput.setText(Calendar.getInstance().simple())
     } else {
@@ -150,25 +148,31 @@ class CarWorkDetailsActivity : BaseActivity() {
         calendar.get(Calendar.DAY_OF_MONTH)).show()
   }
 
-  private fun updateFromState(state: MaintenanceViewModel.MaintenanceState) {
+  private fun updateDetailsState(state: Resource<CarWork>) {
     when (state.status) {
-      MaintenanceViewModel.MaintenanceStatus.IDLE -> showLoading(false)
-      MaintenanceViewModel.MaintenanceStatus.LOADING -> showLoading()
-      MaintenanceViewModel.MaintenanceStatus.NO_MAINTENANCE -> {
-        // not implementing
-      }
-      MaintenanceViewModel.MaintenanceStatus.ERROR -> state.error?.let {
+      Resource.Status.IDLE -> showLoading(false)
+      Resource.Status.LOADING -> showLoading()
+      Resource.Status.ERROR -> state.error?.let {
         showToast(it.localizedMessage)
       }
-      MaintenanceViewModel.MaintenanceStatus.MAINTENANCE_LIST_RETRIEVED -> {
-        // not implementing
-      }
-      MaintenanceViewModel.MaintenanceStatus.MAINTENANCE_RETRIEVED -> {
-        state.maintenance?.let {
-          showMaintenanceDetails(it.first())
+      Resource.Status.SUCCESS -> {
+        state.data?.let {
+          showMaintenanceDetails(it)
         }
       }
-      MaintenanceViewModel.MaintenanceStatus.SUBMIT -> finish()
+    }
+  }
+
+  private fun updateSubmitState(state: Resource<CarWork>) {
+    when (state.status) {
+      Resource.Status.IDLE -> showLoading(false)
+      Resource.Status.LOADING -> showLoading()
+      Resource.Status.ERROR -> state.error?.let {
+        showToast(it.localizedMessage)
+      }
+      Resource.Status.SUCCESS -> {
+        finish()
+      }
     }
   }
 
@@ -177,11 +181,11 @@ class CarWorkDetailsActivity : BaseActivity() {
     val adapter = nameSpinner.adapter as? ArrayAdapter<String>
     val positionOfName = adapter?.getPosition(carWork.name) ?: -1
 
-    if (positionOfName != -1) {
+    if (positionOfName != -1) { // found name in adapter
       nameSpinner.setSelection(positionOfName)
     } else {
-      nameSpinner.visibility = View.GONE
-      nameLayout.visibility = View.VISIBLE
+      // set to 'other' and show input field
+      nameSpinner.setSelection(adapter?.count ?: 0)
       nameInput.setText(carWork.name)
     }
 
@@ -218,7 +222,6 @@ class CarWorkDetailsActivity : BaseActivity() {
       // null carId should auto generate an ID in Room
       val newCarWork = CarWork(
           maintenanceId, carId,
-          type,
           name, date, cost, miles, notes)
 
       maintenanceViewModel.updateCar(newCarWork)
@@ -229,12 +232,10 @@ class CarWorkDetailsActivity : BaseActivity() {
     private const val CAR_ID = "carId"
     private const val MAINTENANCE_ID = "maintenanceId"
     private const val ID_DEFAULT = -1
-    private const val TYPE = "type"
 
     fun newIntent(context: Context, carId: Int, carWorkId: Int? = null): Intent {
       val intent = Intent(context, CarWorkDetailsActivity::class.java)
       intent.putExtra(MAINTENANCE_ID, carWorkId)
-      intent.putExtra(TYPE, carWorkType)
       intent.putExtra(CAR_ID, carId)
       return intent
     }

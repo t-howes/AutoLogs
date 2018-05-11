@@ -13,7 +13,6 @@ data class Car(@PrimaryKey(autoGenerate = true)
                var year: Int,
                var make: String,
                var model: String,
-               var miles: Int? = 0,
                var name: String? = null,
                var notes: String? = null,
                var lastUpdate: String? = Calendar.getInstance().now()) {
@@ -40,7 +39,6 @@ fun Car.yearMakeModel() = "$year $make $model"
 data class CarWork(@PrimaryKey(autoGenerate = true)
                    val id: Int?,
                    val carId: Int,
-                   val type: Int,
                    var name: String,
                    var date: String,
                    var cost: Double? = 0.0,
