@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.squareup.picasso.Picasso
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseFragment
 import sample.thowes.autoservice.extensions.showToast
@@ -92,6 +93,9 @@ class CarDetailsFragment : BaseFragment() {
   private fun showCarDetails(car: Car) {
     setTitle(car.name ?: car.yearMakeModel())
     // TODO
+//    Picasso.get().load("file: some file")
+//        .transform(Crop())
+//        .into(someImageView)
   }
 
   companion object {

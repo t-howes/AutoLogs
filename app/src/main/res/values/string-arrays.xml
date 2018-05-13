@@ -8,4 +8,19 @@
         <item>Fuel Injector Cleaning</item>
         <item>Other</item>
     </string-array>
+
+    <string-array name="oil_preferences">
+        <item>1000 Miles / 1 Month</item>
+        <item>2000 Miles / 2 Months</item>
+        <item>3000 Miles / 3 Months</item>
+        <item>5000 Miles / 5 Months</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="air_filter_preferences">
+        <item>2000 Miles / 2 Months</item>
+        <item>4000 Miles / 4 Months</item>
+        <item>6000 Miles / 6 Months</item>
+        <item>Other</item>
+    </string-array>
 </resources>

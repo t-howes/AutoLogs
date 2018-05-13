@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseActivity
 import sample.thowes.autoservice.extensions.showToast
@@ -13,12 +12,11 @@ import sample.thowes.autoservice.models.CAR_ID
 import sample.thowes.autoservice.models.CAR_ID_DEFAULT
 import sample.thowes.autoservice.models.Car
 import sample.thowes.autoservice.models.Resource
-import sample.thowes.autoservice.views.cars.details.AddCarActivity
 import sample.thowes.autoservice.views.cars.details.CarViewModel
 
 class CarPreferencesActivity : BaseActivity() {
 
-  private lateinit var carViewModel: CarViewModel
+  private lateinit var preferencesViewModel: PreferencesViewModel
   private var carId: Int? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,14 +30,14 @@ class CarPreferencesActivity : BaseActivity() {
 
     initUi()
 
-    carViewModel = ViewModelProviders.of(this).get(CarViewModel::class.java)
-    carViewModel.detailsState.observe(this, Observer {
+    preferencesViewModel = ViewModelProviders.of(this).get(CarViewModel::class.java)
+    preferencesViewModel.detailsState.observe(this, Observer {
       it?.let {
         updateFromState(it)
       }
     })
 
-    carViewModel.getCar(carId)
+    preferencesViewModel.getCar(carId)
   }
 
   private fun initUi() {

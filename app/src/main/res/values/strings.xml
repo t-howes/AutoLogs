@@ -38,4 +38,6 @@
     <string name="edit">Edit</string>
     <string name="preferences">Preferences</string>
     <string name="delete">Delete</string>
+    <string name="oil">Oil</string>
+    <string name="months">Months</string>
 </resources>

@@ -15,6 +15,9 @@ open class BaseViewModel : ViewModel() {
   @Inject
   protected lateinit var carWorkDb: CarWorkDb
 
+  @Inject
+  protected lateinit var prefsDb: PreferencesDb
+
   private val disposables = CompositeDisposable()
 
   init {
