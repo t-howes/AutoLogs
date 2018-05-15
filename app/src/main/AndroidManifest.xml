@@ -11,6 +11,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <receiver android:name=".notifications.NotificationPublisher" />
+
         <activity
             android:name=".views.cars.list.CarListActivity"
             android:label="@string/my_cars"

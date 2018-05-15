@@ -6,6 +6,7 @@ import io.reactivex.disposables.Disposable
 import sample.thowes.autoservice.application.AutoServiceApplication
 import sample.thowes.autoservice.database.CarDb
 import sample.thowes.autoservice.database.CarWorkDb
+import sample.thowes.autoservice.database.PreferencesDb
 import javax.inject.Inject
 
 open class BaseViewModel : ViewModel() {

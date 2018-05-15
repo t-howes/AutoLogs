@@ -5,14 +5,17 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.annotation.ArrayRes
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_car_preferences.*
+import kotlinx.android.synthetic.main.activity_maintenance_details.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseActivity
 import sample.thowes.autoservice.extensions.showToast
-import sample.thowes.autoservice.models.CAR_ID
-import sample.thowes.autoservice.models.CAR_ID_DEFAULT
-import sample.thowes.autoservice.models.Car
-import sample.thowes.autoservice.models.Resource
-import sample.thowes.autoservice.views.cars.details.CarViewModel
+import sample.thowes.autoservice.models.*
+import sample.thowes.autoservice.notifications.ReminderService
 
 class CarPreferencesActivity : BaseActivity() {
 
@@ -22,6 +25,8 @@ class CarPreferencesActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_car_preferences)
+    setDisplayHomeAsUpEnabled()
+    ReminderService.scheduleNotification(this, ReminderService.getNotification(this, "tah-dah"), 10)
     val id = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
 
     if (CAR_ID_DEFAULT != id) {
@@ -30,21 +35,30 @@ class CarPreferencesActivity : BaseActivity() {
 
     initUi()
 
-    preferencesViewModel = ViewModelProviders.of(this).get(CarViewModel::class.java)
-    preferencesViewModel.detailsState.observe(this, Observer {
+    preferencesViewModel = ViewModelProviders.of(this).get(PreferencesViewModel::class.java)
+    preferencesViewModel.prefsState.observe(this, Observer {
       it?.let {
         updateFromState(it)
       }
     })
 
-    preferencesViewModel.getCar(carId)
+    preferencesViewModel.getLivePreferences(carId)
   }
 
   private fun initUi() {
-
+    oilLayout.findViewById<TextView>(R.id.header).text = getString(R.string.oil)
+    setupSpinnerAdapter(oilLayout.findViewById(R.id.spinner), R.array.oil_preferences)
+    airFilterLayout.findViewById<TextView>(R.id.header).text = getString(R.string.air_filter)
+    setupSpinnerAdapter(airFilterLayout.findViewById(R.id.spinner), R.array.air_filter_preferences)
   }
 
-  private fun updateFromState(state: Resource<Car>) {
+  private fun setupSpinnerAdapter(spinner: Spinner, @ArrayRes arrayRes: Int) {
+    val adapter = ArrayAdapter.createFromResource(this, arrayRes, android.R.layout.simple_spinner_item)
+    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    spinner.adapter = adapter
+  }
+
+  private fun updateFromState(state: Resource<List<Preference>>) {
     when (state.status) {
       Resource.Status.IDLE -> showLoading(false)
       Resource.Status.LOADING -> showLoading()
@@ -67,7 +81,7 @@ class CarPreferencesActivity : BaseActivity() {
       val intent = Intent(context, CarPreferencesActivity::class.java)
 
       carId?.let { id ->
-        intent.extras.putInt(CAR_ID, id)
+        intent.putExtra(CAR_ID, id)
       }
 
       return intent

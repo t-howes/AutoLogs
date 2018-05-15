@@ -21,6 +21,11 @@
             android:id="@+id/airFilterLayout"
             layout="@layout/item_row_car_preference" />
 
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            android:text="More preferences coming soon..."/>
     </LinearLayout>
 </ScrollView>
