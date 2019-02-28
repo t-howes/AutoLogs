@@ -1,0 +1,30 @@
+language: android
+android:
+  components:
+  - tools
+  - platform-tools
+  - build-tools-28.0.3
+  - android-28
+git:
+  depth: false
+branches:
+  only:
+  - master
+  #  x.x.x-rc1234
+  - "/^[0-9]{1,4}\\.[0-9]{1,4}\\.[0-9]{1,4}(-[rR][cC][0-9]{1,4})?$/"
+script: "./gradlew build"
+#deploy:
+#- provider: releases
+#  api_key:
+#    secure:
+#  skip_cleanup: true
+#  file_glob: true
+#  file: shared-preference-live-data/build/outputs/aar/shared-preference-live-data-*-release.aar
+#  on:
+#    tags: true
+#    repo: someRepoPath
+#- provider: script
+#  skip_cleanup: true
+#  script: "./gradlew bintrayUpload -Pbintray_username=$bintray_username -Pbintray_api_key=$bintray_api_key"
+#  on:
+#    tags: true
