@@ -1,7 +1,7 @@
 package sample.thowes.autoservice.base
 
 import android.content.Context
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import sample.thowes.autoservice.extensions.showToast

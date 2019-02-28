@@ -1,9 +1,9 @@
 package sample.thowes.autoservice.views.cars.details
 
 import android.content.Context
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.models.CarWork
 import sample.thowes.autoservice.views.maintenance.list.MaintenanceListFragment

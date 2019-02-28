@@ -1,10 +1,10 @@
 package sample.thowes.autoservice.views.cars.list
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.annotation.IdRes
-import android.support.v7.widget.LinearLayoutManager
+import androidx.annotation.IdRes
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.View
 import kotlinx.android.synthetic.main.activity_car_list.*
 import sample.thowes.autoservice.R

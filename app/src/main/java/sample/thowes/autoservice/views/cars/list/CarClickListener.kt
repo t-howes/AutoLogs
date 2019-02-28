@@ -1,6 +1,6 @@
 package sample.thowes.autoservice.views.cars.list
 
-import android.support.annotation.IdRes
+import androidx.annotation.IdRes
 import sample.thowes.autoservice.models.Car
 
 interface CarClickListener {

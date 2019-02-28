@@ -1,7 +1,7 @@
 package sample.thowes.autoservice.validation
 
 import android.content.Context
-import android.support.design.widget.TextInputLayout
+import com.google.android.material.textfield.TextInputLayout
 import sample.thowes.autoservice.R
 import kotlin.math.abs
 
@@ -23,8 +23,8 @@ class FormValidator {
     }
 
     fun hasLength(context: Context?,
-                   inputLayout: TextInputLayout,
-                   requiredLength: Int = 0): Boolean {
+                  inputLayout: TextInputLayout,
+                  requiredLength: Int = 0): Boolean {
 
       val isValid = inputLayout.editText?.length() ?: 0 == abs(requiredLength)
 

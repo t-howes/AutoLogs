@@ -1,7 +1,7 @@
 package sample.thowes.autoservice.database
 
-import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.*
 import io.reactivex.Single
 import sample.thowes.autoservice.models.CarWork
 
@@ -17,9 +17,21 @@ interface CarWorkDb {
   @Query("SELECT * FROM ${CarWork.TABLE} WHERE id = :id")
   fun getCarWork(id: Int?): Single<CarWork>
 
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  fun saveWork(work: CarWork)
+  @Insert
+  fun addCarWork(work: CarWork)
+
+  @Update(onConflict = OnConflictStrategy.REPLACE)
+  fun saveCarWork(work: CarWork)
 
   @Delete
   fun deleteWork(work: CarWork)
+
+  @Transaction
+  fun insertOrUpdateCarWork(work: CarWork) {
+    if (work.id == null) {
+      addCarWork(work)
+    } else {
+      saveCarWork(work)
+    }
+  }
 }

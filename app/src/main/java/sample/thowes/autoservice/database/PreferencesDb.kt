@@ -1,7 +1,7 @@
 package sample.thowes.autoservice.database
 
-import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.*
 import io.reactivex.Single
 import sample.thowes.autoservice.models.Preference
 

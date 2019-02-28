@@ -1,8 +1,8 @@
 package sample.thowes.autoservice.models
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.ForeignKey
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 
 @Entity(tableName = Preference.TABLE,
         foreignKeys = [(ForeignKey(entity = Car::class,

@@ -1,6 +1,6 @@
 package sample.thowes.autoservice.base
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import sample.thowes.autoservice.application.AutoServiceApplication

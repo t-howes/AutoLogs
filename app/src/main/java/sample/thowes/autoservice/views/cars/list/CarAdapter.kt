@@ -1,7 +1,7 @@
 package sample.thowes.autoservice.views.cars.list
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.item_row_car.view.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.models.Car
 import android.R.menu
-import android.support.v7.widget.PopupMenu
+import androidx.appcompat.widget.PopupMenu
 import android.view.MenuInflater
 
 

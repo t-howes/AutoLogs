@@ -1,11 +1,11 @@
 package sample.thowes.autoservice.views.preferences
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.ArrayRes
+import androidx.annotation.ArrayRes
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView

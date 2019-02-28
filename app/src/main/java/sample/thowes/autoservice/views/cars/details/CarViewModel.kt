@@ -1,8 +1,8 @@
 package sample.thowes.autoservice.views.cars.details
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import io.reactivex.Observable
 import io.reactivex.Single
 import sample.thowes.autoservice.base.BaseViewModel
@@ -40,15 +40,18 @@ class CarViewModel : BaseViewModel() {
   }
 
   fun updateCar(car: Car) {
-    addSub(Observable.fromCallable {
-        carDb.saveCar(car)
-      }.applySchedulers()
-        .doOnSubscribe { detailsState.value = Resource.loading() }
-        .doAfterTerminate { detailsState.value = Resource.idle() }
-        .subscribe({
-          submitState.value = Resource.success(true)
-        }, {
-          submitState.value = Resource.error(it)
-        }))
+    addSub(
+      Single.fromCallable {
+        carDb.insertOrUpdate(car)
+      }
+      .applySchedulers()
+      .doOnSubscribe { detailsState.value = Resource.loading() }
+      .doAfterTerminate { detailsState.value = Resource.idle() }
+      .subscribe({
+        submitState.value = Resource.success(true)
+      }, {
+        submitState.value = Resource.error(it)
+      })
+    )
   }
 }

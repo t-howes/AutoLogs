@@ -1,6 +1,6 @@
 package sample.thowes.autoservice.base
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
