@@ -1,7 +1,6 @@
 package sample.thowes.autoservice.views.cars.list
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +24,7 @@ class CarListActivity : BaseActivity(), CarClickListener {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_car_list)
 
-    carsViewModel = ViewModelProviders.of(this).get(CarsViewModel::class.java)
+    carsViewModel = getViewModel()
     carsViewModel.state.observe(this, Observer<Resource<List<Car>>> {
       it?.let { state ->
         updateFromStatus(state)

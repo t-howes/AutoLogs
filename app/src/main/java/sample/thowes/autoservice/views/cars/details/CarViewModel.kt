@@ -3,14 +3,15 @@ package sample.thowes.autoservice.views.cars.details
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import io.reactivex.Observable
 import io.reactivex.Single
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
 import sample.thowes.autoservice.models.Car
 import sample.thowes.autoservice.models.Resource
+import sample.thowes.autoservice.repo.CarRepository
+import javax.inject.Inject
 
-class CarViewModel : BaseViewModel() {
+class CarViewModel @Inject constructor(private val repo: CarRepository) : BaseViewModel() {
 
   var detailsState: MutableLiveData<Resource<Car>> = MutableLiveData()
   var submitState: MutableLiveData<Resource<Boolean>> = MutableLiveData()
@@ -19,7 +20,7 @@ class CarViewModel : BaseViewModel() {
 
   fun getCar(carId: Int? = null) {
     carId?.let {
-      carLiveData = carDb.getLiveCar(carId)
+      carLiveData = repo.getLiveCar(carId)
       carObserver = Observer {
         Single.just(it)
             .applySchedulers()
@@ -41,17 +42,15 @@ class CarViewModel : BaseViewModel() {
 
   fun updateCar(car: Car) {
     addSub(
-      Single.fromCallable {
-        carDb.insertOrUpdate(car)
-      }
-      .applySchedulers()
-      .doOnSubscribe { detailsState.value = Resource.loading() }
-      .doAfterTerminate { detailsState.value = Resource.idle() }
-      .subscribe({
-        submitState.value = Resource.success(true)
-      }, {
-        submitState.value = Resource.error(it)
-      })
+      repo.saveCar(car)
+        .applySchedulers()
+        .doOnSubscribe { detailsState.value = Resource.loading() }
+        .doAfterTerminate { detailsState.value = Resource.idle() }
+        .subscribe({
+          submitState.value = Resource.success(true)
+        }, {
+          submitState.value = Resource.error(it)
+        })
     )
   }
 }

@@ -2,7 +2,6 @@ package sample.thowes.autoservice.views.maintenance.details
 
 import android.app.DatePickerDialog
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -46,7 +45,7 @@ class CarWorkDetailsActivity : BaseActivity() {
 
     initUi()
 
-    maintenanceViewModel = ViewModelProviders.of(this).get(MaintenanceViewModel::class.java)
+    maintenanceViewModel = getViewModel()
     maintenanceViewModel.detailsState.observe(this, Observer {
       it?.let {
         updateDetailsState(it)

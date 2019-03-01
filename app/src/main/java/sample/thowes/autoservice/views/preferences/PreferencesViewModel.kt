@@ -3,15 +3,15 @@ package sample.thowes.autoservice.views.preferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import io.reactivex.Observable
 import io.reactivex.Single
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
-import sample.thowes.autoservice.models.Car
 import sample.thowes.autoservice.models.Preference
 import sample.thowes.autoservice.models.Resource
+import sample.thowes.autoservice.repo.PreferencesRepository
+import javax.inject.Inject
 
-class PreferencesViewModel : BaseViewModel() {
+class PreferencesViewModel @Inject constructor(private val repo: PreferencesRepository) : BaseViewModel() {
   var prefsState: MutableLiveData<Resource<List<Preference>>> = MutableLiveData()
   var submitState: MutableLiveData<Resource<Boolean>> = MutableLiveData()
   private lateinit var prefsLiveData: LiveData<List<Preference>>
@@ -19,7 +19,7 @@ class PreferencesViewModel : BaseViewModel() {
 
   fun getLivePreferences(carId: Int? = null) {
     carId?.let {
-      prefsLiveData = prefsDb.getLivePreferencesList(carId)
+      prefsLiveData = repo.getLivePreferencesList(carId)
       prefsObserver = Observer {
         Single.just(it)
             .applySchedulers()
@@ -40,9 +40,9 @@ class PreferencesViewModel : BaseViewModel() {
   }
 
   fun updatePreference(pref: Preference) {
-    addSub(Observable.fromCallable {
-      prefsDb.savePreference(pref)
-    }.applySchedulers()
+    addSub(
+      repo.savePreference(pref)
+        .applySchedulers()
         .doOnSubscribe { prefsState.value = Resource.loading() }
         .doAfterTerminate { prefsState.value = Resource.idle() }
         .subscribe({

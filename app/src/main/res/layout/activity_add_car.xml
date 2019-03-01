@@ -107,6 +107,7 @@
             android:text="@string/last_updated" />
 
         <Button
+            style="@style/PrimaryButton"
             android:id="@+id/submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1,7 +1,6 @@
 package sample.thowes.autoservice.views.preferences
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +9,6 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_car_preferences.*
-import kotlinx.android.synthetic.main.activity_maintenance_details.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseActivity
 import sample.thowes.autoservice.extensions.showToast
@@ -35,7 +33,7 @@ class CarPreferencesActivity : BaseActivity() {
 
     initUi()
 
-    preferencesViewModel = ViewModelProviders.of(this).get(PreferencesViewModel::class.java)
+    preferencesViewModel = getViewModel()
     preferencesViewModel.prefsState.observe(this, Observer {
       it?.let {
         updateFromState(it)

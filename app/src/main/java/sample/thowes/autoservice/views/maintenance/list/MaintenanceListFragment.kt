@@ -1,7 +1,6 @@
 package sample.thowes.autoservice.views.maintenance.list
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -15,7 +14,6 @@ import sample.thowes.autoservice.models.CAR_ID
 import sample.thowes.autoservice.models.CAR_ID_DEFAULT
 import sample.thowes.autoservice.models.CarWork
 import sample.thowes.autoservice.models.Resource
-import sample.thowes.autoservice.views.cars.details.AddCarActivity
 import sample.thowes.autoservice.views.maintenance.MaintenanceViewModel
 import sample.thowes.autoservice.views.maintenance.details.CarWorkDetailsActivity
 
@@ -38,7 +36,7 @@ class MaintenanceListFragment : BaseFragment() {
 
     initUi()
 
-    maintenanceViewModel = ViewModelProviders.of(this).get(MaintenanceViewModel::class.java)
+    maintenanceViewModel = getViewModel(this)
     maintenanceViewModel.listState.observe(this, Observer {
       it?.let {
         updateFromState(it)

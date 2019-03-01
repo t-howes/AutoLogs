@@ -1,7 +1,6 @@
 package sample.thowes.autoservice.views.cars.details
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -34,15 +33,15 @@ class AddCarActivity : BaseActivity() {
 
     initUi()
 
-    carViewModel = ViewModelProviders.of(this).get(CarViewModel::class.java)
+    carViewModel = getViewModel()
     carViewModel.detailsState.observe(this, Observer {
-      it?.let {
-        updateFromState(it)
+      it?.let { data ->
+        updateFromState(data)
       }
     })
     carViewModel.submitState.observe(this, Observer {
-      it?.let {
-        listenForSubmit(it)
+      it?.let { data ->
+        listenForSubmit(data)
       }
     })
 

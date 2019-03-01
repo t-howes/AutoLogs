@@ -17,9 +17,21 @@ interface PreferencesDb {
   @Query("SELECT * FROM ${Preference.TABLE} WHERE id = :id")
   fun getPreference(id: Int?): Single<Preference>
 
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  fun savePreference(pref: Preference)
+  @Insert
+  fun addPreference(pref: Preference)
+
+  @Update(onConflict = OnConflictStrategy.REPLACE)
+  fun updatePreference(pref: Preference)
 
   @Delete
   fun deletePreference(pref: Preference)
+
+  @Transaction
+  fun insertOrUpdatePref(pref: Preference) {
+    if (pref.id == null) {
+      addPreference(pref)
+    } else {
+      updatePreference(pref)
+    }
+  }
 }

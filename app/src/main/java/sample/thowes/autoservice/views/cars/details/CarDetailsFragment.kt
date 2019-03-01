@@ -1,12 +1,10 @@
 package sample.thowes.autoservice.views.cars.details
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.squareup.picasso.Picasso
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.base.BaseFragment
 import sample.thowes.autoservice.extensions.showToast
@@ -33,8 +31,8 @@ class CarDetailsFragment : BaseFragment() {
 
     initUi()
 
-    carViewModel = ViewModelProviders.of(this).get(CarViewModel::class.java)
-    maintenanceViewModel = ViewModelProviders.of(this).get(MaintenanceViewModel::class.java)
+    carViewModel = getViewModel(this)
+    maintenanceViewModel = getViewModel(this)
 
     carViewModel.detailsState.observe(this, Observer {
       it?.let {

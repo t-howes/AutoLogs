@@ -3,14 +3,15 @@ package sample.thowes.autoservice.views.maintenance
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import io.reactivex.Observable
 import io.reactivex.Single
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
 import sample.thowes.autoservice.models.CarWork
 import sample.thowes.autoservice.models.Resource
+import sample.thowes.autoservice.repo.CarWorkRepository
+import javax.inject.Inject
 
-class MaintenanceViewModel : BaseViewModel() {
+class MaintenanceViewModel @Inject constructor(private val repo: CarWorkRepository) : BaseViewModel() {
 
   val detailsState: MutableLiveData<Resource<CarWork>> = MutableLiveData()
   val listState: MutableLiveData<Resource<List<CarWork>>> = MutableLiveData()
@@ -21,14 +22,16 @@ class MaintenanceViewModel : BaseViewModel() {
 
   fun getLiveCarWorkRecords(carId: Int? = null) {
     carId?.let {
-      maintenanceLiveData = carWorkDb.getLiveCarWorkList(carId)
+      maintenanceLiveData = repo.getLiveCarWorkList(carId)
       maintenanceObserver = Observer {
         Single.just(it)
             .applySchedulers()
             .doOnSubscribe { listState.value = Resource.loading() }
             .doAfterTerminate { listState.value = Resource.idle() }
-            .flatMap { Single.just(it.sortedByDescending { it.date }
-                                     .sortedByDescending { it.odometerReading }) }
+            .flatMap { workList ->
+              Single.just(workList.sortedByDescending { work -> work.date }
+                                  .sortedByDescending { work -> work.odometerReading })
+            }
             .subscribe({ maintenance ->
               listState.value = Resource.success(maintenance)
             }, { error ->
@@ -45,7 +48,7 @@ class MaintenanceViewModel : BaseViewModel() {
 
   fun getMaintenance(id: Int? = null) {
     id?.let {
-      addSub(carWorkDb.getCarWork(id)
+      addSub(repo.getCarWork(id)
           .applySchedulers()
           .doOnSubscribe { detailsState.value = Resource.loading() }
           .doAfterTerminate { detailsState.value = Resource.idle() }
@@ -59,17 +62,15 @@ class MaintenanceViewModel : BaseViewModel() {
 
   fun updateCar(carWork: CarWork) {
     addSub(
-      Observable.fromCallable {
-        carWorkDb.addCarWork(carWork)
-      }
-      .applySchedulers()
-      .doOnSubscribe { submitState.value = Resource.loading() }
-      .doAfterTerminate { submitState.value = Resource.idle() }
-      .subscribe({
-        submitState.value = Resource.success(carWork)
-      }, {
-        submitState.value = Resource.error(it)
-      })
+      repo.saveCarWork(carWork)
+        .applySchedulers()
+        .doOnSubscribe { submitState.value = Resource.loading() }
+        .doAfterTerminate { submitState.value = Resource.idle() }
+        .subscribe({
+          submitState.value = Resource.success(carWork)
+        }, {
+          submitState.value = Resource.error(it)
+        })
     )
 
   }
