@@ -141,13 +141,11 @@ class AddCarActivity : BaseActivity() {
   companion object {
 
     fun newIntent(context: Context, carId: Int? = null): Intent {
-      val intent = Intent(context, AddCarActivity::class.java)
-
-      carId?.let { id ->
-        intent.putExtra(CAR_ID, id)
+      return Intent(context, AddCarActivity::class.java).apply {
+        carId?.let { id ->
+          putExtra(CAR_ID, id)
+        }
       }
-
-      return intent
     }
   }
 }
