@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="sample.thowes.autoservice">
+    package="com.duskencodings.autologs">
 
     <application
         android:name=".application.AutoServiceApplication"
