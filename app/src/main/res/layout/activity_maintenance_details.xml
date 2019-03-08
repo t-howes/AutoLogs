@@ -130,7 +130,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <sample.thowes.autoservice.views.custom.LoadingView
+    <com.duskencodings.autologs.views.custom.LoadingView
         android:id="@+id/loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

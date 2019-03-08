@@ -7,7 +7,7 @@ apply plugin: 'io.fabric'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "sample.thowes.autoservice"
+        applicationId "com.duskencodings.autologs"
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
