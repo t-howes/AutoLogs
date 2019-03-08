@@ -31,5 +31,4 @@ class CarRepository(context: Context,
     }.subscribeOn(Schedulers.io())
   }
 
-
 }

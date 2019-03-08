@@ -3,6 +3,7 @@ package sample.thowes.autoservice.views.cars.list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import io.reactivex.Observable
 import io.reactivex.Single
 import sample.thowes.autoservice.base.BaseViewModel
 import sample.thowes.autoservice.extensions.applySchedulers
@@ -18,13 +19,15 @@ class CarsViewModel @Inject constructor(private val repo: CarRepository) : BaseV
   private lateinit var carsLiveData: LiveData<List<Car>>
   private lateinit var carsObserver: Observer<List<Car>>
 
+  lateinit var adapter: CarAdapter
+
   fun getCars() {
     carsLiveData = repo.getCars()
     carsObserver = Observer {
-      Single.just(it)
+      Observable.just(it)
           .applySchedulers()
-          .flatMap { cars ->
-            Single.just(cars.sortedByDescending { car -> car.year })
+          .map { cars ->
+            cars.sortedByDescending { car -> car.year }
           }
           .doOnSubscribe { state.value = Resource.loading() }
           .doAfterTerminate { state.value = Resource.idle() }
@@ -47,7 +50,7 @@ class CarsViewModel @Inject constructor(private val repo: CarRepository) : BaseV
         .subscribe({
           // do nothing here, car will disappear
         }, {
-          Logger.e("CAR DELETE", "Failed to delete car: ${it.localizedMessage}")
+          Logger.e("CAR DELETE", "Failed to delete car", it)
           state.value = Resource.error(RuntimeException("Unable to delete car at this time"))
         })
     )

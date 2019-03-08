@@ -8,13 +8,11 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_row_car.view.*
 import sample.thowes.autoservice.R
 import sample.thowes.autoservice.models.Car
-import android.R.menu
 import androidx.appcompat.widget.PopupMenu
-import android.view.MenuInflater
+import sample.thowes.autoservice.extensions.clearAndAdd
 
 
-
-class CarAdapter(context: Context, private val cars: List<Car>) : RecyclerView.Adapter<CarViewHolder>() {
+class CarAdapter(context: Context, private val cars: MutableList<Car>) : RecyclerView.Adapter<CarViewHolder>() {
   private val inflater = LayoutInflater.from(context)
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarViewHolder {
@@ -27,6 +25,11 @@ class CarAdapter(context: Context, private val cars: List<Car>) : RecyclerView.A
 
   override fun getItemCount() = cars.size
   fun getItem(position: Int) = cars[position]
+
+  fun setItems(cars: List<Car>) {
+    this.cars.clearAndAdd(cars)
+    notifyDataSetChanged()
+  }
 }
 
 class CarViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -1,27 +1,42 @@
 package sample.thowes.autoservice.log
 
 import android.util.Log
+import com.crashlytics.android.Crashlytics
+import sample.thowes.autoservice.BuildConfig
+import java.lang.Exception
 
 class Logger {
   companion object {
     fun i(tag: String, message: String) {
-      Log.i(tag, message)
+      if (BuildConfig.DEBUG) {
+        Log.i(tag, message)
+      }
     }
 
     fun d(tag: String, message: String) {
-      Log.d(tag, message)
+      if (BuildConfig.DEBUG) {
+        Log.d(tag, message)
+      }
     }
 
-    fun e(tag: String, message: String) {
-      Log.e(tag, message)
+    fun e(tag: String, message: String, exception: Throwable) {
+      if (BuildConfig.DEBUG) {
+        Log.e(tag, message)
+      } else {
+        Crashlytics.logException(exception)
+      }
     }
 
     fun v(tag: String, message: String) {
-      Log.v(tag, message)
+      if (BuildConfig.DEBUG) {
+        Log.v(tag, message)
+      }
     }
 
     fun wtf(tag: String, message: String) {
-      Log.wtf(tag, message)
+      if (BuildConfig.DEBUG) {
+        Log.wtf(tag, message)
+      }
     }
   }
 }

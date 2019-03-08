@@ -30,7 +30,15 @@ class CarListActivity : BaseActivity(), CarClickListener {
         updateFromStatus(state)
       }
     })
+
+    initUi()
     carsViewModel.getCars()
+  }
+
+  private fun initUi() {
+    carsViewModel.adapter = CarAdapter(this, mutableListOf())
+    carsList.adapter = carsViewModel.adapter
+    carsList.layoutManager = LinearLayoutManager(this)
 
     add.setOnClickListener {
       navigateToEditCar()
@@ -48,26 +56,17 @@ class CarListActivity : BaseActivity(), CarClickListener {
       }
       Resource.Status.SUCCESS -> {
         state.data?.let { cars ->
-          if (cars.isEmpty()) {
-            showNoResults()
-          } else {
-            showCars(cars)
-          }
-        } ?: showNoResults()
+          showCars(cars)
+        }
       }
     }
   }
 
   private fun showCars(cars: List<Car>) {
-    carsList.adapter = CarAdapter(this, cars)
-    carsList.layoutManager = LinearLayoutManager(this)
-    carsList.visibility = View.VISIBLE
-    emptyResults.visibility = View.GONE
-  }
-
-  private fun showNoResults() {
-    carsList.visibility = View.GONE
-    emptyResults.visibility = View.VISIBLE
+    val hasCars = cars.isNotEmpty()
+    carsViewModel.adapter.setItems(cars)
+    carsList.visibility = if (hasCars) View.VISIBLE else View.GONE
+    emptyResults.visibility = if (hasCars) View.GONE else View.VISIBLE
   }
 
   private fun navigateToCarDetails(id: Int?) {

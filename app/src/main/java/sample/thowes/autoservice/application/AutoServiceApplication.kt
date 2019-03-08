@@ -7,6 +7,10 @@ import sample.thowes.autoservice.dagger.injector.Injector
 import sample.thowes.autoservice.dagger.module.AppModule
 import sample.thowes.autoservice.dagger.module.DatabaseModule
 import sample.thowes.autoservice.dagger.module.RepositoryModule
+import com.crashlytics.android.Crashlytics
+import io.fabric.sdk.android.Fabric
+
+
 
 
 class AutoServiceApplication : Application() {
@@ -14,6 +18,7 @@ class AutoServiceApplication : Application() {
   override fun onCreate() {
     super.onCreate()
     initDagger()
+    Fabric.with(this, Crashlytics())
   }
 
   private fun initDagger() {
