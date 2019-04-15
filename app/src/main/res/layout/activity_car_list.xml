@@ -31,7 +31,7 @@
         android:layout_margin="15dp"
         android:src="@drawable/ic_add_white"/>
 
-    <sample.thowes.autoservice.views.custom.LoadingView
+    <com.duskencodings.autologs.views.custom.LoadingView
         android:id="@+id/loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
