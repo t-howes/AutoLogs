@@ -16,6 +16,7 @@ import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
 import com.duskencodings.autologs.views.maintenance.details.CarWorkDetailsActivity
+import java.lang.NullPointerException
 
 class MaintenanceListFragment : BaseFragment() {
 
@@ -56,7 +57,7 @@ class MaintenanceListFragment : BaseFragment() {
       Resource.Status.IDLE -> showLoading(false)
       Resource.Status.LOADING -> showLoading()
       Resource.Status.ERROR -> state.error?.let {
-        showToast(it.localizedMessage)
+        onError(it)
       }
       Resource.Status.SUCCESS -> {
         state.data?.let {
@@ -74,16 +75,16 @@ class MaintenanceListFragment : BaseFragment() {
     context?.let { context ->
       carId?.let { carId ->
         startActivity(CarWorkDetailsActivity.newIntent(context, carId, carWorkId))
-      } ?: showToast(getString(R.string.error_occurred))
+      } ?: onError(NullPointerException("${javaClass.simpleName}.navigateToMaintenanceDetails -> null carId"))
     }
   }
 
   private fun showMaintenanceRecords(maintenanceRecords: List<CarWork>) {
     context?.let { context ->
       val adapter = MaintenanceAdapter(context, maintenanceRecords)
-      adapter.setOnMaintenanceClickedListener({ maintenance ->
+      adapter.setOnMaintenanceClickedListener { maintenance ->
         navigateToMaintenanceDetails(maintenance.id)
-      })
+      }
 
       carWorkList.adapter = adapter
       carWorkList.layoutManager = LinearLayoutManager(context)

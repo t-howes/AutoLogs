@@ -10,17 +10,14 @@ import com.duskencodings.autologs.models.CAR_ID
 import com.duskencodings.autologs.models.CAR_ID_DEFAULT
 
 class CarDetailsActivity : BaseActivity() {
-  private var carId: Int? = null
+
+  private var carId: Int = CAR_ID_DEFAULT // we will get passed a valid ID in the intent bundle.
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_car_details)
 
-    val id = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT)
-
-    if (CAR_ID_DEFAULT != id) {
-      carId = id
-    }
+    carId = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
 
     initUi()
   }
@@ -28,29 +25,17 @@ class CarDetailsActivity : BaseActivity() {
   private fun initUi() {
     setDisplayHomeAsUpEnabled()
 
-    carId?.let { id ->
-      val detailsTabAdapter = CarDetailsTabAdapter(this, supportFragmentManager, id)
-      detailsViewPager.adapter = detailsTabAdapter
-      detailsTabs.setupWithViewPager(detailsViewPager)
-    } ?: showAddForm()
-  }
-
-  private fun showAddForm() {
-    supportFragmentManager
-        .beginTransaction()
-        .add(newCarLayout.id, CarDetailsFragment.newInstance())
-//        .addToBackStack("new-car")
-        .commit()
+    val detailsTabAdapter = CarDetailsTabAdapter(this, supportFragmentManager, carId)
+    detailsViewPager.adapter = detailsTabAdapter
+    detailsTabs.setupWithViewPager(detailsViewPager)
   }
 
   companion object {
 
-    fun newIntent(context: Context, carId: Int?): Intent {
-      val intent = Intent(context, CarDetailsActivity::class.java)
-      carId?.let { id ->
-        intent.putExtra(CAR_ID, id)
+    fun newIntent(context: Context, carId: Int): Intent {
+      return Intent(context, CarDetailsActivity::class.java).apply {
+        putExtra(CAR_ID, carId)
       }
-      return intent
     }
   }
 }

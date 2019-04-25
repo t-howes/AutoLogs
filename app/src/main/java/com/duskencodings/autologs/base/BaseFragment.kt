@@ -2,11 +2,13 @@ package com.duskencodings.autologs.base
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.duskencodings.autologs.R
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import com.duskencodings.autologs.dagger.injector.Injector
@@ -59,8 +61,13 @@ abstract class BaseFragment : Fragment(), BaseView, SubscriptionHandler {
     }
   }
 
-  protected fun showToast(message: String?) {
-    context.showToast(message)
+  protected open fun onError(error: Throwable) {
+    Log.e("BASE Fragment", "onError() called:", error)
+    showError(error)
+  }
+
+  protected open fun showError(error: Throwable) {
+    context.showToast(R.string.error_occurred)
   }
 
   protected inline fun <reified V : ViewModel> getViewModel(fragment: Fragment, key: String = ""): V {

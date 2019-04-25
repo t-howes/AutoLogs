@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:hint="@string/name">
+            android:hint="@string/nickname">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/nameInput"

@@ -14,8 +14,7 @@ import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
 class CarDetailsFragment : BaseFragment() {
 
   private lateinit var carViewModel: CarViewModel
-  private lateinit var maintenanceViewModel: MaintenanceViewModel
-  private var carId: Int? = null
+  private var carId: Int = CAR_ID_DEFAULT // will have a valid ID passed in args
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_car_details, container, false)
@@ -23,31 +22,19 @@ class CarDetailsFragment : BaseFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val id = arguments?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
-
-    if (CAR_ID_DEFAULT != id) {
-      carId = id
-    }
+    carId = arguments?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
 
     initUi()
 
     carViewModel = getViewModel(this)
-    maintenanceViewModel = getViewModel(this)
 
     carViewModel.detailsState.observe(this, Observer {
-      it?.let {
-        updateCarState(it)
-      }
-    })
-
-    maintenanceViewModel.listState.observe(this, Observer {
-      it?.let {
-        updateMaintenanceState(it)
+      it?.let { state ->
+        updateCarState(state)
       }
     })
 
     carViewModel.getCar(carId)
-    maintenanceViewModel.getLiveCarWorkRecords(carId)
   }
 
   private fun initUi() {
@@ -60,29 +47,12 @@ class CarDetailsFragment : BaseFragment() {
       Resource.Status.LOADING -> showLoading()
       Resource.Status.ERROR -> {
         state.error?.let {
-          context.showToast(it.localizedMessage)
+          onError(it)
         }
       }
       Resource.Status.SUCCESS -> {
         state.data?.let {
           showCarDetails(it)
-        }
-      }
-    }
-  }
-
-  private fun updateMaintenanceState(state: Resource<List<CarWork>>) {
-    when (state.status) {
-      Resource.Status.IDLE -> showLoading(false)
-      Resource.Status.LOADING -> showLoading()
-      Resource.Status.ERROR -> {
-        state.error?.let {
-          context.showToast(it.localizedMessage)
-        }
-      }
-      Resource.Status.SUCCESS -> {
-        state.data?.let {
-          // TODO: do stuff with maintenance (stats and whatnot)
         }
       }
     }
@@ -97,15 +67,11 @@ class CarDetailsFragment : BaseFragment() {
   }
 
   companion object {
-    fun newInstance(carId: Int? = null): CarDetailsFragment {
+    fun newInstance(carId: Int): CarDetailsFragment {
       val fragment = CarDetailsFragment()
-      val args = Bundle()
-
-      carId?.let { id ->
-        args.putInt(CAR_ID, id)
+      fragment.arguments = Bundle().apply {
+        putInt(CAR_ID, carId)
       }
-
-      fragment.arguments = args
       return fragment
     }
   }

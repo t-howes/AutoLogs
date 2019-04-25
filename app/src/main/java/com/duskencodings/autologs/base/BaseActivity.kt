@@ -1,6 +1,7 @@
 package com.duskencodings.autologs.base
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.dagger.injector.Injector
+import com.duskencodings.autologs.extensions.showToast
 import com.duskencodings.autologs.models.SubscriptionHandler
 import com.duskencodings.autologs.views.custom.LoadingView
 import javax.inject.Inject
@@ -62,6 +64,11 @@ abstract class BaseActivity : AppCompatActivity(), BaseView, SubscriptionHandler
     if (!disposables.isDisposed) {
       disposables.dispose()
     }
+  }
+
+  protected open fun onError(error: Throwable) {
+    Log.e("BASE ACTIVITY", "onError() called:", error)
+    showToast(R.string.error_occurred)
   }
 
   protected fun setDisplayHomeAsUpEnabled(show: Boolean = true) {

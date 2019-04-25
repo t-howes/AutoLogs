@@ -35,4 +35,21 @@
         <item name="android:background">@drawable/button_rounded_secondary_bordered_selector</item>
         <item name="android:textColor">@drawable/secondary_button_text_selector</item>
     </style>
+
+    <style name="TextTitle">
+        <item name="android:fontFamily">@font/exo_bold</item>
+        <item name="android:textColor">@color/darkGray</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TextBody_Regular">
+        <item name="android:fontFamily">@font/exo_regular</item>
+        <item name="android:textColor">@color/darkGray</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextBody_Medium" parent="TextBody_Regular">
+        <item name="android:fontFamily">@font/exo_medium</item>
+    </style>
+
 </resources>
