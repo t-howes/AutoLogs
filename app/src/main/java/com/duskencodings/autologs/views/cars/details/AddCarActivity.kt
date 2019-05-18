@@ -111,7 +111,8 @@ class AddCarActivity : BaseActivity() {
   }
 
   private fun showCarDetails(car: Car) {
-    setTitle(car.name ?: car.yearMakeModel())
+    val name = car.name
+    setTitle(if (name.isNullOrBlank()) car.yearMakeModel() else name)
     nameInput.setText(car.name)
     yearInput.setText(car.year.toString())
     makeInput.setText(car.make)

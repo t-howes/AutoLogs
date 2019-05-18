@@ -11,6 +11,8 @@ import com.duskencodings.autologs.log.Logger
 import com.duskencodings.autologs.models.Car
 import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.repo.CarRepository
+import io.reactivex.android.schedulers.AndroidSchedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class CarsViewModel @Inject constructor(private val repo: CarRepository) : BaseViewModel() {
@@ -24,18 +26,22 @@ class CarsViewModel @Inject constructor(private val repo: CarRepository) : BaseV
   fun getCars() {
     carsLiveData = repo.getCars()
     carsObserver = Observer {
-      Observable.just(it)
+      addSub(
+        Observable.just(it)
           .applySchedulers()
           .map { cars ->
             cars.sortedByDescending { car -> car.year }
           }
           .doOnSubscribe { state.value = Resource.loading() }
-          .doAfterTerminate { state.value = Resource.idle() }
+          .delay(500, TimeUnit.MILLISECONDS) // IDLE is posting/overwriting the SUCCESS event
+          .observeOn(AndroidSchedulers.mainThread())
+          .doAfterNext {state.value = Resource.idle() }
           .subscribe({ cars ->
             state.value = Resource.success(cars)
           }, { error ->
             state.value = Resource.error(error)
           })
+      )
     }
 
     carsLiveData.observeForever(carsObserver)

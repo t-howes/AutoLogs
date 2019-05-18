@@ -59,7 +59,8 @@ class CarDetailsFragment : BaseFragment() {
   }
 
   private fun showCarDetails(car: Car) {
-    setTitle(car.name ?: car.yearMakeModel())
+    val name = car.name
+    setTitle(if (name.isNullOrBlank()) car.yearMakeModel() else name)
     // TODO
 //    Picasso.get().load("file: some file")
 //        .transform(Crop())

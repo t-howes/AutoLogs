@@ -24,6 +24,7 @@ class CarAdapter(context: Context, private val cars: MutableList<Car>) : Recycle
   }
 
   override fun getItemCount() = cars.size
+
   fun getItem(position: Int) = cars[position]
 
   fun setItems(cars: List<Car>) {
@@ -34,23 +35,21 @@ class CarAdapter(context: Context, private val cars: MutableList<Car>) : Recycle
 
 class CarViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-  fun bind(car: Car?) {
-    car?.let {
-      val context = itemView.context
-      itemView.name.text = car.name
-      itemView.name.visibility = if (car.name.isNullOrBlank()) View.GONE else View.VISIBLE
-      val yearMakeModel = "${car.year} ${car.make} ${car.model}"
-      itemView.yearMakeModel.text = yearMakeModel
-      itemView.container.setOnClickListener { (context as? CarClickListener)?.onCarClicked(car) }
-      itemView.options.setOnClickListener {
-        val popup = PopupMenu(itemView.context, itemView.options)
-        val inflater = popup.menuInflater
-        inflater.inflate(R.menu.car_actions, popup.menu)
-        popup.setOnMenuItemClickListener{
-          (context as? CarClickListener)?.onCarActionClicked(it.itemId, car) ?: false
-        }
-        popup.show()
+  fun bind(car: Car) {
+    val context = itemView.context
+    itemView.name.text = car.name
+    itemView.name.visibility = if (car.name.isNullOrBlank()) View.GONE else View.VISIBLE
+    val yearMakeModel = "${car.year} ${car.make} ${car.model}"
+    itemView.yearMakeModel.text = yearMakeModel
+    itemView.container.setOnClickListener { (context as? CarClickListener)?.onCarClicked(car) }
+    itemView.options.setOnClickListener {
+      val popup = PopupMenu(itemView.context, itemView.options)
+      val inflater = popup.menuInflater
+      inflater.inflate(R.menu.car_actions, popup.menu)
+      popup.setOnMenuItemClickListener{
+        (context as? CarClickListener)?.onCarActionClicked(it.itemId, car) ?: false
       }
+      popup.show()
     }
   }
 }
