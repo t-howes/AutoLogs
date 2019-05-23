@@ -18,7 +18,7 @@ class CarViewModel @Inject constructor(private val repo: CarRepository) : BaseVi
   private lateinit var carLiveData: LiveData<Car>
   private lateinit var carObserver: Observer<Car>
 
-  fun getCar(carId: Int? = null) {
+  fun getCar(carId: Int?) {
     carId?.let {
       carLiveData = repo.getLiveCar(carId)
       carObserver = Observer {
@@ -29,7 +29,9 @@ class CarViewModel @Inject constructor(private val repo: CarRepository) : BaseVi
             .subscribe({ car ->
               car?.let {
                 detailsState.value = Resource.success(car)
-              } ?: { detailsState.value = Resource.error(NullPointerException("null car from Room")) }.invoke()
+              } ?: {
+                detailsState.value = Resource.error(NullPointerException("null car from Room"))
+              }.invoke()
             }, { error ->
               detailsState.value = Resource.error(error)
             })

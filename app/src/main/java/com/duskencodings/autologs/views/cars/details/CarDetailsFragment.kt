@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseFragment
 import com.duskencodings.autologs.extensions.showToast
 import com.duskencodings.autologs.models.*
 import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
+import com.duskencodings.autologs.views.maintenance.upcoming.UpcomingMaintenanceAdapter
+import kotlinx.android.synthetic.main.fragment_car_details.*
 
 class CarDetailsFragment : BaseFragment() {
 
@@ -38,7 +41,12 @@ class CarDetailsFragment : BaseFragment() {
   }
 
   private fun initUi() {
-    // TODO
+    upcoming_maintenance.apply {
+      layoutManager = LinearLayoutManager(context)
+      adapter = UpcomingMaintenanceAdapter(context) {
+        context.showToast("TODO: maintenance clicked")
+      }
+    }
   }
 
   private fun updateCarState(state: Resource<Car>) {
@@ -69,11 +77,11 @@ class CarDetailsFragment : BaseFragment() {
 
   companion object {
     fun newInstance(carId: Int): CarDetailsFragment {
-      val fragment = CarDetailsFragment()
-      fragment.arguments = Bundle().apply {
-        putInt(CAR_ID, carId)
+      return CarDetailsFragment().apply {
+        arguments = Bundle().apply {
+          putInt(CAR_ID, carId)
+        }
       }
-      return fragment
     }
   }
 }

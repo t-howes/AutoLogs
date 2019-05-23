@@ -2,15 +2,83 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/total_spent"
+        style="@style/TextTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/zero_dollars" />
+
+    <TextView
+        android:id="@+id/total_spent_label"
         style="@style/TextBody_Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Total spent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        android:text="@string/total_spent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/total_spent" />
+
+    <TextView
+        android:id="@+id/mods_spent"
+        style="@style/TextTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/mods_spent_label"
+        app:layout_constraintEnd_toStartOf="@id/maintenance_spent_label"
+        app:layout_constraintTop_toBottomOf="@id/total_spent_label"
+        android:text="@string/zero_dollars" />
+
+    <TextView
+        android:id="@+id/mods_spent_label"
+        style="@style/TextBody_Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/maintenance_spent_label"
+        app:layout_constraintTop_toBottomOf="@id/mods_spent"
+        android:text="@string/modifications" />
+
+    <TextView
+        android:id="@+id/maintenance_spent"
+        style="@style/TextTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/mods_spent_label"
+        app:layout_constraintEnd_toEndOf="@id/maintenance_spent_label"
+        app:layout_constraintTop_toBottomOf="@id/total_spent_label"
+        android:text="@string/zero_dollars" />
+
+    <TextView
+        android:id="@+id/maintenance_spent_label"
+        style="@style/TextBody_Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@id/mods_spent_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/maintenance_spent"
+        android:text="@string/maintenance" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/upcoming_maintenance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mods_spent_label" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

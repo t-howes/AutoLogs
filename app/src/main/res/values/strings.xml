@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Auto Logs</string>
     <string name="x_miles">%d miles</string>
     <string name="last_updated">Last updated: %s</string>
@@ -20,15 +20,17 @@
     <string name="error_field_required">Required field</string>
     <string name="error_invalid_length">Invalid length</string>
     <string name="add_car">Add a Car</string>
+    <string name="total_spent">Total spent</string>
     <string name="total_cost_placeholder">Total cost: %s</string>
     <string name="average_monthly_cost_placeholder">Average monthly cost: %s</string>
 
     <string name="details">Details</string>
     <string name="maintenance">Maintenance</string>
     <string name="modification">Modification</string>
-    <string name="modifications">Modifications</string>
+    <string name="modifications" tools:ignore="ExtraTranslation">Modifications</string>
     <string name="service">Service</string>
     <string name="other">Other</string>
+    <string name="zero_dollars">$0</string>
 
     <string name="no_car_work">You don\'t have any service recorded.</string>
     <string name="date">Date</string>
