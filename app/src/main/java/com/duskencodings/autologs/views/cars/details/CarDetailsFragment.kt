@@ -10,8 +10,7 @@ import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseFragment
 import com.duskencodings.autologs.extensions.showToast
 import com.duskencodings.autologs.models.*
-import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
-import com.duskencodings.autologs.views.maintenance.upcoming.UpcomingMaintenanceAdapter
+import com.duskencodings.autologs.views.maintenance.upcoming.ReminderAdapter
 import kotlinx.android.synthetic.main.fragment_car_details.*
 
 class CarDetailsFragment : BaseFragment() {
@@ -31,7 +30,7 @@ class CarDetailsFragment : BaseFragment() {
 
     carViewModel = getViewModel(this)
 
-    carViewModel.detailsState.observe(this, Observer {
+    carViewModel.state.observe(this, Observer {
       it?.let { state ->
         updateCarState(state)
       }
@@ -43,7 +42,7 @@ class CarDetailsFragment : BaseFragment() {
   private fun initUi() {
     upcoming_maintenance.apply {
       layoutManager = LinearLayoutManager(context)
-      adapter = UpcomingMaintenanceAdapter(context) {
+      adapter = ReminderAdapter(context) {
         context.showToast("TODO: maintenance clicked")
       }
     }

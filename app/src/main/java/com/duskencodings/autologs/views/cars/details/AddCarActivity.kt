@@ -34,7 +34,7 @@ class AddCarActivity : BaseActivity() {
     initUi()
 
     carViewModel = getViewModel()
-    carViewModel.detailsState.observe(this, Observer {
+    carViewModel.state.observe(this, Observer {
       it?.let { data ->
         updateFromState(data)
       }
