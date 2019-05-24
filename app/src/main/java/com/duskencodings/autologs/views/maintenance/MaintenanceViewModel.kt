@@ -8,10 +8,10 @@ import com.duskencodings.autologs.base.BaseViewModel
 import com.duskencodings.autologs.extensions.applySchedulers
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
-import com.duskencodings.autologs.repo.CarWorkRepository
+import com.duskencodings.autologs.repo.ServiceRepository
 import javax.inject.Inject
 
-class MaintenanceViewModel @Inject constructor(private val repo: CarWorkRepository) : BaseViewModel() {
+class MaintenanceViewModel @Inject constructor(private val repo: ServiceRepository) : BaseViewModel() {
 
   val detailsState: MutableLiveData<Resource<CarWork>> = MutableLiveData()
   val listState: MutableLiveData<Resource<List<CarWork>>> = MutableLiveData()

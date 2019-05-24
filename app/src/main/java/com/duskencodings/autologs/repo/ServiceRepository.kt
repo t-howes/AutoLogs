@@ -8,8 +8,10 @@ import io.reactivex.schedulers.Schedulers
 import com.duskencodings.autologs.base.BaseRepository
 import com.duskencodings.autologs.database.CarWorkDb
 import com.duskencodings.autologs.models.CarWork
+import com.duskencodings.autologs.models.SpendingBreakdown
+import com.duskencodings.autologs.views.cars.details.CarViewModel
 
-class CarWorkRepository(context: Context,
+class ServiceRepository(context: Context,
                         private val carWorkDb: CarWorkDb) : BaseRepository(context) {
 
   fun getLiveCarWorkList(carId: Int): LiveData<List<CarWork>> {
@@ -26,4 +28,8 @@ class CarWorkRepository(context: Context,
     }.subscribeOn(Schedulers.io())
   }
 
+  // TODO
+  fun getSpendingDetails(carId: Int?): Single<SpendingBreakdown> {
+    return Single.just(SpendingBreakdown(150.45, 50.45, 100.00))
+  }
 }

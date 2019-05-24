@@ -18,4 +18,5 @@ abstract class AutoDatabase : RoomDatabase() {
   abstract fun carDb(): CarDb
   abstract fun carWorkDb(): CarWorkDb
   abstract fun preferenceDb(): PreferencesDb
+  abstract fun remindersDb(): RemindersDb
 }

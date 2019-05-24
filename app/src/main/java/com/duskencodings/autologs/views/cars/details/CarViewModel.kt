@@ -9,11 +9,15 @@ import com.duskencodings.autologs.extensions.applySchedulers
 import com.duskencodings.autologs.models.Car
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.models.Resource
+import com.duskencodings.autologs.models.SpendingBreakdown
 import com.duskencodings.autologs.repo.CarRepository
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.duskencodings.autologs.repo.RemindersRepository
+import com.duskencodings.autologs.repo.ServiceRepository
 import javax.inject.Inject
 
-class CarViewModel @Inject constructor(private val repo: CarRepository) : BaseViewModel() {
+class CarViewModel @Inject constructor(private val carRepo: CarRepository,
+                                       private val serviceRepo: ServiceRepository,
+                                       private val remindersRepo: RemindersRepository) : BaseViewModel() {
 
   var state: MutableLiveData<State> = MutableLiveData()
   private lateinit var carLiveData: LiveData<Car>
@@ -21,25 +25,24 @@ class CarViewModel @Inject constructor(private val repo: CarRepository) : BaseVi
 
   fun getCar(carId: Int?) {
     carId?.let { id ->
-      carLiveData = repo.getLiveCar(id)
-      carObserver = Observer {
-        Single.just(it)
+      carLiveData = carRepo.getLiveCar(id)
+      carObserver = Observer { car ->
+        Single.just(car)
             .applySchedulers()
             .doOnSubscribe { state.value = State.loadingDetails() }
-            .doAfterTerminate {
-              getReminders(id)
-            }
-            .flatMap {
-              // TODO: get spent stats
-            }
-            .subscribe({ car ->
+            .doAfterSuccess { state.value = State.successCar(car) }
+            .flatMap { serviceRepo.getSpendingDetails(carId).doOnError { state.value = State.errorDetails(it) } }
+            .doAfterSuccess { state.value = State.successDetails(it) }
+            .flatMap { remindersRepo.getUpcomingReminders(carId) }
+            .doAfterSuccess { state.value = State.successReminders(it) }
+            .subscribe({
               car?.let {
                 state.value = Resource.success(car)
               } ?: {
                 state.value = Resource.error(NullPointerException("null car from Room"))
               }.invoke()
             }, { error ->
-              state.value = Resource.error(error)
+              state.value = State.errorDetails(error)
             })
 
       }
@@ -50,7 +53,7 @@ class CarViewModel @Inject constructor(private val repo: CarRepository) : BaseVi
 
   fun updateCar(car: Car) {
     addSub(
-      repo.saveCar(car)
+      carRepo.saveCar(car)
         .applySchedulers()
         .doOnSubscribe { state.value = Resource.loading() }
         .doAfterTerminate { state.value = Resource.idle() }
@@ -62,13 +65,10 @@ class CarViewModel @Inject constructor(private val repo: CarRepository) : BaseVi
     )
   }
 
-  fun getReminders(cardId: Int) {
-
-  }
-
   enum class Status {
     LOADING_DETAILS,
     LOADING_REMINDERS,
+    CAR,
     DETAILS,
     REMINDERS,
     ERROR_DETAILS,
@@ -77,18 +77,19 @@ class CarViewModel @Inject constructor(private val repo: CarRepository) : BaseVi
 
   data class State(val status: Status,
                    val error: Throwable? = null,
-                   val details: CarDetails? = null,
+                   val car: Car? = null,
+                   val details: SpendingBreakdown? = null,
                    val reminders: List<Reminder>? = null) {
 
     companion object {
       fun loadingDetails() = State(Status.LOADING_DETAILS)
       fun loadingReminders() = State(Status.LOADING_REMINDERS)
-      fun successDetails(details: CarDetails) = State(Status.DETAILS, details = details)
+      fun successCar(car: Car) = State(Status.CAR, car = car)
+      fun successDetails(details: SpendingBreakdown) = State(Status.DETAILS, details = details)
       fun successReminders(reminders: List<Reminder>) = State(Status.REMINDERS, reminders = reminders)
       fun errorDetails(error: Throwable) = State(Status.ERROR_DETAILS, error = error)
       fun errorReminders(error: Throwable) = State(Status.ERROR_REMINDERS, error = error)
     }
   }
 
-  data class CarDetails(val totalSpent: Int, val modsSpent: Int, val maintenanceSpent: Int)
 }
