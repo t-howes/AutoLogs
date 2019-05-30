@@ -17,12 +17,13 @@ class ReminderAdapter(context: Context,
 
   private val inflater = LayoutInflater.from(context)
 
-  override fun getItemViewType(position: Int): Int = data[position].viewType.ordinal
+  // instead of weird Int mapping, just use its position and check type when creating the VH
+  override fun getItemViewType(position: Int): Int = position
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReminderViewHolder {
-    return when (ReminderType.values()[viewType]) {
-      ReminderType.BASIC -> ReminderViewHolder(inflater.inflate(R.layout.basic_reminder, parent, false))
-      ReminderType.MAINTENANCE -> MaintenanceReminderViewHolder(inflater.inflate(R.layout.maintenance_reminder, parent, false))
+    return when (data[viewType].type) {
+      ReminderType.UPCOMING_MAINTENANCE -> MaintenanceReminderViewHolder(inflater.inflate(R.layout.maintenance_reminder, parent, false))
+      else /* BASIC */ -> ReminderViewHolder(inflater.inflate(R.layout.basic_reminder, parent, false))
     }
   }
 

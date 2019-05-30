@@ -7,7 +7,8 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 import com.duskencodings.autologs.dagger.InjectingViewModelFactory
 import com.duskencodings.autologs.dagger.ViewModelKey
-import com.duskencodings.autologs.views.cars.details.CarViewModel
+import com.duskencodings.autologs.views.cars.add.AddCarViewModel
+import com.duskencodings.autologs.views.cars.details.CarDetailsViewModel
 import com.duskencodings.autologs.views.cars.list.CarsViewModel
 import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
 
@@ -16,8 +17,13 @@ abstract class ViewModelModule {
 
   @Binds
   @IntoMap
-  @ViewModelKey(CarViewModel::class)
-  abstract fun bindCarViewModel(carViewModel: CarViewModel): ViewModel
+  @ViewModelKey(AddCarViewModel::class)
+  abstract fun bindAddCarViewModel(addCarViewModel: AddCarViewModel): ViewModel
+
+  @Binds
+  @IntoMap
+  @ViewModelKey(CarDetailsViewModel::class)
+  abstract fun bindCarViewModel(carDetailsViewModel: CarDetailsViewModel): ViewModel
 
   @Binds
   @IntoMap

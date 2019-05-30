@@ -7,8 +7,8 @@ import io.reactivex.Single
 
 @Dao
 interface RemindersDb {
-  @Query("SELECT * FROM $TABLE_NAME")
-  fun getReminders(): LiveData<List<Reminder>>
+  @Query("SELECT * FROM $TABLE_NAME WHERE carId = :carId")
+  fun getReminders(carId: Int): LiveData<List<Reminder>>
 
   @Query("SELECT * FROM $TABLE_NAME WHERE id = :id")
   fun getLiveReminder(id: Int?): LiveData<Reminder>

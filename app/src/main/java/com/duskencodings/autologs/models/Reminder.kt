@@ -1,8 +1,6 @@
 package com.duskencodings.autologs.models
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.duskencodings.autologs.database.RemindersDb
 
 @Entity(tableName = RemindersDb.TABLE_NAME,
@@ -11,20 +9,33 @@ import com.duskencodings.autologs.database.RemindersDb
         childColumns = arrayOf("carId"),
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.NO_ACTION))])
-open class Reminder(@PrimaryKey(autoGenerate = true)
+data class Reminder(@PrimaryKey(autoGenerate = true)
                     val id: Int?,
                     val carId: Int,
                     val name: String,
-                    val viewType: ReminderType = ReminderType.BASIC)
+                    val description: String,
+                    val type: ReminderType = ReminderType.BASIC,
+                    val currentMiles: Int,
+                    val currentDate: String,
+                    val expireMiles: Int,
+                    val expireDate: String)
 
 enum class ReminderType {
   BASIC,
-  MAINTENANCE
+  UPCOMING_MAINTENANCE;
+
+  companion object {
+    fun fromName(name: String): ReminderType? {
+      return values().find { it.name == name }
+    }
+  }
 }
 
-class MaintenanceReminder(carId: Int,
-                          name: String,
-                          val currentMiles: Int,
-                          val currentDate: String,
-                          val expireMiles: Int,
-                          val expireDate: String) : Reminder(null, carId, name, ReminderType.MAINTENANCE)
+
+class ReminderTypeConverter {
+  @TypeConverter
+  fun toString(type: ReminderType): String = type.name
+
+  @TypeConverter
+  fun fromString(name: String): ReminderType? = ReminderType.fromName(name)
+}

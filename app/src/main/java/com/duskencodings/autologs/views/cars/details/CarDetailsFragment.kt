@@ -1,6 +1,5 @@
 package com.duskencodings.autologs.views.cars.details
 
-import androidx.lifecycle.Observer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,7 @@ import kotlinx.android.synthetic.main.fragment_car_details.*
 
 class CarDetailsFragment : BaseFragment() {
 
-  private lateinit var carViewModel: CarViewModel
+  private lateinit var carDetailsViewModel: CarDetailsViewModel
   private var carId: Int = CAR_ID_DEFAULT // will have a valid ID passed in args
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -28,15 +27,15 @@ class CarDetailsFragment : BaseFragment() {
 
     initUi()
 
-    carViewModel = getViewModel(this)
+    carDetailsViewModel = getViewModel(this)
 
-    carViewModel.state.observe(this, Observer {
+    carDetailsViewModel.state.subscribe {
       it?.let { state ->
         updateCarState(state)
       }
-    })
+    }.also { addSub(it) }
 
-    carViewModel.getCar(carId)
+    carDetailsViewModel.loadScreen(carId)
   }
 
   private fun initUi() {
@@ -48,30 +47,32 @@ class CarDetailsFragment : BaseFragment() {
     }
   }
 
-  private fun updateCarState(state: Resource<Car>) {
+  private fun updateCarState(state: CarDetailsViewModel.State) {
     when (state.status) {
-      Resource.Status.IDLE -> showLoading(false)
-      Resource.Status.LOADING -> showLoading()
-      Resource.Status.ERROR -> {
-        state.error?.let {
-          onError(it)
-        }
-      }
-      Resource.Status.SUCCESS -> {
-        state.data?.let {
-          showCarDetails(it)
-        }
-      }
+      CarDetailsViewModel.Status.LOADING_DETAILS -> showLoading(true)
+      CarDetailsViewModel.Status.LOADING_REMINDERS -> { /* TODO */ }
+      CarDetailsViewModel.Status.CAR -> state.car?.let { onCarReceived(it) }
+      CarDetailsViewModel.Status.DETAILS -> state.spendingBreakdown?.let { onSpendingBreakdownReceived(it) }
+      CarDetailsViewModel.Status.REMINDERS -> state.reminders?.let { onRemindersReceived(it) }
+      CarDetailsViewModel.Status.ERROR_DETAILS,
+      CarDetailsViewModel.Status.ERROR_REMINDERS -> state.error?.let { onError(it) }
     }
   }
 
-  private fun showCarDetails(car: Car) {
-    val name = car.name
-    setTitle(if (name.isNullOrBlank()) car.yearMakeModel() else name)
+  private fun onCarReceived(car: Car) {
+    setTitle(car.name)
     // TODO
 //    Picasso.get().load("file: some file")
 //        .transform(Crop())
 //        .into(someImageView)
+  }
+
+  private fun onSpendingBreakdownReceived(breakdown: SpendingBreakdown) {
+    // TODO: show chart
+  }
+
+  private fun onRemindersReceived(reminders: List<Reminder>) {
+    // TODO: show reminders
   }
 
   companion object {

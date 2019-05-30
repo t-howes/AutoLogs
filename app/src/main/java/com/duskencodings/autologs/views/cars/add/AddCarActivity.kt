@@ -1,6 +1,5 @@
-package com.duskencodings.autologs.views.cars.details
+package com.duskencodings.autologs.views.cars.add
 
-import androidx.lifecycle.Observer
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -18,7 +17,7 @@ import com.duskencodings.autologs.validation.FormValidator
 class AddCarActivity : BaseActivity() {
 
   private var carId: Int? = null
-  private lateinit var carViewModel: CarViewModel
+  private lateinit var carViewModel: AddCarViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -34,18 +33,13 @@ class AddCarActivity : BaseActivity() {
     initUi()
 
     carViewModel = getViewModel()
-    carViewModel.state.observe(this, Observer {
+    carViewModel.state.subscribe {
       it?.let { data ->
         updateFromState(data)
       }
-    })
-    carViewModel.submitState.observe(this, Observer {
-      it?.let { data ->
-        listenForSubmit(data)
-      }
-    })
+    }.also { addSub(it) }
 
-    carViewModel.getCar(carId)
+    carViewModel.loadScreen(carId)
   }
 
   private fun initUi() {
@@ -85,34 +79,18 @@ class AddCarActivity : BaseActivity() {
     )
   }
 
-  private fun updateFromState(state: Resource<Car>) {
+  private fun updateFromState(state: AddCarViewModel.State) {
     when (state.status) {
-      Resource.Status.IDLE -> showLoading(false)
-      Resource.Status.LOADING -> showLoading()
-      Resource.Status.ERROR -> {
-        state.error?.let {
-          showToast(it.localizedMessage)
-        }
-      }
-      Resource.Status.SUCCESS -> {
-        state.data?.let {
-          showCarDetails(it)
-        }
-      }
-    }
-  }
-
-  private fun listenForSubmit(state: Resource<Boolean>) {
-    when (state.status) {
-      Resource.Status.SUCCESS -> finish()
-      Resource.Status.ERROR -> showToast(getString(R.string.error_occurred))
-      else -> { /* not handling */ }
+      AddCarViewModel.Status.LOADING -> showLoading(true)
+      AddCarViewModel.Status.CAR_DETAILS -> state.car?.let { showCarDetails(it) }
+      AddCarViewModel.Status.SAVED -> finish()
+      AddCarViewModel.Status.ERROR -> state.error?.let { onError(it) }
     }
   }
 
   private fun showCarDetails(car: Car) {
     val name = car.name
-    setTitle(if (name.isNullOrBlank()) car.yearMakeModel() else name)
+    setTitle(name)
     nameInput.setText(car.name)
     yearInput.setText(car.year.toString())
     makeInput.setText(car.make)
@@ -149,4 +127,5 @@ class AddCarActivity : BaseActivity() {
       }
     }
   }
+
 }

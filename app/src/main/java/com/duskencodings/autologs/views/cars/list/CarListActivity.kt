@@ -1,6 +1,5 @@
 package com.duskencodings.autologs.views.cars.list
 
-import android.content.DialogInterface
 import androidx.lifecycle.Observer
 import android.os.Bundle
 import androidx.annotation.IdRes
@@ -13,9 +12,8 @@ import com.duskencodings.autologs.base.BaseActivity
 import com.duskencodings.autologs.extensions.showToast
 import com.duskencodings.autologs.models.Car
 import com.duskencodings.autologs.models.Resource
-import com.duskencodings.autologs.views.cars.details.AddCarActivity
+import com.duskencodings.autologs.views.cars.add.AddCarActivity
 import com.duskencodings.autologs.views.cars.details.CarDetailsActivity
-import com.duskencodings.autologs.views.preferences.CarPreferencesActivity
 
 
 class CarListActivity : BaseActivity(), CarClickListener {

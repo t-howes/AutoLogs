@@ -9,7 +9,6 @@ import com.duskencodings.autologs.base.BaseRepository
 import com.duskencodings.autologs.database.CarWorkDb
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.SpendingBreakdown
-import com.duskencodings.autologs.views.cars.details.CarViewModel
 
 class ServiceRepository(context: Context,
                         private val carWorkDb: CarWorkDb) : BaseRepository(context) {
@@ -30,6 +29,6 @@ class ServiceRepository(context: Context,
 
   // TODO
   fun getSpendingDetails(carId: Int?): Single<SpendingBreakdown> {
-    return Single.just(SpendingBreakdown(150.45, 50.45, 100.00))
+    return Single.just(SpendingBreakdown(150.15, 502.47, 1450.00))
   }
 }

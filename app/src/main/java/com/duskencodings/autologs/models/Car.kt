@@ -13,9 +13,12 @@ data class Car(@PrimaryKey(autoGenerate = true)
                var year: Int,
                var make: String,
                var model: String,
-               var name: String? = null,
+               var nickname: String? = null,
                var notes: String? = null,
                var lastUpdate: String? = Calendar.getInstance().now()) {
+
+  val name: String
+    get() = if (nickname.isNullOrBlank()) yearMakeModel() else nickname!!
 
   companion object {
     const val TABLE_NAME = "cars"

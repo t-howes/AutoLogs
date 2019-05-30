@@ -34,7 +34,6 @@ class RepositoryModule {
     return PreferencesRepository(context, preferencesDb)
   }
 
-
   @Provides
   @Singleton
   internal fun provideRemindersRepo(context: Context, remindersDb: RemindersDb): RemindersRepository {

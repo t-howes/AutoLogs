@@ -2,18 +2,18 @@ package com.duskencodings.autologs.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.duskencodings.autologs.models.Car
-import com.duskencodings.autologs.models.CarWork
-import com.duskencodings.autologs.models.Preference
+import androidx.room.TypeConverters
+import com.duskencodings.autologs.models.*
 
 
 @Database(entities = arrayOf(
     Car::class,
     CarWork::class,
-    Preference::class
+    Preference::class,
+    Reminder::class
   ),
   version = 1, exportSchema = false)
-//@TypeConverters(CarWorkTypeConverter::class)
+@TypeConverters(ReminderTypeConverter::class)
 abstract class AutoDatabase : RoomDatabase() {
   abstract fun carDb(): CarDb
   abstract fun carWorkDb(): CarWorkDb

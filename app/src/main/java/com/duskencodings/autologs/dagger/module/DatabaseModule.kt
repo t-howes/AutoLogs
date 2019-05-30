@@ -2,12 +2,9 @@ package com.duskencodings.autologs.dagger.module
 
 import androidx.room.Room
 import android.content.Context
+import com.duskencodings.autologs.database.*
 import dagger.Module
 import dagger.Provides
-import com.duskencodings.autologs.database.AutoDatabase
-import com.duskencodings.autologs.database.CarDb
-import com.duskencodings.autologs.database.CarWorkDb
-import com.duskencodings.autologs.database.PreferencesDb
 import javax.inject.Singleton
 
 @Module
@@ -37,5 +34,11 @@ class DatabaseModule(val context: Context) {
   @Provides
   fun providePreferencesDb(autoDatabase: AutoDatabase): PreferencesDb {
     return autoDatabase.preferenceDb()
+  }
+
+  @Singleton
+  @Provides
+  fun provideRemindersDb(autoDatabase: AutoDatabase): RemindersDb {
+    return autoDatabase.remindersDb()
   }
 }
