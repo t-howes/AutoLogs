@@ -27,8 +27,6 @@ class CarWorkDetailsActivity : BaseActivity() {
   private lateinit var maintenanceViewModel: MaintenanceViewModel
   private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
   private val calendar = Calendar.getInstance()
-  private var carId: Int? = null
-  private var maintenanceId: Int? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -36,16 +34,17 @@ class CarWorkDetailsActivity : BaseActivity() {
     val carId = intent.extras?.getInt(CAR_ID, -1)
     val id = intent.extras?.getInt(MAINTENANCE_ID, ID_DEFAULT)
 
+    maintenanceViewModel = getViewModel()
+
     if (carId != ID_DEFAULT) {
-      this.carId = carId
+      maintenanceViewModel.carId = carId
     }
     if (id != ID_DEFAULT) {
-      this.maintenanceId = id
+      maintenanceViewModel.maintenanceId = id
     }
 
     initUi()
 
-    maintenanceViewModel = getViewModel()
     maintenanceViewModel.detailsState.observe(this, Observer {
       it?.let {
         updateDetailsState(it)
@@ -58,14 +57,14 @@ class CarWorkDetailsActivity : BaseActivity() {
       }
     })
 
-    maintenanceViewModel.getMaintenance(maintenanceId)
+    maintenanceViewModel.getMaintenance()
   }
 
   private fun initUi() {
     setDisplayHomeAsUpEnabled()
     setupNameSpinner()
 
-    if (maintenanceId == null) {
+    if (maintenanceViewModel.maintenanceId == null) {
       val text = getString(R.string.service)
       setTitle(getString(R.string.add_placeholder, text))
       dateInput.setText(Calendar.getInstance().simple())
@@ -208,7 +207,7 @@ class CarWorkDetailsActivity : BaseActivity() {
   }
 
   private fun saveCarWork() {
-    carId?.let { carId ->
+    maintenanceViewModel.carId?.let { carId ->
       val selectedName = nameSpinner.selectedItem.toString()
 
       val name = if (nameSpinner.visibility == View.GONE || selectedName == getString(R.string.other)) {
@@ -223,7 +222,7 @@ class CarWorkDetailsActivity : BaseActivity() {
       val type = getType(name)
       // null carId should auto generate an ID in Room
       val newCarWork = CarWork(
-          maintenanceId, carId,
+          maintenanceViewModel.maintenanceId, carId,
           name, type, date, cost, miles, notes)
 
       maintenanceViewModel.saveWork(newCarWork)

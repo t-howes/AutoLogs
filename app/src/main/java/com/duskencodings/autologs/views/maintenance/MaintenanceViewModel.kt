@@ -7,11 +7,12 @@ import com.duskencodings.autologs.base.BaseViewModel
 import com.duskencodings.autologs.extensions.applySchedulers
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
+import com.duskencodings.autologs.repo.RemindersRepository
 import com.duskencodings.autologs.repo.ServiceRepository
 import io.reactivex.Observable
 import javax.inject.Inject
 
-class MaintenanceViewModel @Inject constructor(private val repo: ServiceRepository) : BaseViewModel() {
+class MaintenanceViewModel @Inject constructor(private val serviceRepo: ServiceRepository, private val remindersRepo: RemindersRepository) : BaseViewModel() {
 
   val detailsState: MutableLiveData<Resource<CarWork>> = MutableLiveData()
   val listState: MutableLiveData<Resource<List<CarWork>>> = MutableLiveData()
@@ -19,10 +20,12 @@ class MaintenanceViewModel @Inject constructor(private val repo: ServiceReposito
 
   private lateinit var maintenanceLiveData: LiveData<List<CarWork>>
   private lateinit var maintenanceObserver: Observer<List<CarWork>>
+  var carId: Int? = null
+  var maintenanceId: Int? = null
 
-  fun getLiveCarWorkRecords(carId: Int? = null) {
+  fun getLiveCarWorkRecords() {
     carId?.let {
-      maintenanceLiveData = repo.getLiveCarWorkList(carId)
+      maintenanceLiveData = serviceRepo.getLiveCarWorkList(it)
       maintenanceObserver = Observer {
         Observable.just(it)
             .applySchedulers()
@@ -50,9 +53,9 @@ class MaintenanceViewModel @Inject constructor(private val repo: ServiceReposito
     }.invoke()
   }
 
-  fun getMaintenance(id: Int? = null) {
-    id?.let {
-      addSub(repo.getCarWork(id)
+  fun getMaintenance() {
+    maintenanceId?.let {
+      addSub(serviceRepo.getCarWork(it)
           .applySchedulers()
           .doOnSubscribe { detailsState.value = Resource.loading() }
           .doAfterTerminate { detailsState.value = Resource.idle() }
@@ -66,10 +69,13 @@ class MaintenanceViewModel @Inject constructor(private val repo: ServiceReposito
 
   fun saveWork(carWork: CarWork) {
     addSub(
-      repo.saveCarWork(carWork)
+      serviceRepo.saveCarWork(carWork)
         .applySchedulers()
         .doOnSubscribe { submitState.value = Resource.loading() }
         .doAfterTerminate { submitState.value = Resource.idle() }
+        .doOnSubscribe {
+          remindersRepo.addReminder(carWork)
+        }
         .subscribe({
           submitState.value = Resource.success(carWork)
         }, {

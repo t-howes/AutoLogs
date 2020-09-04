@@ -17,6 +17,9 @@ interface PreferencesDb {
   @Query("SELECT * FROM ${Preference.TABLE} WHERE id = :id")
   fun getPreference(id: Int?): Single<Preference>
 
+  @Query("SELECT * FROM ${Preference.TABLE} WHERE carId = :carId AND name = :prefName")
+  fun getPreferenceByCarAndName(carId: Int, prefName: String): Single<Preference>
+
   @Insert
   fun addPreference(pref: Preference)
 

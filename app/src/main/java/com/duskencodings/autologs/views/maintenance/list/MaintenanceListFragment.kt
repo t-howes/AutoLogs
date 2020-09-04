@@ -20,7 +20,6 @@ import java.lang.NullPointerException
 class MaintenanceListFragment : BaseFragment() {
 
   private lateinit var maintenanceViewModel: MaintenanceViewModel
-  private var carId: Int? = null
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_car_work_list, container, false)
@@ -30,19 +29,20 @@ class MaintenanceListFragment : BaseFragment() {
     super.onViewCreated(view, savedInstanceState)
     val id = arguments?.getInt(CAR_ID, CAR_ID_DEFAULT)
 
+    maintenanceViewModel = getViewModel(this)
+
     if (CAR_ID_DEFAULT != id) {
-      carId = id
+      maintenanceViewModel.carId = id
     }
 
     initUi()
 
-    maintenanceViewModel = getViewModel(this)
     maintenanceViewModel.listState.observe(viewLifecycleOwner, Observer {
       it?.let {
         updateFromState(it)
       }
     })
-    maintenanceViewModel.getLiveCarWorkRecords(carId)
+    maintenanceViewModel.getLiveCarWorkRecords()
   }
 
   private fun initUi() {
@@ -72,7 +72,7 @@ class MaintenanceListFragment : BaseFragment() {
 
   private fun navigateToMaintenanceDetails(carWorkId: Int? = null) {
     context?.let { context ->
-      carId?.let { carId ->
+      maintenanceViewModel.carId?.let { carId ->
         startActivity(CarWorkDetailsActivity.newIntent(context, carId, carWorkId))
       } ?: onError(NullPointerException("${javaClass.simpleName}.navigateToMaintenanceDetails -> null carId"))
     }
