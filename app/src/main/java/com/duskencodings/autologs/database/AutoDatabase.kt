@@ -13,7 +13,7 @@ import com.duskencodings.autologs.models.*
     Reminder::class
   ),
   version = 1, exportSchema = false)
-@TypeConverters(ReminderTypeConverter::class)
+@TypeConverters(ReminderTypeConverter::class, CarWorkTypeConverter::class)
 abstract class AutoDatabase : RoomDatabase() {
   abstract fun carDb(): CarDb
   abstract fun carWorkDb(): CarWorkDb

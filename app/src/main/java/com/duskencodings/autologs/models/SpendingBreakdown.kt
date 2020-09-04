@@ -1,8 +1,8 @@
 package com.duskencodings.autologs.models
 
-data class SpendingBreakdown(val replacementCosts: Double,
+data class SpendingBreakdown(val maintenanceCosts: Double,
                              val modsCost: Double,
-                             val serviceCosts: Double) {
+                             val totalCost: Double = maintenanceCosts + modsCost) {
 
-  fun isEmpty(): Boolean = replacementCosts == 0.0 && modsCost == 0.0 && serviceCosts == 0.0
+  fun isEmpty(): Boolean = maintenanceCosts == 0.0 && modsCost == 0.0
 }

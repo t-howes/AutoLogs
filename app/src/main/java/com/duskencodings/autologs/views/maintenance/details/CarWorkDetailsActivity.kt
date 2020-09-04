@@ -84,7 +84,9 @@ class CarWorkDetailsActivity : BaseActivity() {
     nameSpinner.onItemSelectedListener = object : OnItemSelectedListener {
       override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val isOther = adapter.getItem(position) == getString(R.string.other)
-        nameLayout.visibility = if (isOther) View.VISIBLE else View.GONE
+        val extraInputVisibility = if (isOther) View.VISIBLE else View.GONE
+        nameLayout.visibility = extraInputVisibility
+        aftermarketModificationsCheckbox.visibility = extraInputVisibility
 
         if (isOther) {
           nameLayout.requestFocus()
@@ -218,13 +220,21 @@ class CarWorkDetailsActivity : BaseActivity() {
       val miles = milesInput.text.toString().toInt()
       val cost = costInput.text.toString().toDoubleOrNull()
       val notes = notesInput.text.toString()
+      val type = getType(name)
       // null carId should auto generate an ID in Room
       val newCarWork = CarWork(
           maintenanceId, carId,
-          name, date, cost, miles, notes)
+          name, type, date, cost, miles, notes)
 
-      maintenanceViewModel.updateCar(newCarWork)
+      maintenanceViewModel.saveWork(newCarWork)
     } ?: showToast(getString(R.string.error_occurred))
+  }
+
+  /**
+   * TODO: Consider doing a name mapping later.
+   */
+  private fun getType(name: String): CarWork.Type {
+    return if (aftermarketModificationsCheckbox.isChecked) CarWork.Type.MODIFICATION else CarWork.Type.MAINTENANCE
   }
 
   companion object {
@@ -233,10 +243,10 @@ class CarWorkDetailsActivity : BaseActivity() {
     private const val ID_DEFAULT = -1
 
     fun newIntent(context: Context, carId: Int, carWorkId: Int? = null): Intent {
-      val intent = Intent(context, CarWorkDetailsActivity::class.java)
-      intent.putExtra(MAINTENANCE_ID, carWorkId)
-      intent.putExtra(CAR_ID, carId)
-      return intent
+      return Intent(context, CarWorkDetailsActivity::class.java).apply {
+        putExtra(MAINTENANCE_ID, carWorkId)
+        putExtra(CAR_ID, carId)
+      }
     }
   }
 }

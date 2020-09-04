@@ -41,6 +41,7 @@ class MaintenanceAdapter(context: Context, var data: List<CarWork>)
         itemView.dateContainer.visibility = if (showDate) View.VISIBLE else View.GONE
         itemView.date.text = work.date
         itemView.name.text = work.name
+        itemView.notes.text = work.notes
         itemView.container.setOnClickListener {
           onClickListener?.invoke(carWork)
         }

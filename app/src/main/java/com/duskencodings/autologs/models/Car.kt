@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
 import com.duskencodings.autologs.extensions.now
 import java.util.*
 
@@ -43,6 +44,7 @@ data class CarWork(@PrimaryKey(autoGenerate = true)
                    val id: Int?,
                    val carId: Int,
                    var name: String,
+                   val type: Type,
                    var date: String,
                    var cost: Double? = 0.0,
                    var odometerReading: Int,
@@ -53,8 +55,8 @@ data class CarWork(@PrimaryKey(autoGenerate = true)
     MODIFICATION(1);
 
     companion object {
-      fun from(type: Int): Type {
-        return Type.values().find { it.value == type } ?: MAINTENANCE
+      fun from(name: String): Type {
+        return values().find { it.name == name } ?: MAINTENANCE
       }
     }
   }
@@ -62,4 +64,12 @@ data class CarWork(@PrimaryKey(autoGenerate = true)
   companion object {
     const val TABLE = "car_work"
   }
+}
+
+class CarWorkTypeConverter {
+  @TypeConverter
+  fun toString(type: CarWork.Type): String = type.name
+
+  @TypeConverter
+  fun fromString(name: String): CarWork.Type? = CarWork.Type.from(name)
 }

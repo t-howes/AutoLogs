@@ -5,12 +5,11 @@ import androidx.lifecycle.Observer
 import io.reactivex.Single
 import com.duskencodings.autologs.base.BaseViewModel
 import com.duskencodings.autologs.extensions.applySchedulers
-import com.duskencodings.autologs.models.Car
-import com.duskencodings.autologs.models.Reminder
-import com.duskencodings.autologs.models.SpendingBreakdown
+import com.duskencodings.autologs.models.*
 import com.duskencodings.autologs.repo.CarRepository
 import com.duskencodings.autologs.repo.RemindersRepository
 import com.duskencodings.autologs.repo.ServiceRepository
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
@@ -21,6 +20,8 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
   var state: PublishSubject<State> = PublishSubject.create()
   private lateinit var carLiveData: LiveData<Car>
   private lateinit var carObserver: Observer<Car>
+  private lateinit var maintenanceLiveData: LiveData<List<CarWork>>
+  private lateinit var maintenanceObserver: Observer<List<CarWork>>
 
   fun loadScreen(carId: Int?) {
     carId?.let { id ->
@@ -30,40 +31,57 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
           Single.just(car)
               .applySchedulers()
               .doOnSubscribe { state.onNext(State.loadingDetails()) }
-              .doAfterSuccess { state.onNext(State.successCar(car)) }
-              .flatMap {
-                serviceRepo.getSpendingDetails(carId).onErrorReturn {
-                  // return empty obj on error to keep the stream going.
-                  SpendingBreakdown(0.0, 0.0, 0.0)
-                }
-              }
               .doAfterSuccess {
-                state.onNext(State.successDetails(it))
-                state.onNext(State.loadingReminders())
+                state.onNext(State.successCar(car))
+                observeCarWork(it.id!!)
               }
+              .doAfterSuccess { state.onNext(State.loadingReminders()) }
               .flatMap { remindersRepo.getUpcomingReminders(carId).onErrorReturn { listOf() } }
               .doAfterSuccess { state.onNext(State.successReminders(it)) }
               .subscribe({
                 // posted all success or default states
               }, { error ->
-                state.onNext(State.errorDetails(error))
+                state.onNext(State.error(error))
               })
+              .also { addSub(it) }
         } ?: run {
-          state.onNext(State.errorDetails(NullPointerException("null car from Room")))
+          state.onNext(State.error(NullPointerException("null car from Room")))
         }
       }
 
       carLiveData.observeForever(carObserver)
     } ?: run {
-      state.onNext(State.errorDetails(NullPointerException("null car ID")))
+      state.onNext(State.error(NullPointerException("null car ID")))
     }
+  }
+
+  private fun observeCarWork(carId: Int) {
+    maintenanceLiveData = serviceRepo.getLiveCarWorkList(carId)
+    maintenanceObserver = Observer {
+      Observable.just(it)
+          .applySchedulers()
+          .doOnSubscribe { state.onNext(State.loadingDetails()) }
+          .map { work ->
+            val maintenanceJobs = work.filter { job -> job.type == CarWork.Type.MAINTENANCE }
+            val maintenanceCost = maintenanceJobs.sumByDouble { job -> job.cost ?: 0.0 }
+            val modsCost = work.minus(maintenanceJobs).sumByDouble { job -> job.cost ?: 0.0 }
+            SpendingBreakdown(maintenanceCost, modsCost)
+          }
+          .subscribe({ spending ->
+            state.onNext(State.successSpending(spending))
+          }, { error ->
+            state.onNext(State.error(error))
+          }).also { addSub(it) }
+    }
+
+    maintenanceLiveData.observeForever(maintenanceObserver)
   }
 
   enum class Status {
     LOADING_DETAILS,
     LOADING_REMINDERS,
     CAR,
-    DETAILS,
+    SPENDING,
     REMINDERS,
     ERROR_DETAILS,
     ERROR_REMINDERS
@@ -79,9 +97,9 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
       fun loadingDetails() = State(Status.LOADING_DETAILS)
       fun loadingReminders() = State(Status.LOADING_REMINDERS)
       fun successCar(car: Car) = State(Status.CAR, car = car)
-      fun successDetails(details: SpendingBreakdown) = State(Status.DETAILS, spendingBreakdown = details)
+      fun successSpending(spending: SpendingBreakdown) = State(Status.SPENDING, spendingBreakdown = spending)
       fun successReminders(reminders: List<Reminder>) = State(Status.REMINDERS, reminders = reminders)
-      fun errorDetails(error: Throwable) = State(Status.ERROR_DETAILS, error = error)
+      fun error(error: Throwable) = State(Status.ERROR_DETAILS, error = error)
       fun errorReminders(error: Throwable) = State(Status.ERROR_REMINDERS, error = error)
     }
   }

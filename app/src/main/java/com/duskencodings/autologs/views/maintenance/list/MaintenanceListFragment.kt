@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.fragment_aggregate_data.*
 import kotlinx.android.synthetic.main.fragment_car_work_list.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseFragment
@@ -38,7 +37,7 @@ class MaintenanceListFragment : BaseFragment() {
     initUi()
 
     maintenanceViewModel = getViewModel(this)
-    maintenanceViewModel.listState.observe(this, Observer {
+    maintenanceViewModel.listState.observe(viewLifecycleOwner, Observer {
       it?.let {
         updateFromState(it)
       }
@@ -90,14 +89,7 @@ class MaintenanceListFragment : BaseFragment() {
       carWorkList.layoutManager = LinearLayoutManager(context)
       carWorkList.visibility = View.VISIBLE
       emptyResults.visibility = View.GONE
-
-      getAggregateData()
     }
-  }
-
-  private fun getAggregateData() {
-    //TODO: aggregate data
-    aggregateData.visibility = View.VISIBLE
   }
 
   private fun showNoResults() {
@@ -108,15 +100,11 @@ class MaintenanceListFragment : BaseFragment() {
   companion object {
 
     fun newInstance(carId: Int? = null): MaintenanceListFragment {
-      val fragment = MaintenanceListFragment()
-      val args = Bundle()
-
-      carId?.let { id ->
-        args.putInt(CAR_ID, id)
+      return  MaintenanceListFragment().apply {
+        arguments = Bundle().apply {
+          carId?.let { id -> putInt(CAR_ID, id) }
+        }
       }
-
-      fragment.arguments = args
-      return fragment
     }
   }
 }

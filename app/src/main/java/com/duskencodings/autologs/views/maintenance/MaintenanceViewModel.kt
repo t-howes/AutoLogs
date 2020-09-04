@@ -3,12 +3,12 @@ package com.duskencodings.autologs.views.maintenance
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import io.reactivex.Single
 import com.duskencodings.autologs.base.BaseViewModel
 import com.duskencodings.autologs.extensions.applySchedulers
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.repo.ServiceRepository
+import io.reactivex.Observable
 import javax.inject.Inject
 
 class MaintenanceViewModel @Inject constructor(private val repo: ServiceRepository) : BaseViewModel() {
@@ -24,13 +24,17 @@ class MaintenanceViewModel @Inject constructor(private val repo: ServiceReposito
     carId?.let {
       maintenanceLiveData = repo.getLiveCarWorkList(carId)
       maintenanceObserver = Observer {
-        Single.just(it)
+        Observable.just(it)
             .applySchedulers()
             .doOnSubscribe { listState.value = Resource.loading() }
             .doAfterTerminate { listState.value = Resource.idle() }
-            .flatMap { workList ->
-              Single.just(workList.sortedByDescending { work -> work.date }
-                                  .sortedByDescending { work -> work.odometerReading })
+            .map { workList ->
+              // group by date (sorted) then sort by odometer/miles
+              workList.sortedByDescending { work -> work.date }.groupBy { work -> work.date }.apply {
+//                forEach { date, list ->
+//                  list.sortedByDescending { work -> work.odometerReading }
+//                }
+              }.flatMap { entry -> entry.value }
             }
             .subscribe({ maintenance ->
               listState.value = Resource.success(maintenance)
@@ -60,7 +64,7 @@ class MaintenanceViewModel @Inject constructor(private val repo: ServiceReposito
     } ?: { detailsState.value = Resource.idle() }.invoke()
   }
 
-  fun updateCar(carWork: CarWork) {
+  fun saveWork(carWork: CarWork) {
     addSub(
       repo.saveCarWork(carWork)
         .applySchedulers()

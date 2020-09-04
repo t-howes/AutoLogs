@@ -3,17 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <include layout="@layout/fragment_aggregate_data"
-        android:visibility="gone"
-        tools:visibility="visible"/>
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_medium">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/carWorkList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/aggregateData"/>
+        android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/emptyResults"
@@ -21,8 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_margin="15dp"
+        android:layout_centerInParent="true"
         android:text="@string/no_car_work"
-        android:layout_below="@id/aggregateData"
         android:visibility="gone"
         tools:visibility="visible"/>
 
@@ -33,7 +29,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:elevation="3dp"
-        android:layout_margin="15dp"
+        android:layout_margin="5dp"
         android:src="@drawable/ic_add_white"/>
 
 </RelativeLayout>

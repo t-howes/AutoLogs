@@ -37,5 +37,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Maintenance" />
+
+        <TextView
+            android:id="@+id/notes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="2"
+            android:ellipsize="end"
+            tools:text="Notes" />
     </LinearLayout>
 </LinearLayout>

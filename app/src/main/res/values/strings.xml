@@ -10,6 +10,7 @@
     <string name="make">Make</string>
     <string name="model">Model</string>
     <string name="miles">Miles</string>
+    <string name="cost">Cost</string>
     <string name="notes">Notes</string>
     <string name="done">Done</string>
     <string name="add">Add</string>
@@ -36,6 +37,7 @@
     <string name="date">Date</string>
     <string name="odometer_reading">Odometer reading</string>
     <string name="add_placeholder">Add %s</string>
+    <string name="aftermarket_modifications">Aftermarket/modifications?</string>
 
     <!-- Errors -->
     <string name="error_occurred">An error has occurred. Try again later.</string>
