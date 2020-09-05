@@ -4,10 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import io.reactivex.Observable
-import io.reactivex.Single
 import com.duskencodings.autologs.base.BaseViewModel
-import com.duskencodings.autologs.extensions.applySchedulers
-import com.duskencodings.autologs.log.Logger
+import com.duskencodings.autologs.utils.applySchedulers
+import com.duskencodings.autologs.utils.log.Logger
 import com.duskencodings.autologs.models.Car
 import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.repo.CarRepository

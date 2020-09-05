@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import io.reactivex.Single
 import com.duskencodings.autologs.base.BaseViewModel
-import com.duskencodings.autologs.extensions.applySchedulers
+import com.duskencodings.autologs.utils.applySchedulers
 import com.duskencodings.autologs.models.*
 import com.duskencodings.autologs.repo.CarRepository
 import com.duskencodings.autologs.repo.RemindersRepository
@@ -36,7 +36,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
                 observeCarWork(it.id!!)
               }
               .doAfterSuccess { state.onNext(State.loadingReminders()) }
-              .flatMap { remindersRepo.getUpcomingReminders(carId).onErrorReturn { listOf() } }
+              .flatMap { remindersRepo.getReminders(carId).onErrorReturn { listOf() } }
               .doAfterSuccess { state.onNext(State.successReminders(it)) }
               .subscribe({
                 // posted all success or default states

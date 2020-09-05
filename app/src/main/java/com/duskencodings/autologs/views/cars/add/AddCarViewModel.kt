@@ -3,7 +3,7 @@ package com.duskencodings.autologs.views.cars.add
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.duskencodings.autologs.base.BaseViewModel
-import com.duskencodings.autologs.extensions.applySchedulers
+import com.duskencodings.autologs.utils.applySchedulers
 import com.duskencodings.autologs.models.Car
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.models.SpendingBreakdown

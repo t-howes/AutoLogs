@@ -11,7 +11,7 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_car_preferences.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
-import com.duskencodings.autologs.extensions.showToast
+import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.models.*
 import com.duskencodings.autologs.notifications.ReminderService
 

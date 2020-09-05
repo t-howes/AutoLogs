@@ -15,7 +15,7 @@ data class Preference(@PrimaryKey(autoGenerate = true)
                       val carId: Int,
                       var name: String,
                       var miles: Int,
-                      var months: String) {
+                      var months: Int) {
 
   companion object {
     const val TABLE = "preferences"

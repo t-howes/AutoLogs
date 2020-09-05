@@ -10,7 +10,6 @@ import io.reactivex.functions.Function3
 import kotlinx.android.synthetic.main.activity_add_car.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
-import com.duskencodings.autologs.extensions.showToast
 import com.duskencodings.autologs.models.*
 import com.duskencodings.autologs.validation.FormValidator
 

@@ -12,7 +12,7 @@ import com.duskencodings.autologs.R
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import com.duskencodings.autologs.dagger.injector.Injector
-import com.duskencodings.autologs.extensions.showToast
+import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.models.SubscriptionHandler
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package com.duskencodings.autologs.extensions
+package com.duskencodings.autologs.utils
 
 fun <T> MutableList<T>.clearAndAdd(items: Collection<T>) {
   clear()

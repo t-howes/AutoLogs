@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_row_car.view.*
 import androidx.appcompat.widget.PopupMenu
 import com.duskencodings.autologs.R
-import com.duskencodings.autologs.extensions.clearAndAdd
+import com.duskencodings.autologs.utils.clearAndAdd
 import com.duskencodings.autologs.models.Car
 
 

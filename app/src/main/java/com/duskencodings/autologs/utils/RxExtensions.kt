@@ -1,4 +1,4 @@
-package com.duskencodings.autologs.extensions
+package com.duskencodings.autologs.utils
 
 import io.reactivex.Completable
 import io.reactivex.Observable

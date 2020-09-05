@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_row_car_work.view.*
 import com.duskencodings.autologs.R
-import com.duskencodings.autologs.extensions.asDate
+import com.duskencodings.autologs.utils.asDate
 import com.duskencodings.autologs.models.CarWork
 
 class MaintenanceAdapter(context: Context, var data: List<CarWork>)

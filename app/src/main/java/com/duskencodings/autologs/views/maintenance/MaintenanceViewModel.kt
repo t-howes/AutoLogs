@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.duskencodings.autologs.base.BaseViewModel
-import com.duskencodings.autologs.extensions.applySchedulers
+import com.duskencodings.autologs.utils.applySchedulers
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.repo.RemindersRepository

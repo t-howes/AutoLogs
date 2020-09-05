@@ -9,7 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_car_list.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
-import com.duskencodings.autologs.extensions.showToast
+import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.models.Car
 import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.views.cars.add.AddCarActivity

@@ -3,34 +3,48 @@ package com.duskencodings.autologs.repo
 import android.content.Context
 import com.duskencodings.autologs.base.BaseRepository
 import com.duskencodings.autologs.database.RemindersDb
-import com.duskencodings.autologs.extensions.applySchedulers
+import com.duskencodings.autologs.utils.applySchedulers
 import com.duskencodings.autologs.models.CarWork
+import com.duskencodings.autologs.models.Preference
 import com.duskencodings.autologs.models.Reminder
-import io.reactivex.Scheduler
+import com.duskencodings.autologs.models.ReminderType
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
-class RemindersRepository(context: Context, private val db: RemindersDb, private val preferencesRepo: PreferencesRepository) : BaseRepository(context) {
+class RemindersRepository(
+    context: Context,
+    private val remindersDb: RemindersDb,
+    private val preferencesRepo: PreferencesRepository
+) : BaseRepository(context) {
 
-  fun getUpcomingReminders(carId: Int): Single<List<Reminder>> {
-    //TODO
-    return Single.just(listOf())
-  }
+  fun getReminders(carId: Int): Single<List<Reminder>> = remindersDb.getReminders(carId)
+  private fun getReminder(carId: Int, jobName: String): Single<Reminder> = remindersDb.getReminderForCarByJobName(carId, jobName)
 
-  fun addReminder(carWork: CarWork) {
-    preferencesRepo.getPreferenceByCarAndName(carWork.id!!, carWork.name)
+  fun addReminder(carWork: CarWork): Single<Pair<Preference, Reminder>> {
+    return preferencesRepo.getPreferenceByCarAndName(carWork.carId, carWork.name)
         .applySchedulers(observeOn = Schedulers.io())
-        .doOnSuccess {
+        .map { pref ->
+          val reminder = getReminder(carWork.carId, carWork.name)
+              // if we don't have a saved reminder or fail to fetch, create a new one
+              .onErrorReturn { newReminder(carWork, pref) }
+              // save updated reminder
+              .doOnSuccess { remindersDb.insertOrUpdate(it) }
 
+          Pair(pref, reminder)
         }
-        .doOnError {
-
-        }
-        .subscribe({
-          // saved a new pref or updated existing
-        }, {
-          // sad day
-        }).also { addDisposable(it) }
   }
 
+  private fun newReminder(carWork: CarWork, pref: Preference): Reminder {
+    return Reminder(
+        id = null,
+        carId = carWork.carId,
+        name = carWork.name,
+        description = "Empty for now",
+        type = ReminderType.UPCOMING_MAINTENANCE,
+        currentMiles = carWork.odometerReading,
+        currentDate = carWork.date,
+        expireMiles = carWork.odometerReading + pref.miles,
+        expireDate = carWork.date.plusMonths(pref.months.toLong())
+    )
+  }
 }

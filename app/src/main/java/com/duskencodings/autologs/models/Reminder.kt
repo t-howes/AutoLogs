@@ -2,6 +2,7 @@ package com.duskencodings.autologs.models
 
 import androidx.room.*
 import com.duskencodings.autologs.database.RemindersDb
+import java.time.LocalDate
 
 @Entity(tableName = RemindersDb.TABLE_NAME,
         foreignKeys = [(ForeignKey(entity = Car::class,
@@ -16,9 +17,9 @@ data class Reminder(@PrimaryKey(autoGenerate = true)
                     val description: String,
                     val type: ReminderType = ReminderType.BASIC,
                     val currentMiles: Int,
-                    val currentDate: String,
+                    val currentDate: LocalDate,
                     val expireMiles: Int,
-                    val expireDate: String)
+                    val expireDate: LocalDate)
 
 enum class ReminderType {
   BASIC,

@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseFragment
-import com.duskencodings.autologs.extensions.formatMoney
-import com.duskencodings.autologs.extensions.showToast
+import com.duskencodings.autologs.utils.formatMoney
+import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.models.*
 import com.duskencodings.autologs.views.maintenance.upcoming.ReminderAdapter
 import kotlinx.android.synthetic.main.fragment_car_details.*

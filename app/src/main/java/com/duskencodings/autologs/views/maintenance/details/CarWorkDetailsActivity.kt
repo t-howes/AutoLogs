@@ -12,13 +12,15 @@ import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_maintenance_details.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
-import com.duskencodings.autologs.extensions.formatMoney
-import com.duskencodings.autologs.extensions.showToast
-import com.duskencodings.autologs.extensions.simple
+import com.duskencodings.autologs.utils.formatMoney
+import com.duskencodings.autologs.utils.showToast
+import com.duskencodings.autologs.utils.simple
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
+import com.duskencodings.autologs.utils.toDateOrNull
 import com.duskencodings.autologs.validation.FormValidator
 import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
+import java.time.LocalDate
 import java.util.*
 
 
@@ -189,7 +191,7 @@ class CarWorkDetailsActivity : BaseActivity() {
       nameInput.setText(carWork.name)
     }
 
-    dateInput.setText(carWork.date)
+    dateInput.setText(carWork.date.toString())
     costInput.setText(carWork.cost.formatMoney())
     milesInput.setText(carWork.odometerReading.toString())
     notesInput.setText(carWork.notes)
@@ -215,7 +217,7 @@ class CarWorkDetailsActivity : BaseActivity() {
       } else {
         selectedName
       }
-      val date = dateInput.text.toString()
+      val date = dateInput.text.toString().toDateOrNull() ?: LocalDate.now()
       val miles = milesInput.text.toString().toInt()
       val cost = costInput.text.toString().toDoubleOrNull()
       val notes = notesInput.text.toString()

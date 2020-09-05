@@ -1,4 +1,4 @@
-package com.duskencodings.autologs.log
+package com.duskencodings.autologs.utils.log
 
 import android.util.Log
 import com.crashlytics.android.Crashlytics
