@@ -74,7 +74,11 @@ class MaintenanceViewModel @Inject constructor(private val serviceRepo: ServiceR
         .doOnSubscribe { submitState.value = Resource.loading() }
         .doAfterTerminate { submitState.value = Resource.idle() }
         .doOnSubscribe {
-          remindersRepo.addReminder(carWork)
+          remindersRepo.addReminder(carWork).subscribe({
+            // NO-OP
+          }, {
+            submitState.value = Resource.error(it)
+          })
         }
         .subscribe({
           submitState.value = Resource.success(carWork)

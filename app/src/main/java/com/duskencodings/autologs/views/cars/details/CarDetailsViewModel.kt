@@ -22,9 +22,13 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
   private lateinit var carObserver: Observer<Car>
   private lateinit var maintenanceLiveData: LiveData<List<CarWork>>
   private lateinit var maintenanceObserver: Observer<List<CarWork>>
+  private lateinit var remindersLiveData: LiveData<List<Reminder>>
+  private lateinit var remindersObserver: Observer<List<Reminder>>
 
   fun loadScreen(carId: Int?) {
     carId?.let { id ->
+      observeReminders(id)
+
       carLiveData = carRepo.getLiveCar(id)
       carObserver = Observer { car ->
         car?.let {
@@ -32,14 +36,11 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
               .applySchedulers()
               .doOnSubscribe { state.onNext(State.loadingDetails()) }
               .doAfterSuccess {
-                state.onNext(State.successCar(car))
+                // if we fail to fetch car work, then the lateinit live data and observer will crash.
                 observeCarWork(it.id!!)
               }
-              .doAfterSuccess { state.onNext(State.loadingReminders()) }
-              .flatMap { remindersRepo.getReminders(carId).onErrorReturn { listOf() } }
-              .doAfterSuccess { state.onNext(State.successReminders(it)) }
               .subscribe({
-                // posted all success or default states
+                state.onNext(State.successCar(car))
               }, { error ->
                 state.onNext(State.error(error))
               })
@@ -60,7 +61,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
     maintenanceObserver = Observer {
       Observable.just(it)
           .applySchedulers()
-          .doOnSubscribe { state.onNext(State.loadingDetails()) }
+          .doOnNext { state.onNext(State.loadingDetails()) }
           .map { work ->
             val maintenanceJobs = work.filter { job -> job.type == CarWork.Type.MAINTENANCE }
             val maintenanceCost = maintenanceJobs.sumByDouble { job -> job.cost ?: 0.0 }
@@ -75,6 +76,19 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
     }
 
     maintenanceLiveData.observeForever(maintenanceObserver)
+  }
+
+  private fun observeReminders(carId: Int) {
+    remindersLiveData = remindersRepo.getLiveReminders(carId)
+    remindersObserver = Observer {
+      Observable.just(it)
+        .doOnNext { state.onNext(State.loadingReminders()) }
+        .subscribe({ reminders ->
+          state.onNext(State.successReminders(reminders.sortedByDescending { reminder -> reminder.expireDate }))
+        }, { error ->
+          state.onNext(State.error(error))
+        }).also { addSub(it) }
+    }
   }
 
   enum class Status {

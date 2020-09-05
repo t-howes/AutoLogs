@@ -1,6 +1,7 @@
 package com.duskencodings.autologs.repo
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import com.duskencodings.autologs.base.BaseRepository
 import com.duskencodings.autologs.database.RemindersDb
 import com.duskencodings.autologs.utils.applySchedulers
@@ -18,19 +19,18 @@ class RemindersRepository(
 ) : BaseRepository(context) {
 
   fun getReminders(carId: Int): Single<List<Reminder>> = remindersDb.getReminders(carId)
+  fun getLiveReminders(carId: Int): LiveData<List<Reminder>> = remindersDb.getLiveReminders(carId)
   private fun getReminder(carId: Int, jobName: String): Single<Reminder> = remindersDb.getReminderForCarByJobName(carId, jobName)
 
-  fun addReminder(carWork: CarWork): Single<Pair<Preference, Reminder>> {
+  fun addReminder(carWork: CarWork): Single<Reminder> {
     return preferencesRepo.getPreferenceByCarAndName(carWork.carId, carWork.name)
         .applySchedulers(observeOn = Schedulers.io())
-        .map { pref ->
-          val reminder = getReminder(carWork.carId, carWork.name)
-              // if we don't have a saved reminder or fail to fetch, create a new one
-              .onErrorReturn { newReminder(carWork, pref) }
-              // save updated reminder
-              .doOnSuccess { remindersDb.insertOrUpdate(it) }
-
-          Pair(pref, reminder)
+        .flatMap { pref ->
+          getReminder(carWork.carId, carWork.name)
+            // if we don't have a saved reminder or fail to fetch, create a new one
+            .onErrorReturn { newReminder(carWork, pref) }
+            // save updated reminder
+            .doOnSuccess { remindersDb.insertOrUpdate(it) }
         }
   }
 
