@@ -2,6 +2,7 @@ package com.duskencodings.autologs.models
 
 import androidx.room.*
 import com.duskencodings.autologs.database.RemindersDb
+import com.duskencodings.autologs.utils.toDateOrNull
 import java.time.LocalDate
 
 @Entity(tableName = RemindersDb.TABLE_NAME,
@@ -32,11 +33,10 @@ enum class ReminderType {
   }
 }
 
-
 class ReminderTypeConverter {
   @TypeConverter
-  fun toString(type: ReminderType): String = type.name
+  fun typeToString(type: ReminderType): String = type.name
 
   @TypeConverter
-  fun fromString(name: String): ReminderType? = ReminderType.fromName(name)
+  fun typeFromString(name: String): ReminderType? = ReminderType.fromName(name)
 }

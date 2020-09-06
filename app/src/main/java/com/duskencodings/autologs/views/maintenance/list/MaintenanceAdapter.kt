@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.item_row_car_work.view.*
 import com.duskencodings.autologs.R
-import com.duskencodings.autologs.utils.asDate
 import com.duskencodings.autologs.models.CarWork
+import com.duskencodings.autologs.utils.formatted
 
 class MaintenanceAdapter(context: Context, var data: List<CarWork>)
       : RecyclerView.Adapter<MaintenanceAdapter.CarWorkViewHolder>() {
@@ -36,10 +36,10 @@ class MaintenanceAdapter(context: Context, var data: List<CarWork>)
     fun bind(carWork: CarWork?) {
       carWork?.let { work ->
         val position = indexOf(work)
-        val showDate = position == 0 || work.date.asDate() != getItem(position - 1).date.asDate()
+        val showDate = position == 0 || work.date != getItem(position - 1).date
 
         itemView.dateContainer.visibility = if (showDate) View.VISIBLE else View.GONE
-        itemView.date.text = work.date
+        itemView.date.text = work.date.formatted()
         itemView.name.text = work.name
         itemView.notes.text = work.notes
         itemView.container.setOnClickListener {

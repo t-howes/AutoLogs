@@ -30,5 +30,4 @@ class CarRepository(context: Context,
       carDb.deleteCar(car)
     }.subscribeOn(Schedulers.io())
   }
-
 }

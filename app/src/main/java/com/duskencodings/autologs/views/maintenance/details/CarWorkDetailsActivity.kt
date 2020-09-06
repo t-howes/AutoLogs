@@ -12,15 +12,13 @@ import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_maintenance_details.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
-import com.duskencodings.autologs.utils.formatMoney
-import com.duskencodings.autologs.utils.showToast
-import com.duskencodings.autologs.utils.simple
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
-import com.duskencodings.autologs.utils.toDateOrNull
+import com.duskencodings.autologs.utils.*
 import com.duskencodings.autologs.validation.FormValidator
 import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 
@@ -69,7 +67,7 @@ class CarWorkDetailsActivity : BaseActivity() {
     if (maintenanceViewModel.maintenanceId == null) {
       val text = getString(R.string.service)
       setTitle(getString(R.string.add_placeholder, text))
-      dateInput.setText(Calendar.getInstance().simple())
+      dateInput.setText(nowFormatted())
     } else {
       submit.text = getString(R.string.save)
     }
@@ -121,7 +119,7 @@ class CarWorkDetailsActivity : BaseActivity() {
   }
 
   private fun updateDateInput() {
-    dateInput.setText(calendar.simple())
+    dateInput.setText(LocalDateTime.ofInstant(calendar.toInstant(), calendar.timeZone.toZoneId()).toLocalDate().formatted())
   }
 
   private fun setupLiveValidations() {
@@ -147,7 +145,9 @@ class CarWorkDetailsActivity : BaseActivity() {
     DatePickerDialog(this, dateSetListener,
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)).show()
+        calendar.get(Calendar.DAY_OF_MONTH)).apply {
+          datePicker.maxDate = Calendar.getInstance().also { cal -> cal.add(Calendar.DAY_OF_MONTH, 1) }.timeInMillis
+        }.show()
   }
 
   private fun updateDetailsState(state: Resource<CarWork>) {
@@ -191,7 +191,7 @@ class CarWorkDetailsActivity : BaseActivity() {
       nameInput.setText(carWork.name)
     }
 
-    dateInput.setText(carWork.date.toString())
+    dateInput.setText(carWork.date.formatted())
     costInput.setText(carWork.cost.formatMoney())
     milesInput.setText(carWork.odometerReading.toString())
     notesInput.setText(carWork.notes)

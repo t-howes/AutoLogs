@@ -12,7 +12,10 @@ import com.duskencodings.autologs.repo.ServiceRepository
 import io.reactivex.Observable
 import javax.inject.Inject
 
-class MaintenanceViewModel @Inject constructor(private val serviceRepo: ServiceRepository, private val remindersRepo: RemindersRepository) : BaseViewModel() {
+class MaintenanceViewModel @Inject constructor(
+    private val serviceRepo: ServiceRepository,
+    private val remindersRepo: RemindersRepository
+) : BaseViewModel() {
 
   val detailsState: MutableLiveData<Resource<CarWork>> = MutableLiveData()
   val listState: MutableLiveData<Resource<List<CarWork>>> = MutableLiveData()
@@ -73,12 +76,12 @@ class MaintenanceViewModel @Inject constructor(private val serviceRepo: ServiceR
         .applySchedulers()
         .doOnSubscribe { submitState.value = Resource.loading() }
         .doAfterTerminate { submitState.value = Resource.idle() }
-        .doOnSubscribe {
+        .doOnComplete {
           remindersRepo.addReminder(carWork).subscribe({
             // NO-OP
           }, {
             submitState.value = Resource.error(it)
-          })
+          }).also { addSub(it) }
         }
         .subscribe({
           submitState.value = Resource.success(carWork)
@@ -86,6 +89,5 @@ class MaintenanceViewModel @Inject constructor(private val serviceRepo: ServiceR
           submitState.value = Resource.error(it)
         })
     )
-
   }
 }

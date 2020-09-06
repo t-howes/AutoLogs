@@ -6,6 +6,7 @@ import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import com.duskencodings.autologs.utils.now
+import com.duskencodings.autologs.utils.toDateOrNull
 import java.time.LocalDate
 import java.util.*
 
@@ -17,7 +18,7 @@ data class Car(@PrimaryKey(autoGenerate = true)
                var model: String,
                var nickname: String? = null,
                var notes: String? = null,
-               var lastUpdate: String? = Calendar.getInstance().now()) {
+               var lastUpdate: LocalDate = LocalDate.now()) {
 
   val name: String
     get() = if (nickname.isNullOrBlank()) yearMakeModel() else nickname!!
@@ -26,12 +27,6 @@ data class Car(@PrimaryKey(autoGenerate = true)
     const val TABLE_NAME = "cars"
   }
 }
-
-//fun Car.totalCost(): Double {
-//  val maintenanceCost = maintenance.sumByDouble { it.cost ?: 0.0 }
-//  val modificationCost = modifications.sumByDouble { it.cost ?: 0.0 }
-//  return maintenanceCost + modificationCost
-//}
 
 fun Car.yearMakeModel() = "$year $make $model"
 
@@ -73,4 +68,12 @@ class CarWorkTypeConverter {
 
   @TypeConverter
   fun fromString(name: String): CarWork.Type? = CarWork.Type.from(name)
+}
+
+class DateConverter {
+  @TypeConverter
+  fun dateToString(date: LocalDate): String = date.toString()
+
+  @TypeConverter
+  fun dateFromString(date: String): LocalDate? = date.toDateOrNull()
 }
