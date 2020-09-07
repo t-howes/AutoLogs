@@ -9,6 +9,7 @@ import com.duskencodings.autologs.models.*
 import com.duskencodings.autologs.repo.CarRepository
 import com.duskencodings.autologs.repo.RemindersRepository
 import com.duskencodings.autologs.repo.ServiceRepository
+import com.duskencodings.autologs.views.maintenance.upcoming.ReminderAdapter
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
@@ -19,6 +20,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
 
   var carId: Long? = null // will have a valid ID passed in args
   var state: PublishSubject<State> = PublishSubject.create()
+  lateinit var reminderAdapter: ReminderAdapter
   private lateinit var carLiveData: LiveData<Car>
   private lateinit var carObserver: Observer<Car>
   private lateinit var maintenanceLiveData: LiveData<List<CarWork>>
@@ -90,6 +92,8 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
           state.onNext(State.error(error))
         }).also { addSub(it) }
     }
+
+    remindersLiveData.observeForever(remindersObserver)
   }
 
   enum class Status {

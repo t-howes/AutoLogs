@@ -9,6 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.models.ReminderType
+import com.duskencodings.autologs.utils.clearAndAdd
+import com.duskencodings.autologs.utils.formatted
+import com.duskencodings.autologs.utils.setTextOrHide
+import kotlinx.android.synthetic.main.maintenance_reminder.view.*
 
 
 class ReminderAdapter(context: Context,
@@ -33,15 +37,23 @@ class ReminderAdapter(context: Context,
 
   override fun getItemCount(): Int = data.size
 
+  fun setReminders(reminders: List<Reminder>) {
+    data.clearAndAdd(reminders)
+    notifyDataSetChanged()
+  }
+
   open inner class ReminderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     @CallSuper
-    open fun bind(maintenance: Reminder) {
+    open fun bind(reminder: Reminder) {
       itemView.apply {
-        // TODO: bind view
+        name.text = reminder.name
+        due_on_miles.text = "${reminder.expireAtMiles} miles"
+        description.setTextOrHide(reminder.description)
+        due_on_date.setTextOrHide(reminder.expireAtDate?.formatted())
 
         setOnClickListener {
-          onClick.invoke(maintenance)
+          onClick.invoke(reminder)
         }
       }
     }

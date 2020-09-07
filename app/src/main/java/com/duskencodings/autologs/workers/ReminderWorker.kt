@@ -16,6 +16,7 @@ import com.duskencodings.autologs.utils.now
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class ReminderWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
@@ -33,6 +34,10 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
 
   init {
     Injector.component.inject(this)
+  }
+
+  companion object {
+    const val RUNTIME_INTERVAL = 8L
   }
 
   override fun onStopped() {
@@ -59,7 +64,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
 
   private fun findReminders(): Single<List<Reminder>> {
     return remindersRepo.getAllReminders()
-        .applySchedulers()
+        .applySchedulers(observeOn = Schedulers.io())
         .map { reminders ->
           reminders.filter { it.expireAtDate?.isBefore(now()) == false } // TODO: check miles
         }

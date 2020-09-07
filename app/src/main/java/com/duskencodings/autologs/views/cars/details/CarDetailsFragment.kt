@@ -38,11 +38,12 @@ class CarDetailsFragment : BaseFragment() {
   }
 
   private fun initUi() {
-    upcoming_maintenance.apply {
-      layoutManager = LinearLayoutManager(context)
-      adapter = ReminderAdapter(context) {
-        context.showToast("TODO: maintenance clicked")
+    upcoming_reminders.apply {
+      carDetailsViewModel.reminderAdapter = ReminderAdapter(context) {
+        context.showToast("TODO: Reminder clicked")
       }
+      layoutManager = LinearLayoutManager(context)
+      adapter = carDetailsViewModel.reminderAdapter
     }
   }
 
@@ -73,7 +74,7 @@ class CarDetailsFragment : BaseFragment() {
   }
 
   private fun onRemindersReceived(reminders: List<Reminder>) {
-    // TODO: show reminders
+    carDetailsViewModel.reminderAdapter.setReminders(reminders)
   }
 
   companion object {

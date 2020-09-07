@@ -33,7 +33,7 @@ class AutoServiceApplication : Application() {
   }
 
   private fun startReminders() {
-    val work = PeriodicWorkRequest.Builder(ReminderWorker::class.java, 24L, TimeUnit.HOURS).build()
+    val work = PeriodicWorkRequest.Builder(ReminderWorker::class.java, ReminderWorker.RUNTIME_INTERVAL, TimeUnit.HOURS).build()
     WorkManager.getInstance(this).enqueueUniquePeriodicWork("carServiceReminders", ExistingPeriodicWorkPolicy.KEEP, work)
   }
 }
