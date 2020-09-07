@@ -35,12 +35,11 @@ class MaintenanceViewModel @Inject constructor(
             .doOnSubscribe { listState.value = Resource.loading() }
             .doAfterTerminate { listState.value = Resource.idle() }
             .map { workList ->
-              // group by date (sorted) then sort by odometer/miles
-              workList.sortedByDescending { work -> work.date }.groupBy { work -> work.date }.apply {
-//                forEach { date, list ->
-//                  list.sortedByDescending { work -> work.odometerReading }
-//                }
-              }.flatMap { entry -> entry.value }
+              // sort by mileage, group by date
+              workList
+                  .sortedByDescending { work -> work.odometerReading }
+                  .groupBy { work -> work.date }
+                  .flatMap { entry -> entry.value }
             }
             .subscribe({ maintenance ->
               listState.value = Resource.success(maintenance)

@@ -4,11 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import com.duskencodings.autologs.utils.now
-import com.duskencodings.autologs.utils.toDateOrNull
 import java.time.LocalDate
-import java.util.*
 
 @Entity(tableName = Car.TABLE_NAME)
 data class Car(@PrimaryKey(autoGenerate = true)
@@ -60,20 +56,4 @@ data class CarWork(@PrimaryKey(autoGenerate = true)
   companion object {
     const val TABLE = "car_work"
   }
-}
-
-class CarWorkTypeConverter {
-  @TypeConverter
-  fun toString(type: CarWork.Type): String = type.name
-
-  @TypeConverter
-  fun fromString(name: String): CarWork.Type? = CarWork.Type.from(name)
-}
-
-class DateConverter {
-  @TypeConverter
-  fun dateToString(date: LocalDate): String = date.toString()
-
-  @TypeConverter
-  fun dateFromString(date: String): LocalDate? = date.toDateOrNull()
 }

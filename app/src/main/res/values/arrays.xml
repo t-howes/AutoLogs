@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="maintenance_names">
-        <item>Oil</item>
-        <item>Air Filter</item>
-        <item>Spark Plugs/Wire</item>
-        <item>Tires</item>
-        <item>Fuel Injector Cleaning</item>
-        <item>Other</item>
-    </string-array>
-
     <string-array name="oil_preferences">
         <item>1000 Miles / 1 Month</item>
         <item>2000 Miles / 2 Months</item>
@@ -18,9 +9,16 @@
     </string-array>
 
     <string-array name="air_filter_preferences">
-        <item>2000 Miles / 2 Months</item>
-        <item>4000 Miles / 4 Months</item>
-        <item>6000 Miles / 6 Months</item>
+        <item>3000 Miles / 3 Months</item>
+        <item>5000 Miles / 5 Months</item>
+        <item>8000 Miles / 8 Months</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="spark_plug_preferences">
+        <item>40000 Miles</item>
+        <item>55000 Miles</item>
+        <item>70000 Miles</item>
         <item>Other</item>
     </string-array>
 </resources>

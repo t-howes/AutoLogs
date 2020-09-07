@@ -7,6 +7,7 @@ import io.reactivex.Single
 
 @Dao
 interface RemindersDb {
+
   @Query("SELECT * FROM $TABLE_NAME WHERE carId = :carId")
   fun getReminders(carId: Int): Single<List<Reminder>>
 
@@ -39,6 +40,13 @@ interface RemindersDb {
 
   @Delete
   fun deleteReminder(reminder: Reminder)
+
+  @Query("""
+    SELECT *, MAX(expireAtMiles) FROM $TABLE_NAME
+    WHERE carId = :carId
+    GROUP BY name
+  """)
+  fun getUpcomingReminders(carId: Int): Single<List<Reminder>>
 
   companion object {
     const val TABLE_NAME = "reminders"

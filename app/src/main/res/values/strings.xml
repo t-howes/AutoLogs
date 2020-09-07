@@ -48,4 +48,14 @@
     <string name="oil">Oil</string>
     <string name="months">Months</string>
     <string name="air_filter">Air Filter</string>
+
+    <!-- Maintenance Categories  -->
+    <string name="maintenance_category.brakes_and_wheel">Brakes and Wheel</string>
+    <string name="maintenance_category.cooling">Cooling</string>
+    <string name="maintenance_category.drivetrain">Drivetrain</string>
+    <string name="maintenance_category.engine">Engine</string>
+    <string name="maintenance_category.fuel_and_air">Fuel and Air</string>
+    <string name="maintenance_category.ignition">Ignition</string>
+    <string name="maintenance_category.suspension_and_steering">Suspension and Steering</string>
+    <string name="maintenance_category.transmission">Transmission</string>
 </resources>

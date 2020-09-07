@@ -7,6 +7,7 @@ import io.reactivex.schedulers.Schedulers
 import com.duskencodings.autologs.base.BaseRepository
 import com.duskencodings.autologs.database.CarDb
 import com.duskencodings.autologs.models.Car
+import io.reactivex.Single
 
 class CarRepository(context: Context,
                     private val carDb: CarDb): BaseRepository(context) {
@@ -15,7 +16,11 @@ class CarRepository(context: Context,
     return carDb.getLiveCar(carId)
   }
 
-  fun getCars(): LiveData<List<Car>> {
+  fun getLiveCars(): LiveData<List<Car>> {
+    return carDb.getLiveCars()
+  }
+
+  fun getCars(): Single<List<Car>> {
     return carDb.getCars()
   }
 

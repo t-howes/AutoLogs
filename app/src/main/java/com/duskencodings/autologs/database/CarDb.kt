@@ -14,7 +14,10 @@ import com.duskencodings.autologs.models.Car
 @Dao
 interface CarDb {
   @Query("SELECT * FROM ${Car.TABLE_NAME}")
-  fun getCars(): LiveData<List<Car>>
+  fun getLiveCars(): LiveData<List<Car>>
+
+  @Query("SELECT * FROM ${Car.TABLE_NAME}")
+  fun getCars(): Single<List<Car>>
 
   @Query("SELECT * FROM ${Car.TABLE_NAME} WHERE id = :id")
   fun getLiveCar(id: Int?): LiveData<Car>

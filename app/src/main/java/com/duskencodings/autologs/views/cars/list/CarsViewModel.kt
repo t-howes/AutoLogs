@@ -23,7 +23,7 @@ class CarsViewModel @Inject constructor(private val repo: CarRepository) : BaseV
   lateinit var adapter: CarAdapter
 
   fun getCars() {
-    carsLiveData = repo.getCars()
+    carsLiveData = repo.getLiveCars()
     carsObserver = Observer {
       addSub(
         Observable.just(it)

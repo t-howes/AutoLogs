@@ -2,8 +2,9 @@ package com.duskencodings.autologs.models
 
 import androidx.room.*
 import com.duskencodings.autologs.database.RemindersDb
-import com.duskencodings.autologs.utils.toDateOrNull
+import com.duskencodings.autologs.utils.formatted
 import java.time.LocalDate
+import java.util.*
 
 @Entity(tableName = RemindersDb.TABLE_NAME,
         foreignKeys = [(ForeignKey(entity = Car::class,
@@ -19,8 +20,19 @@ data class Reminder(@PrimaryKey(autoGenerate = true)
                     val type: ReminderType = ReminderType.BASIC,
                     val currentMiles: Int,
                     val currentDate: LocalDate,
-                    val expireMiles: Int,
-                    val expireDate: LocalDate)
+                    val expireAtMiles: Int,
+                    val expireAtDate: LocalDate?) {
+
+  fun pushNotificationText(): String {
+    var message = "Don't forget to service your ${name.toLowerCase(Locale.getDefault())} at $expireAtMiles miles"
+
+    expireAtDate?.formatted()?.let { date ->
+      message += " or by $date"
+    }
+
+    return "$message."
+  }
+}
 
 enum class ReminderType {
   BASIC,

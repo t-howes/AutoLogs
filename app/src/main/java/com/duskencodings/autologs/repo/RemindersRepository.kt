@@ -9,8 +9,11 @@ import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Preference
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.models.ReminderType
+import com.duskencodings.autologs.notifications.NotificationService
+import com.duskencodings.autologs.utils.now
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 
 class RemindersRepository(
     context: Context,
@@ -27,10 +30,24 @@ class RemindersRepository(
         .applySchedulers(observeOn = Schedulers.io())
         .flatMap { pref ->
           getReminder(carWork.carId, carWork.name)
-            // if we don't have a saved reminder or fail to fetch, create a new one
-            .onErrorReturn { newReminder(carWork, pref) }
-            // save updated reminder
-            .doOnSuccess { remindersDb.insertOrUpdate(it) }
+            .doOnSuccess { existingReminder ->
+              // update the existing Reminder with new expiration fields
+              remindersDb.insertOrUpdate(existingReminder.copy(
+                  expireAtMiles = existingReminder.expireAtMiles + pref.miles,
+                  expireAtDate = pref.months?.toLong()?.let { monthsAway ->
+                    (existingReminder.expireAtDate ?: now()).plusMonths(monthsAway)
+                  }
+              ))
+            }
+            .onErrorReturn { newReminder(carWork, pref).also { remindersDb.insertOrUpdate(it) } }
+            .doOnSuccess { reminder ->
+              pref.months?.let {  monthsAway ->
+                val delivery = Calendar.getInstance().apply { add(Calendar.MONTH, monthsAway) }
+                NotificationService.scheduleNotification(context, reminder, delivery)
+              } ?: run {
+                // if there's no time frame for the pref, derive one based on miles?
+              }
+            }
         }
   }
 
@@ -39,12 +56,14 @@ class RemindersRepository(
         id = null,
         carId = carWork.carId,
         name = carWork.name,
-        description = "Empty for now",
+        description = carWork.notes ?: "",
         type = ReminderType.UPCOMING_MAINTENANCE,
         currentMiles = carWork.odometerReading,
         currentDate = carWork.date,
-        expireMiles = carWork.odometerReading + pref.miles,
-        expireDate = carWork.date.plusMonths(pref.months.toLong())
+        expireAtMiles = carWork.odometerReading + pref.miles,
+        expireAtDate = pref.months?.toLong()?.let { carWork.date.plusMonths(it) }
     )
   }
+
+  fun getUpcomingReminders(carId: Int): Single<List<Reminder>> = remindersDb.getUpcomingReminders(carId)
 }

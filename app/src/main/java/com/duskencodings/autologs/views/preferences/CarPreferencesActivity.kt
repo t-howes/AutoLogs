@@ -13,7 +13,7 @@ import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
 import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.models.*
-import com.duskencodings.autologs.notifications.ReminderService
+import com.duskencodings.autologs.notifications.NotificationService
 
 class CarPreferencesActivity : BaseActivity() {
 
@@ -24,7 +24,7 @@ class CarPreferencesActivity : BaseActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_car_preferences)
     setDisplayHomeAsUpEnabled()
-    ReminderService.scheduleNotification(this, ReminderService.getNotification(this, "tah-dah"), 10)
+
     val id = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
 
     if (CAR_ID_DEFAULT != id) {

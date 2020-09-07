@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_maintenance_details.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
+import com.duskencodings.autologs.models.maintenanceJobs
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.utils.*
@@ -77,7 +78,7 @@ class CarWorkDetailsActivity : BaseActivity() {
   }
 
   private fun setupNameSpinner() {
-    val adapter = ArrayAdapter.createFromResource(this, R.array.maintenance_names, android.R.layout.simple_spinner_item)
+    val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, maintenanceJobs.map { it.name })
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     nameSpinner.adapter = adapter
     nameSpinner.onItemSelectedListener = object : OnItemSelectedListener {

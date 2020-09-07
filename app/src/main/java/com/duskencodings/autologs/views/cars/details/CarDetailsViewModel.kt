@@ -84,7 +84,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
       Observable.just(it)
         .doOnNext { state.onNext(State.loadingReminders()) }
         .subscribe({ reminders ->
-          state.onNext(State.successReminders(reminders.sortedByDescending { reminder -> reminder.expireDate }))
+          state.onNext(State.successReminders(reminders.sortedByDescending { reminder -> reminder.expireAtDate }))
         }, { error ->
           state.onNext(State.error(error))
         }).also { addSub(it) }
