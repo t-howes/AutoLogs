@@ -8,12 +8,21 @@ import android.content.Context
 import android.content.Intent
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.models.Reminder
+import java.time.ZoneId
 import java.util.Calendar
+import java.util.Date
 
 object NotificationService {
+  fun scheduleNotifications(context: Context, reminders: List<Reminder>) {
+    reminders.forEach { scheduleNotification(context, it) }
+  }
 
-  fun scheduleNotification(context: Context, reminder: Reminder, delivery: Calendar) {
-    scheduleNotification(context, getNotification(context, reminder), reminder.currentMiles, delivery)
+  private fun scheduleNotification(context: Context, reminder: Reminder) {
+    val delivery: Calendar = reminder.expireAtDate?.let { expireDate ->
+      Calendar.getInstance().apply { time = Date.from(expireDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) }
+     } ?: Calendar.getInstance().apply { add(Calendar.SECOND, 20) }
+
+    scheduleNotification(context, getNotification(context, reminder), reminder.id!!.toInt(), delivery)
   }
 
   private fun scheduleNotification(context: Context, notification: Notification, notificationId: Int, delivery: Calendar) {
@@ -28,9 +37,6 @@ object NotificationService {
     alarmManager.set(AlarmManager.RTC_WAKEUP, delivery.timeInMillis, pendingIntent)
   }
 
-  fun publishNotifications(context: Context, reminders: List<Reminder>) {
-    reminders.forEach { publishNotification(context, getNotification(context, it), it.id!!) }
-  }
 
   fun publishNotification(context: Context, notification: Notification, notificationId: Int) {
     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

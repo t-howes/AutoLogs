@@ -13,7 +13,7 @@ import io.reactivex.Single
 class PreferencesRepository(context: Context,
                             private val prefsDb: PreferencesDb) : BaseRepository(context) {
 
-  fun getLivePreferencesList(carId: Int): LiveData<List<Preference>> {
+  fun getLivePreferencesList(carId: Long): LiveData<List<Preference>> {
     return prefsDb.getLivePreferencesList(carId)
   }
 
@@ -23,13 +23,13 @@ class PreferencesRepository(context: Context,
     }.subscribeOn(Schedulers.io())
   }
 
-  fun getPreferenceByCarAndName(carId: Int, prefName: String): Single<Preference> {
+  fun getPreferenceByCarAndName(carId: Long, prefName: String): Single<Preference> {
     return prefsDb.getPreferenceByCarAndName(carId, prefName).onErrorReturn {
       defaultPreference(carId, prefName)
     }
   }
 
-  private fun defaultPreference(carId: Int, prefName: String): Preference {
+  private fun defaultPreference(carId: Long, prefName: String): Preference {
     return maintenanceJobs.find { it.name.equals(prefName, true) }?.defaultPreference?.let { default ->
       Preference(null, carId, prefName, default.miles, default.months)
     } ?: throw NoSuchElementException("No default preference for '$prefName'")

@@ -2,19 +2,20 @@ package com.duskencodings.autologs.models
 
 import androidx.room.*
 import com.duskencodings.autologs.database.RemindersDb
+import com.duskencodings.autologs.models.Reminder.Companion.TABLE_NAME
 import com.duskencodings.autologs.utils.formatted
 import java.time.LocalDate
 import java.util.*
 
-@Entity(tableName = RemindersDb.TABLE_NAME,
+@Entity(tableName = TABLE_NAME,
         foreignKeys = [(ForeignKey(entity = Car::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("carId"),
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.NO_ACTION))])
 data class Reminder(@PrimaryKey(autoGenerate = true)
-                    val id: Int?,
-                    val carId: Int,
+                    val id: Long?,
+                    val carId: Long ,
                     val name: String,
                     val description: String,
                     val type: ReminderType = ReminderType.BASIC,
@@ -22,6 +23,10 @@ data class Reminder(@PrimaryKey(autoGenerate = true)
                     val currentDate: LocalDate,
                     val expireAtMiles: Int,
                     val expireAtDate: LocalDate?) {
+
+  companion object {
+    const val TABLE_NAME = "reminders"
+  }
 
   fun pushNotificationText(): String {
     var message = "Don't forget to service your ${name.toLowerCase(Locale.getDefault())} at $expireAtMiles miles"

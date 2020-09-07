@@ -4,17 +4,18 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
+import com.duskencodings.autologs.utils.now
 import java.time.LocalDate
 
 @Entity(tableName = Car.TABLE_NAME)
 data class Car(@PrimaryKey(autoGenerate = true)
-               val id: Int?,
+               val id: Long?,
                var year: Int,
                var make: String,
                var model: String,
                var nickname: String? = null,
                var notes: String? = null,
-               var lastUpdate: LocalDate = LocalDate.now()) {
+               var lastUpdate: LocalDate = now()) {
 
   val name: String
     get() = if (nickname.isNullOrBlank()) yearMakeModel() else nickname!!
@@ -33,8 +34,8 @@ fun Car.yearMakeModel() = "$year $make $model"
                                    childColumns = arrayOf("carId"),
                                    onDelete = CASCADE))])
 data class CarWork(@PrimaryKey(autoGenerate = true)
-                   val id: Int?,
-                   val carId: Int,
+                   val id: Long?,
+                   val carId: Long,
                    var name: String,
                    val type: Type,
                    var date: LocalDate,

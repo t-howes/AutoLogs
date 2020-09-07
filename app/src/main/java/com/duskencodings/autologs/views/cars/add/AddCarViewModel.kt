@@ -14,11 +14,12 @@ import javax.inject.Inject
 
 class AddCarViewModel @Inject constructor(private val carRepo: CarRepository) : BaseViewModel() {
 
+    var carId: Long? = null
     var state: PublishSubject<State> = PublishSubject.create()
     private lateinit var carLiveData: LiveData<Car>
     private lateinit var carObserver: Observer<Car>
 
-    fun loadScreen(carId: Int?) {
+    fun loadScreen() {
       carId?.let { id ->
         carLiveData = carRepo.getLiveCar(id)
         carObserver = Observer { car ->

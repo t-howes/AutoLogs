@@ -12,7 +12,7 @@ import io.reactivex.Single
 class CarRepository(context: Context,
                     private val carDb: CarDb): BaseRepository(context) {
 
-  fun getLiveCar(carId: Int): LiveData<Car> {
+  fun getLiveCar(carId: Long): LiveData<Car> {
     return carDb.getLiveCar(carId)
   }
 

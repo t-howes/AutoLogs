@@ -21,9 +21,10 @@ class RemindersRepository(
     private val preferencesRepo: PreferencesRepository
 ) : BaseRepository(context) {
 
-  fun getReminders(carId: Int): Single<List<Reminder>> = remindersDb.getReminders(carId)
-  fun getLiveReminders(carId: Int): LiveData<List<Reminder>> = remindersDb.getLiveReminders(carId)
-  private fun getReminder(carId: Int, jobName: String): Single<Reminder> = remindersDb.getReminderForCarByJobName(carId, jobName)
+  fun getAllReminders(): Single<List<Reminder>> = remindersDb.getAllReminders()
+  fun getReminders(carId: Long): Single<List<Reminder>> = remindersDb.getReminders(carId)
+  fun getLiveReminders(carId: Long): LiveData<List<Reminder>> = remindersDb.getLiveReminders(carId)
+  private fun getReminder(carId: Long, jobName: String): Single<Reminder> = remindersDb.getReminderForCarByJobName(carId, jobName)
 
   fun addReminder(carWork: CarWork): Single<Reminder> {
     return preferencesRepo.getPreferenceByCarAndName(carWork.carId, carWork.name)
@@ -39,16 +40,8 @@ class RemindersRepository(
                   }
               ))
             }
-            .onErrorReturn { newReminder(carWork, pref).also { remindersDb.insertOrUpdate(it) } }
-            .map { reminder ->
-              pref.months?.let {  monthsAway ->
-                val delivery = Calendar.getInstance().apply { add(Calendar.MONTH, monthsAway) }
-                NotificationService.scheduleNotification(context, reminder, delivery)
-              } ?: run {
-                // if there's no time frame for the pref, derive one based on miles?
-              }
-
-              reminder
+            .onErrorReturn {
+              remindersDb.insertOrUpdate(newReminder(carWork, pref))
             }
         }
   }

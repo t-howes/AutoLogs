@@ -20,23 +20,25 @@ interface CarDb {
   fun getCars(): Single<List<Car>>
 
   @Query("SELECT * FROM ${Car.TABLE_NAME} WHERE id = :id")
-  fun getLiveCar(id: Int?): LiveData<Car>
+  fun getLiveCar(id: Long): LiveData<Car>
 
   @Query("SELECT * FROM ${Car.TABLE_NAME} WHERE id = :id")
-  fun getCar(id: Int?): Single<Car>
+  fun getCar(id: Long): Single<Car>
 
   @Insert
-  fun addCar(car: Car)
+  fun addCar(car: Car): Long
 
   @Update(onConflict = OnConflictStrategy.REPLACE)
   fun saveCar(car: Car)
 
   @Transaction
-  fun insertOrUpdate(car: Car) {
-    if (car.id == null) {
-      addCar(car)
+  fun insertOrUpdate(car: Car): Car {
+    return if (car.id == null) {
+      val id = addCar(car)
+      car.copy(id = id)
     } else {
       saveCar(car)
+      car
     }
   }
 

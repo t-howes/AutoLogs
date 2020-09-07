@@ -24,8 +24,8 @@ class MaintenanceViewModel @Inject constructor(
 
   private lateinit var maintenanceLiveData: LiveData<List<CarWork>>
   private lateinit var maintenanceObserver: Observer<List<CarWork>>
-  var carId: Int? = null
-  var maintenanceId: Int? = null
+  var carId: Long? = null
+  var maintenanceId: Long? = null
 
   fun getLiveCarWorkRecords() {
     carId?.let {

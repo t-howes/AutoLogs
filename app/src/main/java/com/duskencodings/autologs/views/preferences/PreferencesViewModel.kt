@@ -17,7 +17,7 @@ class PreferencesViewModel @Inject constructor(private val repo: PreferencesRepo
   private lateinit var prefsLiveData: LiveData<List<Preference>>
   private lateinit var prefsObserver: Observer<List<Preference>>
 
-  fun getLivePreferences(carId: Int? = null) {
+  fun getLivePreferences(carId: Long? = null) {
     carId?.let {
       prefsLiveData = repo.getLivePreferencesList(carId)
       prefsObserver = Observer {

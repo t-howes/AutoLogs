@@ -14,7 +14,6 @@ import com.duskencodings.autologs.workers.ReminderWorker
 import io.fabric.sdk.android.Fabric
 import java.util.concurrent.TimeUnit
 
-
 class AutoServiceApplication : Application() {
 
   override fun onCreate() {
@@ -34,7 +33,7 @@ class AutoServiceApplication : Application() {
   }
 
   private fun startReminders() {
-//    val work = PeriodicWorkRequest.Builder(ReminderWorker::class, 24L, TimeUnit.HOURS).build()
-//    WorkManager.getInstance(this).enqueueUniquePeriodicWork("jobTag", ExistingPeriodicWorkPolicy.KEEP, work)
+    val work = PeriodicWorkRequest.Builder(ReminderWorker::class.java, 24L, TimeUnit.HOURS).build()
+    WorkManager.getInstance(this).enqueueUniquePeriodicWork("carServiceReminders", ExistingPeriodicWorkPolicy.KEEP, work)
   }
 }

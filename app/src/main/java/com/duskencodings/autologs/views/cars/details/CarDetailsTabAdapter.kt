@@ -9,7 +9,7 @@ import com.duskencodings.autologs.views.maintenance.list.MaintenanceListFragment
 
 class CarDetailsTabAdapter(val context: Context,
                            fragManager: FragmentManager,
-                           val carId: Int) : FragmentStatePagerAdapter(fragManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+                           val carId: Long) : FragmentStatePagerAdapter(fragManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
   override fun getItem(position: Int): Fragment {
     return when (position) {

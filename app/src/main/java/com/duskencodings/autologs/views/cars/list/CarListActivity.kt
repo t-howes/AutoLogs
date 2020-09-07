@@ -69,15 +69,15 @@ class CarListActivity : BaseActivity(), CarClickListener {
     emptyResults.visibility = if (hasCars) View.GONE else View.VISIBLE
   }
 
-  private fun navigateToCarDetails(id: Int) {
+  private fun navigateToCarDetails(id: Long) {
     startActivity(CarDetailsActivity.newIntent(this, id))
   }
 
-  private fun navigateToEditCar(id: Int? = null) {
+  private fun navigateToEditCar(id: Long? = null) {
     startActivity(AddCarActivity.newIntent(this, id))
   }
 
-  private fun navigateToCarPreferences(id: Int? = null) {
+  private fun navigateToCarPreferences(id: Long? = null) {
     showToast("feature coming soon!")
 //    startActivity(CarPreferencesActivity.newIntent(this, id))
   }

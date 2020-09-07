@@ -12,11 +12,11 @@ import com.duskencodings.autologs.models.CarWork
 class ServiceRepository(context: Context,
                         private val carWorkDb: CarWorkDb) : BaseRepository(context) {
 
-  fun getLiveCarWorkList(carId: Int): LiveData<List<CarWork>> {
+  fun getLiveCarWorkList(carId: Long): LiveData<List<CarWork>> {
     return carWorkDb.getLiveCarWorkList(carId)
   }
 
-  fun getCarWork(id: Int): Single<CarWork> {
+  fun getCarWork(id: Long): Single<CarWork> {
     return carWorkDb.getCarWork(id)
   }
 

@@ -18,14 +18,14 @@ import com.duskencodings.autologs.notifications.NotificationService
 class CarPreferencesActivity : BaseActivity() {
 
   private lateinit var preferencesViewModel: PreferencesViewModel
-  private var carId: Int? = null
+  private var carId: Long? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_car_preferences)
     setDisplayHomeAsUpEnabled()
 
-    val id = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
+    val id = intent?.extras?.getLong(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
 
     if (CAR_ID_DEFAULT != id) {
       carId = id

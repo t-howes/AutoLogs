@@ -27,7 +27,7 @@ class MaintenanceListFragment : BaseFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val id = arguments?.getInt(CAR_ID, CAR_ID_DEFAULT)
+    val id = arguments?.getLong(CAR_ID, CAR_ID_DEFAULT)
 
     maintenanceViewModel = getViewModel(this)
 
@@ -70,7 +70,7 @@ class MaintenanceListFragment : BaseFragment() {
     }
   }
 
-  private fun navigateToMaintenanceDetails(carWorkId: Int? = null) {
+  private fun navigateToMaintenanceDetails(carWorkId: Long? = null) {
     context?.let { context ->
       maintenanceViewModel.carId?.let { carId ->
         startActivity(CarWorkDetailsActivity.newIntent(context, carId, carWorkId))
@@ -99,10 +99,10 @@ class MaintenanceListFragment : BaseFragment() {
 
   companion object {
 
-    fun newInstance(carId: Int? = null): MaintenanceListFragment {
+    fun newInstance(carId: Long? = null): MaintenanceListFragment {
       return  MaintenanceListFragment().apply {
         arguments = Bundle().apply {
-          carId?.let { id -> putInt(CAR_ID, id) }
+          carId?.let { id -> putLong(CAR_ID, id) }
         }
       }
     }

@@ -11,13 +11,13 @@ import com.duskencodings.autologs.models.CAR_ID_DEFAULT
 
 class CarDetailsActivity : BaseActivity() {
 
-  private var carId: Int = CAR_ID_DEFAULT // we will get passed a valid ID in the intent bundle.
+  private var carId: Long = CAR_ID_DEFAULT // we will get passed a valid ID in the intent bundle.
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_car_details)
 
-    carId = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
+    carId = intent?.extras?.getLong(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
 
     initUi()
   }
@@ -32,7 +32,7 @@ class CarDetailsActivity : BaseActivity() {
 
   companion object {
 
-    fun newIntent(context: Context, carId: Int): Intent {
+    fun newIntent(context: Context, carId: Long): Intent {
       return Intent(context, CarDetailsActivity::class.java).apply {
         putExtra(CAR_ID, carId)
       }

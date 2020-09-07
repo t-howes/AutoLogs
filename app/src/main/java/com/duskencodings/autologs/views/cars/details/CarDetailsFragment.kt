@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.fragment_car_details.*
 class CarDetailsFragment : BaseFragment() {
 
   private lateinit var carDetailsViewModel: CarDetailsViewModel
-  private var carId: Int = CAR_ID_DEFAULT // will have a valid ID passed in args
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_car_details, container, false)
@@ -24,11 +23,10 @@ class CarDetailsFragment : BaseFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    carId = arguments?.getInt(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
-
-    initUi()
-
     carDetailsViewModel = getViewModel(this)
+
+    carDetailsViewModel.carId = arguments?.getLong(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
+    initUi()
 
     carDetailsViewModel.state.subscribe {
       it?.let { state ->
@@ -36,7 +34,7 @@ class CarDetailsFragment : BaseFragment() {
       }
     }.also { addSub(it) }
 
-    carDetailsViewModel.loadScreen(carId)
+    carDetailsViewModel.loadScreen()
   }
 
   private fun initUi() {
@@ -79,10 +77,10 @@ class CarDetailsFragment : BaseFragment() {
   }
 
   companion object {
-    fun newInstance(carId: Int): CarDetailsFragment {
+    fun newInstance(carId: Long): CarDetailsFragment {
       return CarDetailsFragment().apply {
         arguments = Bundle().apply {
-          putInt(CAR_ID, carId)
+          putLong(CAR_ID, carId)
         }
       }
     }

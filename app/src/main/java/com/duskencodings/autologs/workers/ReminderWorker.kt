@@ -11,6 +11,9 @@ import com.duskencodings.autologs.repo.CarRepository
 import com.duskencodings.autologs.repo.PreferencesRepository
 import com.duskencodings.autologs.repo.RemindersRepository
 import com.duskencodings.autologs.utils.applySchedulers
+import com.duskencodings.autologs.utils.log.Logger
+import com.duskencodings.autologs.utils.now
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import javax.inject.Inject
@@ -42,21 +45,27 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
    * These can either be because the Reminder's expiration date or x miles have past.
    */
   override fun doWork(): Result {
-    carsRepo.getCars()
+    return Single.create<Result> { emitter ->
+      findReminders()
+          .subscribe({
+            Logger.i("ReminderWorker", "Successfully scheduled Reminders.")
+            emitter.onSuccess(Result.success())
+          }, {
+            Logger.d("ReminderWorker", "Failed to schedule Reminders.")
+            emitter.onSuccess(Result.failure())
+          }).also { addSub(it) }
+    }.blockingGet()
+  }
+
+  private fun findReminders(): Single<List<Reminder>> {
+    return remindersRepo.getAllReminders()
         .applySchedulers()
-        .doOnSuccess { cars ->
-          cars.forEach {
-            val reminders = getRemindersForCar(it)
-            NotificationService.publishNotifications(applicationContext, reminders)
-          }
+        .map { reminders ->
+          reminders.filter { it.expireAtDate?.isBefore(now()) == false } // TODO: check miles
         }
-        .subscribe({
-
-        }, {
-          // NO-OP
-        }).also { addSub(it) }
-
-    return Result.success()
+        .doOnSuccess { reminders ->
+          NotificationService.scheduleNotifications(applicationContext, reminders)
+        }
   }
 
   private fun getRemindersForCar(car: Car): List<Reminder> {

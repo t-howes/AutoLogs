@@ -15,7 +15,6 @@ import com.duskencodings.autologs.validation.FormValidator
 
 class AddCarActivity : BaseActivity() {
 
-  private var carId: Int? = null
   private lateinit var carViewModel: AddCarViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,28 +22,28 @@ class AddCarActivity : BaseActivity() {
     setContentView(R.layout.activity_add_car)
     setDisplayHomeAsUpEnabled()
 
-    val id = intent?.extras?.getInt(CAR_ID, CAR_ID_DEFAULT)
+    carViewModel = getViewModel()
+    val id = intent?.extras?.getLong(CAR_ID, CAR_ID_DEFAULT)
 
     if (CAR_ID_DEFAULT != id) {
-      carId = id
+      carViewModel.carId = id
     }
 
     initUi()
 
-    carViewModel = getViewModel()
     carViewModel.state.subscribe {
       it?.let { data ->
         updateFromState(data)
       }
     }.also { addSub(it) }
 
-    carViewModel.loadScreen(carId)
+    carViewModel.loadScreen()
   }
 
   private fun initUi() {
     lastUpdate.visibility = View.GONE
 
-    if (carId == null) {
+    if (carViewModel.carId == null) {
       setTitle(getString(R.string.add_car))
     } else {
       submit.text = getString(R.string.save)
@@ -112,13 +111,13 @@ class AddCarActivity : BaseActivity() {
     val model = modelInput.text.toString()
     val notes = notesInput.text.toString()
     // null carId should auto generate an ID in Room
-    val newCar = Car(carId, year, make, model, name, notes)
+    val newCar = Car(carViewModel.carId, year, make, model, name, notes)
     carViewModel.updateCar(newCar)
   }
 
   companion object {
 
-    fun newIntent(context: Context, carId: Int? = null): Intent {
+    fun newIntent(context: Context, carId: Long? = null): Intent {
       return Intent(context, AddCarActivity::class.java).apply {
         carId?.let { id ->
           putExtra(CAR_ID, id)
@@ -126,5 +125,4 @@ class AddCarActivity : BaseActivity() {
       }
     }
   }
-
 }

@@ -32,8 +32,8 @@ class CarWorkDetailsActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_maintenance_details)
-    val carId = intent.extras?.getInt(CAR_ID, -1)
-    val id = intent.extras?.getInt(MAINTENANCE_ID, ID_DEFAULT)
+    val carId = intent.extras?.getLong(CAR_ID, -1)
+    val id = intent.extras?.getLong(MAINTENANCE_ID, ID_DEFAULT)
 
     maintenanceViewModel = getViewModel()
 
@@ -242,9 +242,9 @@ class CarWorkDetailsActivity : BaseActivity() {
   companion object {
     private const val CAR_ID = "carId"
     private const val MAINTENANCE_ID = "maintenanceId"
-    private const val ID_DEFAULT = -1
+    private const val ID_DEFAULT = -1L
 
-    fun newIntent(context: Context, carId: Int, carWorkId: Int? = null): Intent {
+    fun newIntent(context: Context, carId: Long, carWorkId: Long? = null): Intent {
       return Intent(context, CarWorkDetailsActivity::class.java).apply {
         putExtra(MAINTENANCE_ID, carWorkId)
         putExtra(CAR_ID, carId)

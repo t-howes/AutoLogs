@@ -3,25 +3,22 @@ package com.duskencodings.autologs.models
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import com.duskencodings.autologs.utils.toDateOrNull
-import java.time.LocalDate
 
-@Entity(tableName = Preference.TABLE,
+@Entity(tableName = Preference.TABLE_NAME,
         foreignKeys = [(ForeignKey(entity = Car::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("carId"),
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.NO_ACTION))])
 data class Preference(@PrimaryKey(autoGenerate = true)
-                      val id: Int?,
-                      val carId: Int,
+                      val id: Long?,
+                      val carId: Long,
                       var name: String,
                       var miles: Int,
                       var months: Int?) {
 
   companion object {
-    const val TABLE = "preferences"
+    const val TABLE_NAME = "preferences"
   }
 }
 

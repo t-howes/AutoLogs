@@ -17,6 +17,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
                                               private val serviceRepo: ServiceRepository,
                                               private val remindersRepo: RemindersRepository) : BaseViewModel() {
 
+  var carId: Long? = null // will have a valid ID passed in args
   var state: PublishSubject<State> = PublishSubject.create()
   private lateinit var carLiveData: LiveData<Car>
   private lateinit var carObserver: Observer<Car>
@@ -25,7 +26,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
   private lateinit var remindersLiveData: LiveData<List<Reminder>>
   private lateinit var remindersObserver: Observer<List<Reminder>>
 
-  fun loadScreen(carId: Int?) {
+  fun loadScreen() {
     carId?.let { id ->
       observeReminders(id)
 
@@ -56,7 +57,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
     }
   }
 
-  private fun observeCarWork(carId: Int) {
+  private fun observeCarWork(carId: Long) {
     maintenanceLiveData = serviceRepo.getLiveCarWorkList(carId)
     maintenanceObserver = Observer {
       Observable.just(it)
@@ -78,7 +79,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
     maintenanceLiveData.observeForever(maintenanceObserver)
   }
 
-  private fun observeReminders(carId: Int) {
+  private fun observeReminders(carId: Long) {
     remindersLiveData = remindersRepo.getLiveReminders(carId)
     remindersObserver = Observer {
       Observable.just(it)

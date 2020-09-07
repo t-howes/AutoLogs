@@ -9,16 +9,16 @@ import com.duskencodings.autologs.models.CarWork
 interface CarWorkDb {
 
   @Query("SELECT * FROM ${CarWork.TABLE} WHERE carId = :carId")
-  fun getLiveCarWorkList(carId: Int): LiveData<List<CarWork>>
+  fun getLiveCarWorkList(carId: Long): LiveData<List<CarWork>>
 
   @Query("SELECT * FROM ${CarWork.TABLE} WHERE carId = :carId")
-  fun getCarWorkList(carId: Int): Single<List<CarWork>>
+  fun getCarWorkList(carId: Long): Single<List<CarWork>>
 
   @Query("SELECT * FROM ${CarWork.TABLE} WHERE id = :id")
-  fun getCarWork(id: Int?): Single<CarWork>
+  fun getCarWork(id: Long): Single<CarWork>
 
   @Insert
-  fun addCarWork(work: CarWork)
+  fun addCarWork(work: CarWork): Long
 
   @Update(onConflict = OnConflictStrategy.REPLACE)
   fun saveCarWork(work: CarWork)
@@ -27,11 +27,13 @@ interface CarWorkDb {
   fun deleteWork(work: CarWork)
 
   @Transaction
-  fun insertOrUpdateCarWork(work: CarWork) {
-    if (work.id == null) {
-      addCarWork(work)
+  fun insertOrUpdateCarWork(work: CarWork): CarWork {
+    return if (work.id == null) {
+      val id = addCarWork(work)
+      work.copy(id = id)
     } else {
       saveCarWork(work)
+      work
     }
   }
 }
