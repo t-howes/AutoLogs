@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.item_row_car_work.view.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.utils.formatted
+import com.duskencodings.autologs.utils.setTextOrHide
 
 class MaintenanceAdapter(context: Context, var data: List<CarWork>)
       : RecyclerView.Adapter<MaintenanceAdapter.CarWorkViewHolder>() {
@@ -38,12 +39,16 @@ class MaintenanceAdapter(context: Context, var data: List<CarWork>)
         val position = indexOf(work)
         val showDate = position == 0 || work.date != getItem(position - 1).date
 
-        itemView.dateContainer.visibility = if (showDate) View.VISIBLE else View.GONE
-        itemView.date.text = work.date.formatted()
-        itemView.name.text = work.name
-        itemView.notes.text = work.notes
-        itemView.container.setOnClickListener {
-          onClickListener?.invoke(carWork)
+        itemView.apply {
+          dateContainer.visibility = if (showDate) View.VISIBLE else View.GONE
+          defaultDivider.visibility = if (showDate) View.GONE else View.VISIBLE
+          date.text = work.date.formatted()
+          name.text = work.name
+          miles.text = work.odometerReading.toString()
+          notes.setTextOrHide(work.notes)
+          container.setOnClickListener {
+            onClickListener?.invoke(carWork)
+          }
         }
       }
     }

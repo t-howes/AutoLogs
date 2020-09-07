@@ -9,6 +9,7 @@ import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.repo.RemindersRepository
 import com.duskencodings.autologs.repo.ServiceRepository
+import com.duskencodings.autologs.utils.log.Logger
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -36,10 +37,7 @@ class MaintenanceViewModel @Inject constructor(
             .doAfterTerminate { listState.value = Resource.idle() }
             .map { workList ->
               // sort by mileage, group by date
-              workList
-                  .sortedByDescending { work -> work.odometerReading }
-                  .groupBy { work -> work.date }
-                  .flatMap { entry -> entry.value }
+              workList.sortedByDescending { work -> work.odometerReading }
             }
             .subscribe({ maintenance ->
               listState.value = Resource.success(maintenance)
@@ -77,9 +75,9 @@ class MaintenanceViewModel @Inject constructor(
         .doAfterTerminate { submitState.value = Resource.idle() }
         .doOnComplete {
           remindersRepo.addReminder(carWork).subscribe({
-            // NO-OP
+            Logger.i("Save Work -> Add Reminder", "Successfully saved car work and added reminder (if applicable)")
           }, {
-            submitState.value = Resource.error(it)
+            Logger.d("Save Work -> Add Reminder", "Failed to add a reminder for ${carWork.name}")
           }).also { addSub(it) }
         }
         .subscribe({

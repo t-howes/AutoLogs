@@ -40,13 +40,15 @@ class RemindersRepository(
               ))
             }
             .onErrorReturn { newReminder(carWork, pref).also { remindersDb.insertOrUpdate(it) } }
-            .doOnSuccess { reminder ->
+            .map { reminder ->
               pref.months?.let {  monthsAway ->
                 val delivery = Calendar.getInstance().apply { add(Calendar.MONTH, monthsAway) }
                 NotificationService.scheduleNotification(context, reminder, delivery)
               } ?: run {
                 // if there's no time frame for the pref, derive one based on miles?
               }
+
+              reminder
             }
         }
   }
