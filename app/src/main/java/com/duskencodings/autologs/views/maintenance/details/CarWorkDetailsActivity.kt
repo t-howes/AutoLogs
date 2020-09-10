@@ -16,6 +16,7 @@ import com.duskencodings.autologs.models.maintenanceJobs
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.utils.*
+import com.duskencodings.autologs.utils.log.Logger
 import com.duskencodings.autologs.validation.FormValidator
 import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
 import java.time.LocalDate
@@ -166,15 +167,22 @@ class CarWorkDetailsActivity : BaseActivity() {
     }
   }
 
-  private fun updateSubmitState(state: Resource<CarWork>) {
+  private fun updateSubmitState(state: MaintenanceViewModel.State) {
     when (state.status) {
-      Resource.Status.IDLE -> showLoading(false)
-      Resource.Status.LOADING -> showLoading()
-      Resource.Status.ERROR -> state.error?.let {
-        showToast(it.localizedMessage)
+      MaintenanceViewModel.Status.IDLE -> showLoading(false)
+      MaintenanceViewModel.Status.LOADING -> showLoading()
+      MaintenanceViewModel.Status.SUCCESS -> finish()
+      MaintenanceViewModel.Status.ERROR_PREF -> {
+        state.error?.let {
+          Logger.d("ERROR_PREF", "Failed to get preference. Set manually...")
+        }
+
+        state.work?.let { showManualPreferenceInput(it) }
       }
-      Resource.Status.SUCCESS -> {
-        finish()
+      MaintenanceViewModel.Status.ERROR_REMINDER,
+      MaintenanceViewModel.Status.ERROR_WORK -> state.error?.let {
+        Logger.d("SAVE WORK ERROR", "Failed to save work / add reminder.")
+        onError(it)
       }
     }
   }
@@ -223,13 +231,19 @@ class CarWorkDetailsActivity : BaseActivity() {
       val cost = costInput.text.toString().toDoubleOrNull()
       val notes = notesInput.text.toString()
       val type = getType(name)
+      val addReminder = addReminderCheckbox.isChecked
       // null carId should auto generate an ID in Room
       val newCarWork = CarWork(
           maintenanceViewModel.maintenanceId, carId,
           name, type, date, cost, miles, notes)
 
-      maintenanceViewModel.saveWork(newCarWork)
+      maintenanceViewModel.saveWork(newCarWork, addReminder)
     } ?: showToast(getString(R.string.error_occurred))
+  }
+
+  private fun showManualPreferenceInput(carWork: CarWork) {
+    // TODO: show input for manual pref then save reminder
+    maintenanceViewModel.addReminderFromManualPref(carWork, pref)
   }
 
   /**

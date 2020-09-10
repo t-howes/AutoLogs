@@ -124,9 +124,16 @@
                     android:layout_height="wrap_content"
                     android:gravity="top"
                     android:lines="2"
-                    android:maxLines="4"
+                    android:maxLines="3"
                     android:maxLength="400" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/addReminderCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_reminder"
+                android:checked="true"/>
 
             <Button
                 style="@style/PrimaryButton"
