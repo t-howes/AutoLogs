@@ -19,12 +19,14 @@ import com.duskencodings.autologs.utils.*
 import com.duskencodings.autologs.utils.log.Logger
 import com.duskencodings.autologs.validation.FormValidator
 import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
+import com.duskencodings.autologs.views.preferences.PreferenceInputDialogFragment
+import com.duskencodings.autologs.views.preferences.PreferenceInputListener
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
 
-class CarWorkDetailsActivity : BaseActivity() {
+class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
 
   private lateinit var maintenanceViewModel: MaintenanceViewModel
   private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
@@ -189,14 +191,14 @@ class CarWorkDetailsActivity : BaseActivity() {
 
   private fun showMaintenanceDetails(carWork: CarWork) {
     setTitle(carWork.name)
-    val adapter = nameSpinner.adapter as? ArrayAdapter<String>
-    val positionOfName = adapter?.getPosition(carWork.name) ?: -1
+    val adapter = nameSpinner.adapter as ArrayAdapter<String>
+    val positionOfName = adapter.getPosition(carWork.name) ?: -1
 
     if (positionOfName != -1) { // found name in adapter
       nameSpinner.setSelection(positionOfName)
     } else {
       // set to 'other' and show input field
-      nameSpinner.setSelection(adapter?.count ?: 0)
+      nameSpinner.setSelection(adapter.count ?: 0)
       nameInput.setText(carWork.name)
     }
 
@@ -242,8 +244,7 @@ class CarWorkDetailsActivity : BaseActivity() {
   }
 
   private fun showManualPreferenceInput(carWork: CarWork) {
-    // TODO: show input for manual pref then save reminder
-    maintenanceViewModel.addReminderFromManualPref(carWork, pref)
+    PreferenceInputDialogFragment.show(this, carWork)
   }
 
   /**
@@ -251,6 +252,10 @@ class CarWorkDetailsActivity : BaseActivity() {
    */
   private fun getType(name: String): CarWork.Type {
     return if (aftermarketModificationsCheckbox.isChecked) CarWork.Type.MODIFICATION else CarWork.Type.MAINTENANCE
+  }
+
+  override fun onPreferenceSet(carWork: CarWork, miles: Int, months: Int) {
+    maintenanceViewModel.addReminderFromManualPref(carWork, miles, months)
   }
 
   companion object {

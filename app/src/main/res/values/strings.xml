@@ -60,4 +60,5 @@
     <string name="maintenance_category.suspension_and_steering">Suspension and Steering</string>
     <string name="maintenance_category.transmission">Transmission</string>
     <string name="add_reminder">Add reminder?</string>
+    <string name="preference_name">Preference name:</string>
 </resources>

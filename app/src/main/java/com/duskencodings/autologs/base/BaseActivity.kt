@@ -66,7 +66,7 @@ abstract class BaseActivity : AppCompatActivity(), BaseView, SubscriptionHandler
     }
   }
 
-  protected open fun onError(error: Throwable) {
+  open fun onError(error: Throwable) {
     Log.e("BASE ACTIVITY", "onError() called:", error)
     showToast(R.string.error_occurred)
   }

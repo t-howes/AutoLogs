@@ -1,10 +1,12 @@
 package com.duskencodings.autologs.models
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 import com.duskencodings.autologs.utils.now
+import kotlinx.android.parcel.Parcelize
 import java.time.LocalDate
 
 @Entity(tableName = Car.TABLE_NAME)
@@ -27,7 +29,7 @@ data class Car(@PrimaryKey(autoGenerate = true)
 
 fun Car.yearMakeModel() = "$year $make $model"
 
-
+@Parcelize
 @Entity(tableName = CarWork.TABLE,
         foreignKeys = [(ForeignKey(entity = Car::class,
                                    parentColumns = arrayOf("id"),
@@ -41,7 +43,7 @@ data class CarWork(@PrimaryKey(autoGenerate = true)
                    var date: LocalDate,
                    var cost: Double? = 0.0,
                    var odometerReading: Int,
-                   var notes: String? = null) {
+                   var notes: String? = null) : Parcelable{
 
   enum class Type(val value: Int) {
     MAINTENANCE(0),

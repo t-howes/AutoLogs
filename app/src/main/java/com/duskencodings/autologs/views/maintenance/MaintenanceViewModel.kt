@@ -65,8 +65,6 @@ class MaintenanceViewModel @Inject constructor(
           }, { error ->
             detailsState.value = Resource.error(error)
           }))
-    } ?: run {
-      detailsState.value = Resource.error(IllegalArgumentException("null maintenanceId in getMaintenance()"))
     }
   }
 
@@ -107,7 +105,8 @@ class MaintenanceViewModel @Inject constructor(
       }).also { addSub(it) }
   }
 
-  fun addReminderFromManualPref(carWork: CarWork, pref: Preference) {
+  fun addReminderFromManualPref(carWork: CarWork, miles: Int, months: Int) {
+    val pref =  Preference(null, carWork.carId, carWork.name, miles, months)
     remindersRepo.addReminder(carWork, pref)
       .doOnError {
         submitState.value = State.errorReminder(it)
