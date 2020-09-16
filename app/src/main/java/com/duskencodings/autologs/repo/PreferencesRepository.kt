@@ -25,7 +25,7 @@ class PreferencesRepository(context: Context,
 
   fun getPreferenceByCarAndName(carId: Long, prefName: String): Single<Preference> {
     return prefsDb.getPreferenceByCarAndName(carId, prefName).onErrorReturn {
-      defaultPreference(carId, prefName)
+      prefsDb.insertOrUpdatePref(defaultPreference(carId, prefName))
     }
   }
 

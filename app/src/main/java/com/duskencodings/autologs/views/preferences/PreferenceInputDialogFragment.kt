@@ -56,7 +56,7 @@ class PreferenceInputDialogFragment : DialogFragment() {
       override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val item = items[position]
         val pair = item.split("/")
-        val miles = pair.first().trim()
+        val miles = pair.first().trim().trim()
         val months = pair.last().trim()
 
         milesInput.setText(miles)

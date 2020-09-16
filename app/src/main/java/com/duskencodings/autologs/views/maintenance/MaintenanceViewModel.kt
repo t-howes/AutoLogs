@@ -11,7 +11,6 @@ import com.duskencodings.autologs.repo.RemindersRepository
 import com.duskencodings.autologs.repo.ServiceRepository
 import com.duskencodings.autologs.utils.log.Logger
 import io.reactivex.Observable
-import io.reactivex.Single
 import javax.inject.Inject
 
 class MaintenanceViewModel @Inject constructor(
@@ -90,24 +89,28 @@ class MaintenanceViewModel @Inject constructor(
   }
 
   private fun addReminder(carWork: CarWork) {
-    getPreference(carWork)
-      .map { pref ->
+    prefRepo.getPreferenceByCarAndName(carWork.carId, carWork.name)
+      .applySchedulers()
+      .subscribe({ pref ->
         remindersRepo.addReminder(carWork, pref)
-      }
-      .doOnError {
-        submitState.value = State.errorReminder(it)
-      }
-      .subscribe({
-        submitState.value = State.success(carWork)
-        Logger.i("Save Work -> Add Reminder", "Successfully saved car work and added reminder (if applicable)")
+            .applySchedulers()
+            .subscribe({
+              Logger.i("Save Work -> Add Reminder", "Successfully saved car work and added reminder (if applicable)")
+              submitState.value = State.success(carWork)
+            }, {
+              Logger.d("Save Work -> Add Reminder", "Failed to add a reminder for ${carWork.name}")
+              submitState.value = State.errorReminder(it)
+            }).also { addSub(it) }
       }, {
-        Logger.d("Save Work -> Add Reminder", "Failed to add a reminder for ${carWork.name}")
+        Logger.d("Save Work -> Get Preference", "Failed to get preference/add a reminder for ${carWork.name}")
+        submitState.value = State.errorPref(it, carWork)
       }).also { addSub(it) }
   }
 
   fun addReminderFromManualPref(carWork: CarWork, miles: Int, months: Int) {
     val pref =  Preference(null, carWork.carId, carWork.name, miles, months)
     remindersRepo.addReminder(carWork, pref)
+      .applySchedulers()
       .doOnError {
         submitState.value = State.errorReminder(it)
       }
@@ -117,13 +120,6 @@ class MaintenanceViewModel @Inject constructor(
       }, {
         Logger.d("Save Work -> Add Reminder", "Failed to add a reminder for ${carWork.name}")
       }).also { addSub(it) }
-  }
-
-  private fun getPreference(carWork: CarWork): Single<Preference> {
-    return prefRepo.getPreferenceByCarAndName(carWork.carId, carWork.name)
-        .doOnError {
-          submitState.value = State.errorPref(it, carWork)
-        }
   }
 
   enum class Status {

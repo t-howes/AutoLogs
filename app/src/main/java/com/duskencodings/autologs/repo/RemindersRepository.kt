@@ -8,8 +8,10 @@ import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Preference
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.models.ReminderType
+import com.duskencodings.autologs.utils.applySchedulers
 import com.duskencodings.autologs.utils.now
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 
 class RemindersRepository(
     context: Context,
@@ -27,9 +29,9 @@ class RemindersRepository(
       .map { existingReminder ->
         // update the existing Reminder with new expiration fields
         saveReminder(existingReminder.copy(
-            expireAtMiles = existingReminder.expireAtMiles + pref.miles,
+            expireAtMiles = carWork.odometerReading + pref.miles,
             expireAtDate = pref.months?.toLong()?.let { monthsAway ->
-              (existingReminder.expireAtDate ?: now()).plusMonths(monthsAway)
+              (carWork.date ?: now()).plusMonths(monthsAway)
             }
         ))
       }

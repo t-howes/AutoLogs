@@ -192,16 +192,18 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
   private fun showMaintenanceDetails(carWork: CarWork) {
     setTitle(carWork.name)
     val adapter = nameSpinner.adapter as ArrayAdapter<String>
-    val positionOfName = adapter.getPosition(carWork.name) ?: -1
+    val positionOfName = adapter.getPosition(carWork.name)
 
     if (positionOfName != -1) { // found name in adapter
       nameSpinner.setSelection(positionOfName)
     } else {
       // set to 'other' and show input field
-      nameSpinner.setSelection(adapter.count ?: 0)
+      nameSpinner.setSelection(adapter.count - 1)
       nameInput.setText(carWork.name)
+      nameInput.setSelection(carWork.name.length)
     }
 
+    aftermarketModificationsCheckbox.isChecked = carWork.type == CarWork.Type.MODIFICATION
     dateInput.setText(carWork.date.formatted())
     costInput.setText(carWork.cost.formatMoney())
     milesInput.setText(carWork.odometerReading.toString())
@@ -230,9 +232,9 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
       }
       val date = dateInput.text.toString().toDateOrNull() ?: LocalDate.now()
       val miles = milesInput.text.toString().toInt()
-      val cost = costInput.text.toString().toDoubleOrNull()
+      val cost = costInput.text.toString().removePrefix("$").toDoubleOrNull()
       val notes = notesInput.text.toString()
-      val type = getType(name)
+      val type = if (aftermarketModificationsCheckbox.isChecked) CarWork.Type.MODIFICATION else CarWork.Type.MAINTENANCE
       val addReminder = addReminderCheckbox.isChecked
       // null carId should auto generate an ID in Room
       val newCarWork = CarWork(
@@ -245,13 +247,6 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
 
   private fun showManualPreferenceInput(carWork: CarWork) {
     PreferenceInputDialogFragment.show(this, carWork)
-  }
-
-  /**
-   * TODO: Consider doing a name mapping later.
-   */
-  private fun getType(name: String): CarWork.Type {
-    return if (aftermarketModificationsCheckbox.isChecked) CarWork.Type.MODIFICATION else CarWork.Type.MAINTENANCE
   }
 
   override fun onPreferenceSet(carWork: CarWork, miles: Int, months: Int) {
