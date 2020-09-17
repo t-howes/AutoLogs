@@ -13,7 +13,6 @@ import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
 import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.models.*
-import com.duskencodings.autologs.notifications.NotificationService
 
 class CarPreferencesActivity : BaseActivity() {
 
@@ -45,7 +44,7 @@ class CarPreferencesActivity : BaseActivity() {
 
   private fun initUi() {
     oilLayout.findViewById<TextView>(R.id.header).text = getString(R.string.oil)
-    setupSpinnerAdapter(oilLayout.findViewById(R.id.spinner), R.array.oil_preferences)
+    setupSpinnerAdapter(oilLayout.findViewById(R.id.spinner), R.array.preferences_selection)
     airFilterLayout.findViewById<TextView>(R.id.header).text = getString(R.string.air_filter)
     setupSpinnerAdapter(airFilterLayout.findViewById(R.id.spinner), R.array.air_filter_preferences)
   }

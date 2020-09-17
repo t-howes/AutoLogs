@@ -33,8 +33,7 @@ class PreferenceInputDialogFragment : DialogFragment() {
     super.onViewCreated(view, savedInstanceState)
     val carWork: CarWork = arguments?.getParcelable(CAR_WORK)!!
     header.text = carWork.name
-    setupSpinnerAdapter(spinner, R.array.oil_preferences)
-    customInputContainer.visibility = View.VISIBLE
+    setupSpinnerAdapter(spinner, R.array.preferences_selection)
     submit.setOnClickListener {
       val miles = milesInput.text.toString().toIntOrNull()
       val months = monthsInput.text.toString().toIntOrNull()
@@ -48,19 +47,21 @@ class PreferenceInputDialogFragment : DialogFragment() {
   }
 
   private fun setupSpinnerAdapter(spinner: Spinner, @ArrayRes arrayRes: Int) {
-    val items = resources.getStringArray(arrayRes).toMutableList().apply { remove(getString(R.string.other)) }
+    val items = resources.getStringArray(arrayRes)
     val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, items)
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     spinner.adapter = adapter
     spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
       override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        val isOther = position == items.size - 1
         val item = items[position]
         val pair = item.split("/")
-        val miles = pair.first().trim().trim()
-        val months = pair.last().trim()
+        val miles = pair.first().trim().trim().toIntOrNull()?.toString()
+        val months = pair.last().trim().toIntOrNull()?.toString()
 
         milesInput.setText(miles)
         monthsInput.setText(months)
+        customInputContainer.visibility = if (isOther) View.VISIBLE else View.GONE
       }
 
       override fun onNothingSelected(parent: AdapterView<*>?) { }

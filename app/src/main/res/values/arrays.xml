@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="oil_preferences">
+    <string-array name="preferences_selection">
         <item>1000 Miles / 1 Month</item>
         <item>2000 Miles / 2 Months</item>
         <item>3000 Miles / 3 Months</item>

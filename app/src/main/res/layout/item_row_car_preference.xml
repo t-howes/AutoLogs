@@ -18,7 +18,7 @@
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_margin="10dp"
         android:dropDownWidth="wrap_content" />
 
     <LinearLayout
@@ -42,6 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
+                android:hint="@string/miles"
                 android:maxLength="5"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -59,6 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
+                android:hint="@string/months"
                 android:digits="123456789"
                 android:maxLength="1"
                 android:maxLines="1" />
