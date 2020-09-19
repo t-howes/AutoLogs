@@ -8,10 +8,7 @@ import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Preference
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.models.ReminderType
-import com.duskencodings.autologs.utils.applySchedulers
-import com.duskencodings.autologs.utils.now
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 
 class RemindersRepository(
     context: Context,
@@ -31,7 +28,7 @@ class RemindersRepository(
         saveReminder(existingReminder.copy(
             expireAtMiles = carWork.odometerReading + pref.miles,
             expireAtDate = pref.months?.toLong()?.let { monthsAway ->
-              (carWork.date ?: now()).plusMonths(monthsAway)
+              carWork.date.plusMonths(monthsAway)
             }
         ))
       }

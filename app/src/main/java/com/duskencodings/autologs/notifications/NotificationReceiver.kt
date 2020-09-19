@@ -1,14 +1,12 @@
 package com.duskencodings.autologs.notifications
 
 import android.app.Notification
-import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.core.app.NotificationManagerCompat
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.utils.log.Logger
-import java.util.*
+import java.util.Calendar
 
 class NotificationReceiver : BroadcastReceiver() {
 
