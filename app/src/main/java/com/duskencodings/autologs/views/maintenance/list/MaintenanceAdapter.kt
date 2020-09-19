@@ -11,11 +11,13 @@ import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.utils.formatted
 import com.duskencodings.autologs.utils.setTextOrHide
 
-class MaintenanceAdapter(context: Context, var data: List<CarWork>)
-      : RecyclerView.Adapter<MaintenanceAdapter.CarWorkViewHolder>() {
+class MaintenanceAdapter(
+    context: Context,
+    var data: List<CarWork>,
+    var onClickListener: ((maintenance: CarWork) -> Unit)? = null
+  ) : RecyclerView.Adapter<MaintenanceAdapter.CarWorkViewHolder>() {
 
   private val inflater = LayoutInflater.from(context)
-  private var onClickListener: ((maintenance: CarWork) -> Unit)? = null
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarWorkViewHolder {
     return CarWorkViewHolder(inflater.inflate(R.layout.item_row_car_work, parent, false))

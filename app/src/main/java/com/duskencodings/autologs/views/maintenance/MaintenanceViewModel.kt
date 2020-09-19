@@ -68,24 +68,22 @@ class MaintenanceViewModel @Inject constructor(
   }
 
   fun saveWork(carWork: CarWork, addReminder: Boolean) {
-    addSub(
-      serviceRepo.saveCarWork(carWork)
-        .applySchedulers()
-        .doOnSubscribe { submitState.value = State.loading() }
-        .doAfterTerminate { submitState.value = State.idle() }
-        .doOnComplete {
-          if (addReminder) {
-            addReminder(carWork)
-          } else {
-            submitState.value = State.success(carWork)
-          }
+    serviceRepo.saveCarWork(carWork)
+      .applySchedulers()
+      .doOnSubscribe { submitState.value = State.loading() }
+      .doAfterTerminate { submitState.value = State.idle() }
+      .doOnComplete {
+        if (addReminder) {
+          addReminder(carWork)
+        } else {
+          submitState.value = State.success(carWork)
         }
-        .subscribe({
-          Logger.i("saveWork subscribe", "saveWork() complete")
-        }, {
-          submitState.value = State.errorWork(it)
-        })
-    )
+      }
+      .subscribe({
+        Logger.i("saveWork subscribe", "saveWork() complete")
+      }, {
+        submitState.value = State.errorWork(it)
+      }).also { addSub(it) }
   }
 
   private fun addReminder(carWork: CarWork) {

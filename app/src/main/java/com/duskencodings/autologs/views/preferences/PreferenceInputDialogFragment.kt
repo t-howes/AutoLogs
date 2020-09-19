@@ -56,8 +56,8 @@ class PreferenceInputDialogFragment : DialogFragment() {
         val isOther = position == items.size - 1
         val item = items[position]
         val pair = item.split("/")
-        val miles = pair.first().trim().trim().toIntOrNull()?.toString()
-        val months = pair.last().trim().toIntOrNull()?.toString()
+        val miles = parseInt(pair.first())
+        val months = parseInt(pair.last())
 
         milesInput.setText(miles)
         monthsInput.setText(months)
@@ -67,6 +67,8 @@ class PreferenceInputDialogFragment : DialogFragment() {
       override fun onNothingSelected(parent: AdapterView<*>?) { }
     }
   }
+
+  private fun parseInt(s: String): String? = s.trim().split(" ").first().toIntOrNull()?.toString()
 
   companion object {
     private const val CAR_WORK = "car_work"

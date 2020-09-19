@@ -37,11 +37,11 @@ class MaintenanceListFragment : BaseFragment() {
 
     initUi()
 
-    maintenanceViewModel.listState.observe(viewLifecycleOwner, Observer {
+    maintenanceViewModel.listState.observeForever {
       it?.let {
         updateFromState(it)
       }
-    })
+    }
     maintenanceViewModel.getLiveCarWorkRecords()
   }
 
@@ -80,8 +80,7 @@ class MaintenanceListFragment : BaseFragment() {
 
   private fun showMaintenanceRecords(maintenanceRecords: List<CarWork>) {
     context?.let { context ->
-      val adapter = MaintenanceAdapter(context, maintenanceRecords)
-      adapter.setOnMaintenanceClickedListener { maintenance ->
+      val adapter = MaintenanceAdapter(context, maintenanceRecords) { maintenance ->
         navigateToMaintenanceDetails(maintenance.id)
       }
 
