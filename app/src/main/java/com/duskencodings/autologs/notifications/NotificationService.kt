@@ -1,31 +1,38 @@
 package com.duskencodings.autologs.notifications
 
-import android.app.AlarmManager
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
+import android.app.Notification.EXTRA_NOTIFICATION_ID
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import androidx.core.app.NotificationCompat
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.models.Reminder
-import java.time.ZoneId
-import java.util.Calendar
-import java.util.Date
+import com.duskencodings.autologs.notifications.NotificationReceiver.Companion.ACTION_SNOOZE
+import com.duskencodings.autologs.notifications.NotificationReceiver.Companion.EXTRA_REMINDER
+import com.duskencodings.autologs.utils.log.Logger
+import com.duskencodings.autologs.utils.notificationManager
+import com.duskencodings.autologs.views.cars.details.CarDetailsActivity
+import java.util.*
 
 object NotificationService {
-  fun scheduleNotifications(context: Context, reminders: List<Reminder>) {
-    reminders.forEach { scheduleNotification(context, it) }
+  fun publishNotifications(context: Context, reminders: List<Reminder>) {
+    reminders.forEachIndexed { index, reminder -> publishNotification(context, reminder, index) }
   }
 
-  private fun scheduleNotification(context: Context, reminder: Reminder) {
-    val delivery: Calendar = reminder.expireAtDate?.let { expireDate ->
-      Calendar.getInstance().apply { time = Date.from(expireDate.atStartOfDay(ZoneId.systemDefault()).toInstant()) }
-     } ?: Calendar.getInstance().apply { add(Calendar.SECOND, 20) }
-
-    scheduleNotification(context, getNotification(context, reminder), reminder.id!!.toInt(), delivery)
+  private fun publishNotification(context: Context, reminder: Reminder, notificationId: Int) {
+    val notification = getNotification(context, reminder, notificationId)
+    createNotificationChannel(context, reminder.name)
+//    scheduleNotification(context, notification, reminder.id!!.toInt(), delivery)
+    publishNotification(context, notification, notificationId)
   }
 
-  private fun scheduleNotification(context: Context, notification: Notification, notificationId: Int, delivery: Calendar) {
+  fun scheduleNotification(context: Context, reminder: Reminder, notificationId: Int, delivery: Calendar = Calendar.getInstance().apply { add(Calendar.SECOND, 5) }) {
+    val notification = getNotification(context, reminder, notificationId)
+    scheduleNotification(context, notification, notificationId, delivery)
+  }
+
+  private fun scheduleNotification(context: Context, notification: Notification, notificationId: Int, delivery: Calendar = Calendar.getInstance().apply { add(Calendar.SECOND, 10) }) {
     // Send an intent to trigger the NotificationReceiver that will publish the notification.
     val notificationIntent = Intent(context, NotificationReceiver::class.java).apply {
       putExtra(NotificationReceiver.NOTIFICATION_ID, notificationId)
@@ -37,17 +44,53 @@ object NotificationService {
     alarmManager.set(AlarmManager.RTC_WAKEUP, delivery.timeInMillis, pendingIntent)
   }
 
-
   fun publishNotification(context: Context, notification: Notification, notificationId: Int) {
-    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    notificationManager.notify(notificationId, notification)
+    context.notificationManager().notify(notificationId, notification)
   }
 
-  private fun getNotification(context: Context, reminder: Reminder): Notification {
-    return Notification.Builder(context, reminder.name).apply {
-      setContentTitle("Service Reminder")
-      setContentText(reminder.pushNotificationText())
-      setSmallIcon(R.mipmap.ic_launcher_round)
-    }.build()
+  fun cancelNotification(context: Context, notificationId: Int) {
+    context.notificationManager().cancel(notificationId)
+  }
+
+  private fun createNotificationChannel(context: Context, name: String) {
+    // Create the NotificationChannel, but only on API 26+ because
+    // the NotificationChannel class is new and not in the support library
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val importance = NotificationManager.IMPORTANCE_DEFAULT
+      val channel = NotificationChannel(name, name, importance)
+      context.notificationManager().createNotificationChannel(channel)
+    }
+  }
+
+  private fun getNotification(context: Context, reminder: Reminder, notificationId: Int): Notification {
+    val snoozeIntent = Intent(context, NotificationReceiver::class.java).apply {
+      action = ACTION_SNOOZE
+      putExtra(EXTRA_NOTIFICATION_ID, notificationId)
+      putExtra(EXTRA_REMINDER, reminder)
+    }
+    val snoozePendingIntent = PendingIntent.getBroadcast(context, 0, snoozeIntent, 0)
+    val action = NotificationCompat.Action.Builder(
+          android.R.drawable.ic_lock_silent_mode, context.getString(R.string.remind_me_tomorrow), snoozePendingIntent
+        )
+        .build()
+
+    return NotificationCompat.Builder(context, reminder.name)
+      .setContentTitle("${reminder.name} Reminder")
+      .setContentText(reminder.pushNotificationText())
+      .setSmallIcon(R.mipmap.ic_launcher_round)
+      .setContentIntent(notificationClickIntent(context, reminder))
+      .addAction(action)
+      .setAutoCancel(true)
+      .build()
+  }
+
+  private fun notificationClickIntent(context: Context, reminder: Reminder): PendingIntent {
+    val carId = reminder.carId
+    val carDetailsIntent = CarDetailsActivity.newIntent(context, carId)
+    Logger.i("Notification clicked", "Starting details screen for carId $carId")
+    return TaskStackBuilder.create(context).run {
+      addNextIntentWithParentStack(carDetailsIntent)
+      getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+    }
   }
 }

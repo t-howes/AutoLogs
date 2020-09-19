@@ -10,6 +10,10 @@ import com.duskencodings.autologs.dagger.injector.Injector
 import com.duskencodings.autologs.dagger.module.AppModule
 import com.duskencodings.autologs.dagger.module.DatabaseModule
 import com.duskencodings.autologs.dagger.module.RepositoryModule
+import com.duskencodings.autologs.models.Reminder
+import com.duskencodings.autologs.models.ReminderType
+import com.duskencodings.autologs.notifications.NotificationService
+import com.duskencodings.autologs.utils.now
 import com.duskencodings.autologs.workers.ReminderWorker
 import io.fabric.sdk.android.Fabric
 import java.util.concurrent.TimeUnit
@@ -33,7 +37,9 @@ class AutoServiceApplication : Application() {
   }
 
   private fun startReminders() {
-//    val work = PeriodicWorkRequest.Builder(ReminderWorker::class.java, ReminderWorker.RUNTIME_INTERVAL, TimeUnit.HOURS).build()
-//    WorkManager.getInstance(this).enqueueUniquePeriodicWork("carServiceReminders", ExistingPeriodicWorkPolicy.KEEP, work)
+//    NotificationService.scheduleNotification(this, Reminder(10, 1, "Oil", "Change your oil!", ReminderType.UPCOMING_MAINTENANCE, 128000, now(), 132000, null), 0)
+
+    val work = PeriodicWorkRequest.Builder(ReminderWorker::class.java, ReminderWorker.RUNTIME_INTERVAL, TimeUnit.HOURS).build()
+    WorkManager.getInstance(this).enqueueUniquePeriodicWork("carServiceReminders", ExistingPeriodicWorkPolicy.KEEP, work)
   }
 }

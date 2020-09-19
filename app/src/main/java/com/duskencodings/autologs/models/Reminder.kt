@@ -1,12 +1,15 @@
 package com.duskencodings.autologs.models
 
+import android.os.Parcelable
 import androidx.room.*
 import com.duskencodings.autologs.database.RemindersDb
 import com.duskencodings.autologs.models.Reminder.Companion.TABLE_NAME
 import com.duskencodings.autologs.utils.formatted
+import kotlinx.android.parcel.Parcelize
 import java.time.LocalDate
 import java.util.*
 
+@Parcelize
 @Entity(tableName = TABLE_NAME,
         foreignKeys = [(ForeignKey(entity = Car::class,
         parentColumns = arrayOf("id"),
@@ -22,7 +25,7 @@ data class Reminder(@PrimaryKey(autoGenerate = true)
                     val currentMiles: Int,
                     val currentDate: LocalDate,
                     val expireAtMiles: Int,
-                    val expireAtDate: LocalDate?) {
+                    val expireAtDate: LocalDate?): Parcelable {
 
   companion object {
     const val TABLE_NAME = "reminders"

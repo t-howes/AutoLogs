@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.duskencodings.autologs.dagger.injector.Injector
-import com.duskencodings.autologs.models.Car
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.notifications.NotificationService
 import com.duskencodings.autologs.repo.CarRepository
@@ -50,31 +49,25 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
    * These can either be because the Reminder's expiration date or x miles have past.
    */
   override fun doWork(): Result {
-    return Single.create<Result> { emitter ->
-      findReminders()
-          .subscribe({
-            Logger.i("ReminderWorker", "Successfully scheduled Reminders.")
-            emitter.onSuccess(Result.success())
-          }, {
-            Logger.d("ReminderWorker", "Failed to schedule Reminders.")
-            emitter.onSuccess(Result.failure())
-          }).also { addSub(it) }
-    }.blockingGet()
+    findRemindersForToday()
+        .applySchedulers()
+        .subscribe({
+          Logger.i("ReminderWorker", "Successfully scheduled Reminders.")
+        }, {
+          Logger.d("ReminderWorker", "Failed to schedule Reminders.")
+        }).also { addSub(it) }
+
+    return Result.success()
   }
 
-  private fun findReminders(): Single<List<Reminder>> {
+  private fun findRemindersForToday(): Single<List<Reminder>> {
     return remindersRepo.getAllReminders()
-        .applySchedulers(observeOn = Schedulers.io())
         .map { reminders ->
           reminders.filter { it.expireAtDate?.isBefore(now()) == false } // TODO: check miles
         }
         .doOnSuccess { reminders ->
-          NotificationService.scheduleNotifications(applicationContext, reminders)
+          NotificationService.publishNotifications(applicationContext, reminders)
         }
-  }
-
-  private fun getRemindersForCar(car: Car): List<Reminder> {
-    return listOf()
   }
 
   private fun addSub(disposable: Disposable?) {

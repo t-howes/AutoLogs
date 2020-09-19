@@ -1,5 +1,7 @@
 package com.duskencodings.autologs.views.cars.list
 
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.Observer
 import android.os.Bundle
 import androidx.annotation.IdRes
@@ -108,5 +110,9 @@ class CarListActivity : BaseActivity(), CarClickListener {
       }
       else -> false
     }
+  }
+
+  companion object {
+    fun newIntent(context: Context): Intent = Intent(context, CarListActivity::class.java)
   }
 }

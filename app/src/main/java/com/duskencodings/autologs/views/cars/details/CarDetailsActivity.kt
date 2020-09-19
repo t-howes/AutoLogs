@@ -16,9 +16,16 @@ class CarDetailsActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_car_details)
+    init()
+  }
 
+  override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+    init()
+  }
+
+  private fun init() {
     carId = intent?.extras?.getLong(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
-
     initUi()
   }
 
@@ -35,6 +42,7 @@ class CarDetailsActivity : BaseActivity() {
     fun newIntent(context: Context, carId: Long): Intent {
       return Intent(context, CarDetailsActivity::class.java).apply {
         putExtra(CAR_ID, carId)
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
       }
     }
   }

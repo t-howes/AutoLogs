@@ -1,5 +1,6 @@
 package com.duskencodings.autologs.utils
 
+import android.app.NotificationManager
 import android.content.Context
 import android.widget.Toast
 import androidx.annotation.StringRes
@@ -13,3 +14,5 @@ fun Context?.showToast(text: String?, duration: Int = Toast.LENGTH_LONG) {
   if (this == null || text == null) return
   Toast.makeText(this, text, duration).show()
 }
+
+fun Context.notificationManager() = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
