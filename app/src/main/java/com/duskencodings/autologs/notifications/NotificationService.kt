@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.notifications.NotificationReceiver.Companion.ACTION_SNOOZE
@@ -77,7 +78,8 @@ object NotificationService {
     return NotificationCompat.Builder(context, reminder.name)
       .setContentTitle("${reminder.name} Reminder")
       .setContentText(reminder.pushNotificationText())
-      .setSmallIcon(R.mipmap.ic_launcher_round)
+      .setSmallIcon(R.drawable.ic_launcher_foreground)
+      .setColor(ContextCompat.getColor(context, R.color.colorAccent))
       .setContentIntent(notificationClickIntent(context, reminder))
       .addAction(action)
       .setAutoCancel(true)
