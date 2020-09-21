@@ -10,6 +10,7 @@ import com.duskencodings.autologs.R
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.utils.formatted
 import com.duskencodings.autologs.utils.setTextOrHide
+import com.duskencodings.autologs.utils.visible
 
 class MaintenanceAdapter(
     context: Context,
@@ -42,8 +43,8 @@ class MaintenanceAdapter(
         val showDate = position == 0 || work.date != getItem(position - 1).date
 
         itemView.apply {
-          dateContainer.visibility = if (showDate) View.VISIBLE else View.GONE
-          defaultDivider.visibility = if (showDate) View.GONE else View.VISIBLE
+          dateContainer.visible = showDate
+          defaultDivider.visible = !showDate
           date.text = work.date.formatted()
           name.text = work.name
           miles.text = work.odometerReading.toString()

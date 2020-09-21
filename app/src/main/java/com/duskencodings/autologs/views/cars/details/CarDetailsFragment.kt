@@ -10,6 +10,7 @@ import com.duskencodings.autologs.base.BaseFragment
 import com.duskencodings.autologs.utils.formatMoney
 import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.models.*
+import com.duskencodings.autologs.utils.visible
 import com.duskencodings.autologs.views.maintenance.upcoming.ReminderAdapter
 import kotlinx.android.synthetic.main.fragment_car_details.*
 
@@ -61,6 +62,10 @@ class CarDetailsFragment : BaseFragment() {
 
   private fun onCarReceived(car: Car) {
     setTitle(car.name)
+    val hasNotes = !car.notes.isNullOrBlank()
+    notes_label.visible = hasNotes
+    notes.visible = hasNotes
+    notes.text = car.notes
     // TODO
 //    Picasso.get().load("file: some file")
 //        .transform(Crop())
@@ -74,6 +79,7 @@ class CarDetailsFragment : BaseFragment() {
   }
 
   private fun onRemindersReceived(reminders: List<Reminder>) {
+    reminders_label.visible = reminders.isNotEmpty()
     carDetailsViewModel.reminderAdapter.setReminders(reminders)
   }
 

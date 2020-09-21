@@ -5,5 +5,11 @@ import android.widget.TextView
 
 fun TextView.setTextOrHide(text: String?) {
   setText(text)
-  visibility = if (text.isNullOrBlank()) View.GONE else View.VISIBLE
+  visible = !text.isNullOrBlank()
 }
+
+var View.visible
+  get() = visibility == View.VISIBLE
+  set(visible) {
+    visibility = if (visible) View.VISIBLE else View.GONE
+  }

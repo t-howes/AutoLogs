@@ -14,6 +14,7 @@ import com.duskencodings.autologs.base.BaseActivity
 import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.models.Car
 import com.duskencodings.autologs.models.Resource
+import com.duskencodings.autologs.utils.visible
 import com.duskencodings.autologs.views.cars.add.AddCarActivity
 import com.duskencodings.autologs.views.cars.details.CarDetailsActivity
 
@@ -67,8 +68,8 @@ class CarListActivity : BaseActivity(), CarClickListener {
   private fun showCars(cars: List<Car>) {
     val hasCars = cars.isNotEmpty()
     carsViewModel.adapter.setItems(cars)
-    carsList.visibility = if (hasCars) View.VISIBLE else View.GONE
-    emptyResults.visibility = if (hasCars) View.GONE else View.VISIBLE
+    carsList.visible = hasCars
+    emptyResults.visible = !hasCars
   }
 
   private fun navigateToCarDetails(id: Long) {

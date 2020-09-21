@@ -87,9 +87,8 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
     nameSpinner.onItemSelectedListener = object : OnItemSelectedListener {
       override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val isOther = adapter.getItem(position) == getString(R.string.other)
-        val extraInputVisibility = if (isOther) View.VISIBLE else View.GONE
-        nameLayout.visibility = extraInputVisibility
-        aftermarketModificationsCheckbox.visibility = extraInputVisibility
+        nameLayout.visible = isOther
+        aftermarketModificationsCheckbox.visible = isOther
 
         if (isOther) {
           nameLayout.requestFocus()
@@ -217,7 +216,7 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
   }
 
   private fun validName(): Boolean {
-    return (nameLayout.visibility == View.GONE && nameSpinner.selectedItem.toString() != getString(R.string.other))
+    return (!nameLayout.visible && nameSpinner.selectedItem.toString() != getString(R.string.other))
             || FormValidator.validateRequired(this, nameLayout)
   }
 
@@ -225,7 +224,7 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
     maintenanceViewModel.carId?.let { carId ->
       val selectedName = nameSpinner.selectedItem.toString()
 
-      val name = if (nameSpinner.visibility == View.GONE || selectedName == getString(R.string.other)) {
+      val name = if (!nameSpinner.visible || selectedName == getString(R.string.other)) {
         nameInput.text.toString()
       } else {
         selectedName

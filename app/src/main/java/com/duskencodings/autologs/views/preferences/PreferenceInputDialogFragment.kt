@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
 import com.duskencodings.autologs.models.CarWork
+import com.duskencodings.autologs.utils.visible
 import kotlinx.android.synthetic.main.fragment_preference_input.*
 import kotlinx.android.synthetic.main.item_row_car_preference.*
 
@@ -61,7 +62,7 @@ class PreferenceInputDialogFragment : DialogFragment() {
 
         milesInput.setText(miles)
         monthsInput.setText(months)
-        customInputContainer.visibility = if (isOther) View.VISIBLE else View.GONE
+        customInputContainer.visible = isOther
       }
 
       override fun onNothingSelected(parent: AdapterView<*>?) { }

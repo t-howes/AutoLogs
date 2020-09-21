@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.duskencodings.autologs.R
+import com.duskencodings.autologs.utils.visible
 
 class LoadingView : LinearLayout {
 
@@ -29,7 +30,7 @@ class LoadingView : LinearLayout {
   }
 
   fun show(show: Boolean = true) {
-    loadingView.visibility = if (show) View.VISIBLE else View.GONE
+    loadingView.visible = show
   }
 
   fun setMessage(text: String? = context.getString(R.string.loading)) {

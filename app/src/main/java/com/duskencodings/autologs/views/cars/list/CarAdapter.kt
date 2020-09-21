@@ -10,6 +10,7 @@ import androidx.appcompat.widget.PopupMenu
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.utils.clearAndAdd
 import com.duskencodings.autologs.models.Car
+import com.duskencodings.autologs.utils.visible
 
 
 class CarAdapter(context: Context, private val cars: MutableList<Car>) : RecyclerView.Adapter<CarViewHolder>() {
@@ -38,7 +39,7 @@ class CarViewHolder(view: View) : RecyclerView.ViewHolder(view) {
   fun bind(car: Car) {
     val context = itemView.context
     itemView.name.text = car.name
-    itemView.name.visibility = if (car.name.isBlank()) View.GONE else View.VISIBLE
+    itemView.name.visible = car.name.isNotBlank()
     val yearMakeModel = "${car.year} ${car.make} ${car.model}"
     itemView.yearMakeModel.text = yearMakeModel
     itemView.container.setOnClickListener { (context as? CarClickListener)?.onCarClicked(car) }

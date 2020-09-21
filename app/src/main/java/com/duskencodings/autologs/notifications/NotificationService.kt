@@ -89,7 +89,6 @@ object NotificationService {
   private fun notificationClickIntent(context: Context, reminder: Reminder): PendingIntent {
     val carId = reminder.carId
     val carDetailsIntent = CarDetailsActivity.newIntent(context, carId)
-    Logger.i("Notification clicked", "Starting details screen for carId $carId")
     return TaskStackBuilder.create(context).run {
       addNextIntentWithParentStack(carDetailsIntent)
       getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)

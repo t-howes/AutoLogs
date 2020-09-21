@@ -13,6 +13,7 @@ import com.duskencodings.autologs.models.CAR_ID
 import com.duskencodings.autologs.models.CAR_ID_DEFAULT
 import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Resource
+import com.duskencodings.autologs.utils.visible
 import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
 import com.duskencodings.autologs.views.maintenance.details.CarWorkDetailsActivity
 import java.lang.NullPointerException
@@ -86,14 +87,14 @@ class MaintenanceListFragment : BaseFragment() {
 
       carWorkList.adapter = adapter
       carWorkList.layoutManager = LinearLayoutManager(context)
-      carWorkList.visibility = View.VISIBLE
-      emptyResults.visibility = View.GONE
+      carWorkList.visible = true
+      emptyResults.visible = false
     }
   }
 
   private fun showNoResults() {
-    carWorkList.visibility = View.GONE
-    emptyResults.visibility = View.VISIBLE
+    carWorkList.visible = false
+    emptyResults.visible = true
   }
 
   companion object {

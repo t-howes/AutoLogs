@@ -36,7 +36,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
   }
 
   companion object {
-    const val RUNTIME_INTERVAL = 8L
+    const val RUNTIME_INTERVAL = 3L
   }
 
   override fun onStopped() {

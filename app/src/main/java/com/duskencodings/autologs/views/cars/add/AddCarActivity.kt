@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.activity_add_car.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
 import com.duskencodings.autologs.models.*
+import com.duskencodings.autologs.utils.visible
 import com.duskencodings.autologs.validation.FormValidator
 
 class AddCarActivity : BaseActivity() {
@@ -41,7 +42,7 @@ class AddCarActivity : BaseActivity() {
   }
 
   private fun initUi() {
-    lastUpdate.visibility = View.GONE
+    lastUpdate.visible = false
 
     if (carViewModel.carId == null) {
       setTitle(getString(R.string.add_car))
@@ -94,7 +95,7 @@ class AddCarActivity : BaseActivity() {
     makeInput.setText(car.make)
     modelInput.setText(car.model)
     notesInput.setText(car.notes)
-    lastUpdate.visibility = View.VISIBLE
+    lastUpdate.visible = true
     lastUpdate.text = getString(R.string.last_updated, car.lastUpdate)
   }
 
