@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 class PreferencesViewModel @Inject constructor(private val repo: PreferencesRepository) : BaseViewModel() {
   var prefsState: MutableLiveData<Resource<List<Preference>>> = MutableLiveData()
-  var submitState: MutableLiveData<Resource<Boolean>> = MutableLiveData()
+  var submitState: MutableLiveData<Resource<Preference>> = MutableLiveData()
   private lateinit var prefsLiveData: LiveData<List<Preference>>
   private lateinit var prefsObserver: Observer<List<Preference>>
 
@@ -40,15 +40,14 @@ class PreferencesViewModel @Inject constructor(private val repo: PreferencesRepo
   }
 
   fun updatePreference(pref: Preference) {
-    addSub(
-      repo.savePreference(pref)
-        .applySchedulers()
-        .doOnSubscribe { prefsState.value = Resource.loading() }
-        .doAfterTerminate { prefsState.value = Resource.idle() }
-        .subscribe({
-          submitState.value = Resource.success(true)
-        }, {
-          submitState.value = Resource.error(it)
-        }))
+    repo.savePreference(pref)
+      .applySchedulers()
+      .doOnSubscribe { prefsState.value = Resource.loading() }
+      .doAfterTerminate { prefsState.value = Resource.idle() }
+      .subscribe({
+        submitState.value = Resource.success(it)
+      }, {
+        submitState.value = Resource.error(it)
+      }).also { addSub(it) }
   }
 }

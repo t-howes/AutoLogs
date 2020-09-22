@@ -32,10 +32,6 @@ class MaintenanceAdapter(
   fun getItem(position: Int) = data[position]
   fun indexOf(carWork: CarWork) = data.indexOf(carWork)
 
-  fun setOnMaintenanceClickedListener(onClick: (maintenance: CarWork) -> Unit) {
-    onClickListener = onClick
-  }
-
   inner class CarWorkViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     fun bind(carWork: CarWork?) {
       carWork?.let { work ->

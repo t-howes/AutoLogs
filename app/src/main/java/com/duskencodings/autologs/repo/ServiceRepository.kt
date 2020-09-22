@@ -2,7 +2,6 @@ package com.duskencodings.autologs.repo
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import com.duskencodings.autologs.base.BaseRepository
@@ -20,9 +19,7 @@ class ServiceRepository(context: Context,
     return carWorkDb.getCarWork(id)
   }
 
-  fun saveCarWork(carWork: CarWork): Completable {
-    return Completable.fromCallable {
-      carWorkDb.insertOrUpdateCarWork(carWork)
-    }.subscribeOn(Schedulers.io())
+  fun saveCarWork(carWork: CarWork): CarWork {
+    return carWorkDb.insertOrUpdateCarWork(carWork)
   }
 }

@@ -2,30 +2,39 @@ package com.duskencodings.autologs.models
 
 import android.os.Parcelable
 import androidx.room.*
-import com.duskencodings.autologs.database.RemindersDb
 import com.duskencodings.autologs.models.Reminder.Companion.TABLE_NAME
 import com.duskencodings.autologs.utils.formatted
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalDate
-import java.util.*
+import java.util.Locale
 
 @Parcelize
 @Entity(tableName = TABLE_NAME,
-        foreignKeys = [(ForeignKey(entity = Car::class,
+    foreignKeys = [
+      ForeignKey(entity = Car::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("carId"),
         onDelete = ForeignKey.CASCADE,
-        onUpdate = ForeignKey.NO_ACTION))])
+        onUpdate = ForeignKey.NO_ACTION
+      ),
+      ForeignKey(entity = CarWork::class,
+          parentColumns = arrayOf("id"),
+          childColumns = arrayOf("carWorkId"),
+          onDelete = ForeignKey.CASCADE,
+          onUpdate = ForeignKey.NO_ACTION
+      )
+    ])
 data class Reminder(@PrimaryKey(autoGenerate = true)
                     val id: Long?,
-                    val carId: Long ,
+                    val carId: Long,
+                    val carWorkId: Long,
                     val name: String,
                     val description: String,
                     val type: ReminderType = ReminderType.BASIC,
                     val currentMiles: Int,
                     val currentDate: LocalDate,
                     val expireAtMiles: Int,
-                    val expireAtDate: LocalDate?): Parcelable {
+                    val expireAtDate: LocalDate): Parcelable {
 
   companion object {
     const val TABLE_NAME = "reminders"
@@ -34,7 +43,7 @@ data class Reminder(@PrimaryKey(autoGenerate = true)
   fun pushNotificationText(): String {
     var message = "Don't forget to service your ${name.toLowerCase(Locale.getDefault())} at $expireAtMiles miles"
 
-    expireAtDate?.formatted()?.let { date ->
+    expireAtDate.formatted().let { date ->
       message += " or by $date"
     }
 

@@ -85,9 +85,19 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
     remindersLiveData = remindersRepo.getLiveReminders(carId)
     remindersObserver = Observer {
       Observable.just(it)
+        .applySchedulers()
+        .map { reminders ->
+          // for each reminder name group (carWork name), find reminder
+          // with the latest date (newest reminder).
+          // flatten reminders and sort by miles (lowest first).
+          reminders // TODO: move to SQL/Room query
+              .groupBy { reminder -> reminder.name }
+              .mapNotNull { group -> group.value.maxBy { reminder -> reminder.expireAtMiles } }
+              .sortedBy { reminder -> reminder.expireAtMiles }
+        }
         .doOnNext { state.onNext(State.loadingReminders()) }
         .subscribe({ reminders ->
-          state.onNext(State.successReminders(reminders.sortedBy { reminder -> reminder.expireAtDate }))
+          state.onNext(State.successReminders(reminders))
         }, { error ->
           state.onNext(State.error(error))
         }).also { addSub(it) }

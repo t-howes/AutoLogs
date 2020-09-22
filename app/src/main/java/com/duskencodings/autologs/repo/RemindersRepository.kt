@@ -18,18 +18,18 @@ class RemindersRepository(
   fun getAllReminders(): Single<List<Reminder>> = remindersDb.getAllReminders()
   fun getReminders(carId: Long): Single<List<Reminder>> = remindersDb.getReminders(carId)
   fun getLiveReminders(carId: Long): LiveData<List<Reminder>> = remindersDb.getLiveReminders(carId)
-  private fun getReminder(carId: Long, jobName: String): Single<Reminder> = remindersDb.getReminderForCarByJobName(carId, jobName)
+  private fun getReminder(carWorkId: Long): Single<Reminder> = remindersDb.getByCarWork(carWorkId)
   private fun saveReminder(reminder: Reminder): Reminder = remindersDb.insertOrUpdate(reminder)
+  fun getUpcomingReminders(carId: Int): Single<List<Reminder>> = remindersDb.getUpcomingReminders(carId)
+  fun getNotificationReminders(): Single<List<Reminder>> = remindersDb.getNotificationReminders()
 
   fun addReminder(carWork: CarWork, pref: Preference): Single<Reminder> {
-    return getReminder(carWork.carId, carWork.name)
+    return getReminder(carWork.id!!)
       .map { existingReminder ->
         // update the existing Reminder with new expiration fields
         saveReminder(existingReminder.copy(
             expireAtMiles = carWork.odometerReading + pref.miles,
-            expireAtDate = pref.months?.toLong()?.let { monthsAway ->
-              carWork.date.plusMonths(monthsAway)
-            }
+            expireAtDate = pref.getExpirationDate(carWork)
         ))
       }
       .onErrorReturn {
@@ -41,15 +41,14 @@ class RemindersRepository(
     return Reminder(
         id = null,
         carId = carWork.carId,
+        carWorkId = carWork.id!!,
         name = carWork.name,
         description = carWork.notes ?: "",
         type = ReminderType.UPCOMING_MAINTENANCE,
         currentMiles = carWork.odometerReading,
         currentDate = carWork.date,
         expireAtMiles = carWork.odometerReading + pref.miles,
-        expireAtDate = pref.months?.toLong()?.let { carWork.date.plusMonths(it) }
+        expireAtDate = pref.getExpirationDate(carWork)
     )
   }
-
-  fun getUpcomingReminders(carId: Int): Single<List<Reminder>> = remindersDb.getUpcomingReminders(carId)
 }

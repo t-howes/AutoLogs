@@ -15,7 +15,6 @@ import com.duskencodings.autologs.utils.now
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class ReminderWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
@@ -35,10 +34,6 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
     Injector.component.inject(this)
   }
 
-  companion object {
-    const val RUNTIME_INTERVAL = 3L
-  }
-
   override fun onStopped() {
     super.onStopped()
     clearDisposables()
@@ -51,7 +46,8 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
   override fun doWork(): Result {
     findRemindersForToday()
         .applySchedulers()
-        .subscribe({
+        .subscribe({ reminders ->
+          NotificationService.publishNotifications(applicationContext, reminders)
           Logger.i("ReminderWorker", "Successfully scheduled Reminders.")
         }, {
           Logger.d("ReminderWorker", "Failed to schedule Reminders.")
@@ -61,13 +57,10 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
   }
 
   private fun findRemindersForToday(): Single<List<Reminder>> {
-    return remindersRepo.getAllReminders()
-        .map { reminders ->
-          reminders.filter { it.expireAtDate?.isBefore(now()) == false } // TODO: check miles
-        }
-        .doOnSuccess { reminders ->
-          NotificationService.publishNotifications(applicationContext, reminders)
-        }
+    return remindersRepo.getNotificationReminders()
+//        .map { reminders ->
+//          reminders.filter { it.expireAtDate?.isBefore(now()) == false } // TODO: check miles
+//        }
   }
 
   private fun addSub(disposable: Disposable?) {

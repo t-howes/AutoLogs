@@ -50,7 +50,7 @@ class ReminderAdapter(context: Context,
         name.text = reminder.name
         due_on_miles.text = "${reminder.expireAtMiles} miles"
         description.setTextOrHide(reminder.description)
-        due_on_date.setTextOrHide(reminder.expireAtDate?.formatted())
+        due_on_date.setTextOrHide(reminder.expireAtDate.formatted())
 
         setOnClickListener {
           onClick.invoke(reminder)

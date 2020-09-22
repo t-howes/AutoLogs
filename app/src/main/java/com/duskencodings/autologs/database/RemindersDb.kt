@@ -24,8 +24,8 @@ interface RemindersDb {
   @Query("SELECT * FROM $TABLE_NAME WHERE id = :id")
   fun getReminder(id: Long): Single<Reminder>
 
-  @Query("SELECT * FROM $TABLE_NAME WHERE carId = :carId AND name = :jobName")
-  fun getReminderForCarByJobName(carId: Long, jobName: String): Single<Reminder>
+  @Query("SELECT * FROM $TABLE_NAME WHERE carWorkId = :carWorkId")
+  fun getByCarWork(carWorkId: Long): Single<Reminder>
 
   @Insert
   fun addReminder(reminder: Reminder): Long
@@ -53,5 +53,34 @@ interface RemindersDb {
     GROUP BY name
   """)
   fun getUpcomingReminders(carId: Int): Single<List<Reminder>>
-}
 
+  /**
+  TABLE
+  +---------+----------  +----------+
+  | carId   | name       | miles    |
+  +---------+------------+----------+
+  | 1       |        oil | 100      |
+  | 1       | air filter | 150      |
+  | 1       |        oil | 200      |
+  | 1       |        oil | 250      |
+  | 2       |        oil | 100      |
+  | 2       | air filter | 200      |
+  | 2       |        oil | 400      |
+  +---------+------------+----------+
+
+  RESULT
+  +---------+----------  +----------+
+  | carId   | name       | miles    |
+  +---------+------------+----------+
+  | 1       | air filter | 150      |
+  | 1       |        oil | 250      |
+  | 2       | air filter | 200      |
+  | 2       |        oil | 400      |
+  +---------+------------+----------+
+   */
+  @Query("""
+    SELECT *, MAX(expireAtMiles) FROM $TABLE_NAME
+    GROUP BY carId, name
+  """)
+  fun getNotificationReminders(): Single<List<Reminder>>
+}

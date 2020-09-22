@@ -11,6 +11,9 @@ import com.duskencodings.autologs.repo.RemindersRepository
 import com.duskencodings.autologs.repo.ServiceRepository
 import com.duskencodings.autologs.utils.log.Logger
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MaintenanceViewModel @Inject constructor(
@@ -36,6 +39,7 @@ class MaintenanceViewModel @Inject constructor(
             .applySchedulers()
             .doOnSubscribe { listState.value = Resource.loading() }
             .doAfterTerminate { listState.value = Resource.idle() }
+            .debounce(500, TimeUnit.MILLISECONDS)
             .map { workList ->
               // sort by mileage, group by date
               workList.sortedByDescending { work -> work.odometerReading }
@@ -68,11 +72,15 @@ class MaintenanceViewModel @Inject constructor(
   }
 
   fun saveWork(carWork: CarWork, addReminder: Boolean) {
-    serviceRepo.saveCarWork(carWork)
+    Single.just(carWork)
+      .subscribeOn(Schedulers.io())
+      .map {
+        serviceRepo.saveCarWork(carWork)
+      }
       .applySchedulers()
       .doOnSubscribe { submitState.value = State.loading() }
       .doAfterTerminate { submitState.value = State.idle() }
-      .doOnComplete {
+      .doOnSuccess {
         if (addReminder) {
           addReminder(carWork)
         } else {
