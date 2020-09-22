@@ -1,11 +1,11 @@
 package com.duskencodings.autologs.views.maintenance.list
 
-import androidx.lifecycle.Observer
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_car_work_list.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseFragment
@@ -87,6 +87,12 @@ class MaintenanceListFragment : BaseFragment() {
 
       carWorkList.adapter = adapter
       carWorkList.layoutManager = LinearLayoutManager(context)
+      carWorkList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+          super.onScrollStateChanged(recyclerView, newState)
+          add.visible = newState == RecyclerView.SCROLL_STATE_IDLE
+        }
+      })
       carWorkList.visible = true
       emptyResults.visible = false
     }

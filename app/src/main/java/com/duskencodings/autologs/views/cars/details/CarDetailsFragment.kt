@@ -63,8 +63,7 @@ class CarDetailsFragment : BaseFragment() {
   private fun onCarReceived(car: Car) {
     setTitle(car.name)
     val hasNotes = !car.notes.isNullOrBlank()
-    notes_label.visible = hasNotes
-    notes.visible = hasNotes
+    notes_group.visible = hasNotes
     notes.text = car.notes
     // TODO
 //    Picasso.get().load("file: some file")

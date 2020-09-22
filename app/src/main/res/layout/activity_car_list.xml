@@ -29,7 +29,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:elevation="3dp"
-        android:layout_margin="15dp"
+        android:layout_margin="@dimen/padding_small"
         android:src="@drawable/ic_add_white"/>
 
     <com.duskencodings.autologs.views.custom.LoadingView
