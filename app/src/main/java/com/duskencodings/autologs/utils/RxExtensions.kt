@@ -1,9 +1,6 @@
 package com.duskencodings.autologs.utils
 
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.Single
+import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -17,6 +14,13 @@ fun <T> Observable<T>.applySchedulers(subscribeOn: Scheduler = Schedulers.io(),
 
 fun <T> Single<T>.applySchedulers(subscribeOn: Scheduler = Schedulers.io(),
                                   observeOn: Scheduler = AndroidSchedulers.mainThread()): Single<T> {
+  return this
+      .subscribeOn(subscribeOn)
+      .observeOn(observeOn)
+}
+
+fun <T> Maybe<T>.applySchedulers(subscribeOn: Scheduler = Schedulers.io(),
+                                 observeOn: Scheduler = AndroidSchedulers.mainThread()): Maybe<T> {
   return this
       .subscribeOn(subscribeOn)
       .observeOn(observeOn)

@@ -131,9 +131,7 @@
         app:layout_constraintTop_toBottomOf="@id/notes_bottom_divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="@string/upcoming_maintenance"
-        android:visibility="gone"
-        tools:visibility="visible"/>
+        android:text="@string/no_upcoming_maintenance"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/upcoming_reminders"

@@ -42,7 +42,7 @@ data class CarWork(@PrimaryKey(autoGenerate = true)
                    val type: Type,
                    var date: LocalDate,
                    var cost: Double? = 0.0,
-                   var odometerReading: Int,
+                   var miles: Int,
                    var notes: String? = null) : Parcelable{
 
   enum class Type(val value: Int) {

@@ -40,6 +40,6 @@ class AutoServiceApplication : Application() {
 //    NotificationService.scheduleNotification(this, Reminder(10, 1, "Oil", "Change your oil!", ReminderType.UPCOMING_MAINTENANCE, 128000, now(), 132000, null), 0)
 
     val work = PeriodicWorkRequest.Builder(ReminderWorker::class.java, 3, TimeUnit.MINUTES).build()
-    WorkManager.getInstance(this).enqueueUniquePeriodicWork("carServiceReminders", ExistingPeriodicWorkPolicy.REPLACE, work)
+    WorkManager.getInstance(this).enqueueUniquePeriodicWork("carServiceReminders", ExistingPeriodicWorkPolicy.KEEP, work)
   }
 }

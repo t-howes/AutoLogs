@@ -52,31 +52,38 @@ interface RemindersDb {
     WHERE carId = :carId
     GROUP BY name
   """)
-  fun getUpcomingReminders(carId: Int): Single<List<Reminder>>
+  fun getLiveUpcomingReminders(carId: Long): LiveData<List<Reminder>>
 
   /**
-  TABLE
-  +---------+----------  +----------+
-  | carId   | name       | miles    |
-  +---------+------------+----------+
-  | 1       |        oil | 100      |
-  | 1       | air filter | 150      |
-  | 1       |        oil | 200      |
-  | 1       |        oil | 250      |
-  | 2       |        oil | 100      |
-  | 2       | air filter | 200      |
-  | 2       |        oil | 400      |
-  +---------+------------+----------+
-
-  RESULT
-  +---------+----------  +----------+
-  | carId   | name       | miles    |
-  +---------+------------+----------+
-  | 1       | air filter | 150      |
-  | 1       |        oil | 250      |
-  | 2       | air filter | 200      |
-  | 2       |        oil | 400      |
-  +---------+------------+----------+
+   * <p>
+   * TABLE
+   * <p>
+   * <pre>
+   * +---------+------------+----------+
+   * | carId   | name       | miles    |
+   * +---------+------------+----------+
+   * | 1       |        oil | 100      |
+   * | 1       | air filter | 150      |
+   * | 1       |        oil | 200      |
+   * | 1       |        oil | 250      |
+   * | 2       |        oil | 100      |
+   * | 2       | air filter | 200      |
+   * | 2       |        oil | 400      |
+   * +---------+------------+----------+
+   * </pre>
+   * <p>
+   * RESULT
+   * <p>
+   * <pre>
+   * +---------+------------+----------+
+   * | carId   | name       | miles    |
+   * +---------+------------+----------+
+   * | 1       | air filter | 150      |
+   * | 1       |        oil | 250      |
+   * | 2       | air filter | 200      |
+   * | 2       |        oil | 400      |
+   * +---------+------------+----------+
+   * </pre>
    */
   @Query("""
     SELECT *, MAX(expireAtMiles) FROM $TABLE_NAME

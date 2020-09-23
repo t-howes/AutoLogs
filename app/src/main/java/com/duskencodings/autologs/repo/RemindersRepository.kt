@@ -17,10 +17,9 @@ class RemindersRepository(
 
   fun getAllReminders(): Single<List<Reminder>> = remindersDb.getAllReminders()
   fun getReminders(carId: Long): Single<List<Reminder>> = remindersDb.getReminders(carId)
-  fun getLiveReminders(carId: Long): LiveData<List<Reminder>> = remindersDb.getLiveReminders(carId)
   private fun getReminder(carWorkId: Long): Single<Reminder> = remindersDb.getByCarWork(carWorkId)
   private fun saveReminder(reminder: Reminder): Reminder = remindersDb.insertOrUpdate(reminder)
-  fun getUpcomingReminders(carId: Int): Single<List<Reminder>> = remindersDb.getUpcomingReminders(carId)
+  fun getLiveUpcomingReminders(carId: Long): LiveData<List<Reminder>> = remindersDb.getLiveUpcomingReminders(carId)
   fun getNotificationReminders(): Single<List<Reminder>> = remindersDb.getNotificationReminders()
 
   fun addReminder(carWork: CarWork, pref: Preference): Single<Reminder> {
@@ -28,7 +27,7 @@ class RemindersRepository(
       .map { existingReminder ->
         // update the existing Reminder with new expiration fields
         saveReminder(existingReminder.copy(
-            expireAtMiles = carWork.odometerReading + pref.miles,
+            expireAtMiles = carWork.miles + pref.miles,
             expireAtDate = pref.getExpirationDate(carWork)
         ))
       }
@@ -45,9 +44,9 @@ class RemindersRepository(
         name = carWork.name,
         description = carWork.notes ?: "",
         type = ReminderType.UPCOMING_MAINTENANCE,
-        currentMiles = carWork.odometerReading,
+        currentMiles = carWork.miles,
         currentDate = carWork.date,
-        expireAtMiles = carWork.odometerReading + pref.miles,
+        expireAtMiles = carWork.miles + pref.miles,
         expireAtDate = pref.getExpirationDate(carWork)
     )
   }

@@ -78,7 +78,9 @@ class CarDetailsFragment : BaseFragment() {
   }
 
   private fun onRemindersReceived(reminders: List<Reminder>) {
-    reminders_label.visible = reminders.isNotEmpty()
+    reminders_label.text = getString(
+        if (reminders.isEmpty()) R.string.no_upcoming_maintenance else R.string.upcoming_maintenance
+    )
     carDetailsViewModel.reminderAdapter.setReminders(reminders)
   }
 

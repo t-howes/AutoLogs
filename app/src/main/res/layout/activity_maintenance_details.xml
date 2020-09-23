@@ -129,6 +129,12 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
+                android:id="@+id/copyNotesCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/copy_notes"/>
+
+            <CheckBox
                 android:id="@+id/addReminderCheckbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

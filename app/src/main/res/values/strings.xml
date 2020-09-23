@@ -27,6 +27,7 @@
 
     <string name="details">Details</string>
     <string name="maintenance">Maintenance</string>
+    <string name="no_upcoming_maintenance">No upcoming maintenance</string>
     <string name="upcoming_maintenance">Upcoming maintenance</string>
     <string name="modification">Modification</string>
     <string name="modifications" tools:ignore="ExtraTranslation">Modifications</string>
@@ -62,4 +63,6 @@
     <string name="add_reminder">Add reminder?</string>
     <string name="preference_name">Preference name:</string>
     <string name="remind_me_tomorrow">Remind me tomorrow</string>
+    <string name="copy_notes">Copy notes from previous</string>
+    <string name="no_notes_found">No previous notes found</string>
 </resources>

@@ -43,7 +43,7 @@ class MaintenanceAdapter(
           defaultDivider.visible = !showDate
           date.text = work.date.formatted()
           name.text = work.name
-          miles.text = work.odometerReading.toString()
+          miles.text = work.miles.toString()
           notes.setTextOrHide(work.notes)
           container.setOnClickListener {
             onClickListener?.invoke(carWork)

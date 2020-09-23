@@ -22,14 +22,14 @@ class MaintenanceViewModel @Inject constructor(
     private val prefRepo: PreferencesRepository
 ) : BaseViewModel() {
 
-  val detailsState: MutableLiveData<Resource<CarWork>> = MutableLiveData()
   val listState: MutableLiveData<Resource<List<CarWork>>> = MutableLiveData()
-  val submitState: MutableLiveData<State> = MutableLiveData()
+  val state: MutableLiveData<State> = MutableLiveData()
 
   private lateinit var maintenanceLiveData: LiveData<List<CarWork>>
   private lateinit var maintenanceObserver: Observer<List<CarWork>>
   var carId: Long? = null
-  var maintenanceId: Long? = null
+  var workId: Long? = null
+  var previousWork: CarWork? = null
 
   fun getLiveCarWorkRecords() {
     carId?.let {
@@ -42,7 +42,7 @@ class MaintenanceViewModel @Inject constructor(
             .debounce(500, TimeUnit.MILLISECONDS)
             .map { workList ->
               // sort by mileage, group by date
-              workList.sortedByDescending { work -> work.odometerReading }
+              workList.sortedByDescending { work -> work.miles }
             }
             .subscribe({ maintenance ->
               listState.value = Resource.success(maintenance)
@@ -59,15 +59,18 @@ class MaintenanceViewModel @Inject constructor(
   }
 
   fun getMaintenance() {
-    maintenanceId?.let {
-      addSub(serviceRepo.getCarWork(it)
+    workId?.let {
+      addSub(
+        serviceRepo.getCarWork(it)
           .applySchedulers()
-          .doOnSubscribe { detailsState.value = Resource.loading() }
+          .doOnSubscribe { state.value = State.loading() }
+          .doAfterTerminate { state.value = State.idle() }
           .subscribe({ maintenance ->
-            detailsState.value = Resource.success(maintenance)
+            state.value = State.successMaintenance(maintenance)
           }, { error ->
-            detailsState.value = Resource.error(error)
-          }))
+            state.value = State.errorGetWork(error)
+          })
+      )
     }
   }
 
@@ -78,76 +81,106 @@ class MaintenanceViewModel @Inject constructor(
         serviceRepo.saveCarWork(carWork)
       }
       .applySchedulers()
-      .doOnSubscribe { submitState.value = State.loading() }
-      .doAfterTerminate { submitState.value = State.idle() }
-      .doOnSuccess {
+      .doOnSubscribe { state.value = State.loading() }
+      .doAfterTerminate { state.value = State.idle() }
+      .doOnSuccess { work ->
         if (addReminder) {
-          addReminder(carWork)
+          fetchPrefAndAddReminder(work)
         } else {
-          submitState.value = State.success(carWork)
+          state.value = State.successSubmit(work)
         }
       }
       .subscribe({
         Logger.i("saveWork subscribe", "saveWork() complete")
       }, {
-        submitState.value = State.errorWork(it)
+        state.value = State.errorSaveWork(it)
       }).also { addSub(it) }
   }
 
-  private fun addReminder(carWork: CarWork) {
+  private fun fetchPrefAndAddReminder(carWork: CarWork) {
     prefRepo.getPreferenceByCarAndName(carWork.carId, carWork.name)
       .applySchedulers()
       .subscribe({ pref ->
-        remindersRepo.addReminder(carWork, pref)
-            .applySchedulers()
-            .subscribe({
-              Logger.i("Save Work -> Add Reminder", "Successfully saved car work and added reminder (if applicable)")
-              submitState.value = State.success(carWork)
-            }, {
-              Logger.d("Save Work -> Add Reminder", "Failed to add a reminder for ${carWork.name}")
-              submitState.value = State.errorReminder(it)
-            }).also { addSub(it) }
+        addReminder(carWork, pref)
       }, {
         Logger.d("Save Work -> Get Preference", "Failed to get preference/add a reminder for ${carWork.name}")
-        submitState.value = State.errorPref(it, carWork)
+        state.value = State.errorSavePref(it, carWork)
       }).also { addSub(it) }
   }
 
+  private fun addReminder(carWork: CarWork, pref: Preference) {
+    remindersRepo.addReminder(carWork, pref)
+        .applySchedulers()
+        .subscribe({
+          Logger.i("Save Work -> Add Reminder", "Successfully saved car work and added reminder (if applicable)")
+          state.value = State.successSubmit(carWork)
+        }, {
+          Logger.d("Save Work -> Add Reminder", "Failed to add a reminder for ${carWork.name}")
+          state.value = State.errorSaveReminder(it)
+        }).also { addSub(it) }
+  }
+
   fun addReminderFromManualPref(carWork: CarWork, miles: Int, months: Int) {
-    val pref =  Preference(null, carWork.carId, carWork.name, miles, months)
+    val pref = Preference(null, carWork.carId, carWork.name, miles, months)
     remindersRepo.addReminder(carWork, pref)
       .applySchedulers()
       .doOnError {
-        submitState.value = State.errorReminder(it)
+        state.value = State.errorSaveReminder(it)
       }
       .subscribe({
-        submitState.value = State.success(carWork)
+        state.value = State.successSubmit(carWork)
         Logger.i("Save Work -> Add Reminder", "Successfully saved car work and added reminder (if applicable)")
       }, {
         Logger.d("Save Work -> Add Reminder", "Failed to add a reminder for ${carWork.name}")
       }).also { addSub(it) }
   }
 
+  fun copyNotesFromPrevious(jobName: String) {
+    if (previousWork == null || !previousWork!!.name.equals(jobName, true)) {
+      serviceRepo.getPreviousCarWork(jobName)
+        .applySchedulers()
+        .doOnSubscribe { state.value = State.loading() }
+        .doAfterTerminate { state.value = State.idle() }
+        .subscribe({ job ->
+          previousWork = job
+          state.value = State.successPreviousNotes(job.notes)
+        }, {
+          state.value = State.errorPreviousNotes()
+        }).also { addSub(it) }
+    } else {
+      state.value = State.successPreviousNotes(previousWork?.notes)
+    }
+  }
+
   enum class Status {
     IDLE,
     LOADING,
-    SUCCESS,
-    ERROR_PREF,
-    ERROR_REMINDER,
-    ERROR_WORK
+    SUCCESS_MAINTENANCE,
+    SUCCESS_SUBMIT,
+    SUCCESS_PREVIOUS_NOTES,
+    ERROR_SAVE_PREF,
+    ERROR_SAVE_REMINDER,
+    ERROR_GET_WORK,
+    ERROR_SAVE_WORK,
+    ERROR_PREVIOUS_NOTES
   }
 
   data class State(val status: Status,
                    val error: Throwable? = null,
-                   val work: CarWork? = null) {
+                   val work: CarWork? = null,
+                   val notes: String? = null) {
 
     companion object {
       fun idle() = State(Status.IDLE)
       fun loading() = State(Status.LOADING)
-      fun success(work: CarWork) = State(Status.SUCCESS, work = work)
-      fun errorPref(error: Throwable, carWork: CarWork) = State(Status.ERROR_PREF, error = error, work = carWork)
-      fun errorReminder(error: Throwable) = State(Status.ERROR_REMINDER, error = error)
-      fun errorWork(error: Throwable) = State(Status.ERROR_WORK, error = error)
+      fun successMaintenance(work: CarWork) = State(Status.SUCCESS_MAINTENANCE, work = work)
+      fun successSubmit(work: CarWork) = State(Status.SUCCESS_SUBMIT, work = work)
+      fun errorSavePref(error: Throwable, carWork: CarWork) = State(Status.ERROR_SAVE_PREF, error = error, work = carWork)
+      fun errorSaveReminder(error: Throwable) = State(Status.ERROR_SAVE_REMINDER, error = error)
+      fun errorGetWork(error: Throwable) = State(Status.ERROR_GET_WORK, error = error)
+      fun errorSaveWork(error: Throwable) = State(Status.ERROR_SAVE_WORK, error = error)
+      fun successPreviousNotes(notes: String?) = State(Status.SUCCESS_PREVIOUS_NOTES, notes = notes)
+      fun errorPreviousNotes() = State(Status.ERROR_PREVIOUS_NOTES)
     }
   }
 }

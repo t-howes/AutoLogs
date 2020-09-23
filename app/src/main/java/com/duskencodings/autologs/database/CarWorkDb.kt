@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import io.reactivex.Single
 import com.duskencodings.autologs.models.CarWork
+import io.reactivex.Maybe
 
 @Dao
 interface CarWorkDb {
@@ -36,4 +37,12 @@ interface CarWorkDb {
       work
     }
   }
+
+  @Query(
+    """
+      SELECT *, MAX(miles) FROM ${CarWork.TABLE}
+      WHERE name = :name
+    """
+  )
+  fun getPreviousWork(name: String): Single<CarWork>
 }

@@ -3,7 +3,6 @@ package com.duskencodings.autologs.repo
 import android.content.Context
 import androidx.lifecycle.LiveData
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 import com.duskencodings.autologs.base.BaseRepository
 import com.duskencodings.autologs.database.CarWorkDb
 import com.duskencodings.autologs.models.CarWork
@@ -21,5 +20,9 @@ class ServiceRepository(context: Context,
 
   fun saveCarWork(carWork: CarWork): CarWork {
     return carWorkDb.insertOrUpdateCarWork(carWork)
+  }
+
+  fun getPreviousCarWork(name: String): Single<CarWork> {
+    return carWorkDb.getPreviousWork(name)
   }
 }

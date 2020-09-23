@@ -14,7 +14,6 @@ import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
 import com.duskencodings.autologs.models.maintenanceJobs
 import com.duskencodings.autologs.models.CarWork
-import com.duskencodings.autologs.models.Resource
 import com.duskencodings.autologs.utils.*
 import com.duskencodings.autologs.utils.log.Logger
 import com.duskencodings.autologs.validation.FormValidator
@@ -44,20 +43,14 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
       maintenanceViewModel.carId = carId
     }
     if (id != ID_DEFAULT) {
-      maintenanceViewModel.maintenanceId = id
+      maintenanceViewModel.workId = id
     }
 
     initUi()
 
-    maintenanceViewModel.detailsState.observe(this, Observer {
+    maintenanceViewModel.state.observe(this, Observer {
       it?.let {
-        updateDetailsState(it)
-      }
-    })
-
-    maintenanceViewModel.submitState.observe(this, Observer {
-      it?.let {
-        updateSubmitState(it)
+        onStateUpdated(it)
       }
     })
 
@@ -68,11 +61,12 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
     setDisplayHomeAsUpEnabled()
     setupNameSpinner()
 
-    if (maintenanceViewModel.maintenanceId == null) {
+    if (maintenanceViewModel.workId == null) {
       val text = getString(R.string.service)
       setTitle(getString(R.string.add_placeholder, text))
       dateInput.setText(nowFormatted())
     } else {
+      copyNotesCheckbox.visible = false
       submit.text = getString(R.string.save)
     }
 
@@ -100,6 +94,12 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
   }
 
   private fun setupListeners() {
+    copyNotesCheckbox.setOnCheckedChangeListener { _, isChecked ->
+      if (isChecked && validName()) {
+        maintenanceViewModel.copyNotesFromPrevious(getJobName())
+      }
+    }
+
     dateInput.onFocusChangeListener = View.OnFocusChangeListener { p0, hasFocus ->
       if (hasFocus) {
         showDatePicker()
@@ -153,37 +153,35 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
         }.show()
   }
 
-  private fun updateDetailsState(state: Resource<CarWork>) {
-    when (state.status) {
-      Resource.Status.IDLE -> showLoading(false)
-      Resource.Status.LOADING -> showLoading()
-      Resource.Status.ERROR -> state.error?.let {
-        showToast(it.localizedMessage)
-      }
-      Resource.Status.SUCCESS -> {
-        state.data?.let {
-          showMaintenanceDetails(it)
-        }
-      }
-    }
-  }
-
-  private fun updateSubmitState(state: MaintenanceViewModel.State) {
+  private fun onStateUpdated(state: MaintenanceViewModel.State) {
     when (state.status) {
       MaintenanceViewModel.Status.IDLE -> showLoading(false)
       MaintenanceViewModel.Status.LOADING -> showLoading()
-      MaintenanceViewModel.Status.SUCCESS -> finish()
-      MaintenanceViewModel.Status.ERROR_PREF -> {
+      MaintenanceViewModel.Status.SUCCESS_MAINTENANCE -> {
+        state.work?.let {
+          showMaintenanceDetails(it)
+        }
+      }
+      MaintenanceViewModel.Status.SUCCESS_SUBMIT -> finish()
+      MaintenanceViewModel.Status.ERROR_SAVE_PREF -> {
         state.error?.let {
           Logger.d("ERROR_PREF", "Failed to get preference. Set manually...")
         }
 
         state.work?.let { showManualPreferenceInput(it) }
       }
-      MaintenanceViewModel.Status.ERROR_REMINDER,
-      MaintenanceViewModel.Status.ERROR_WORK -> state.error?.let {
+      MaintenanceViewModel.Status.ERROR_SAVE_REMINDER,
+      MaintenanceViewModel.Status.ERROR_SAVE_WORK -> state.error?.let {
         Logger.d("SAVE WORK ERROR", "Failed to save work / add reminder.")
         onError(it)
+      }
+      MaintenanceViewModel.Status.ERROR_GET_WORK -> state.error?.let {
+        showToast(it.localizedMessage)
+      }
+      MaintenanceViewModel.Status.SUCCESS_PREVIOUS_NOTES -> notesInput.setText(state.notes)
+      MaintenanceViewModel.Status.ERROR_PREVIOUS_NOTES -> {
+        copyNotesCheckbox.isChecked = false
+        showToast(R.string.no_notes_found)
       }
     }
   }
@@ -205,7 +203,7 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
     aftermarketModificationsCheckbox.isChecked = carWork.type == CarWork.Type.MODIFICATION
     dateInput.setText(carWork.date.formatted())
     costInput.setText(carWork.cost.formatMoney())
-    milesInput.setText(carWork.odometerReading.toString())
+    milesInput.setText(carWork.miles.toString())
     notesInput.setText(carWork.notes)
   }
 
@@ -222,13 +220,7 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
 
   private fun saveCarWork() {
     maintenanceViewModel.carId?.let { carId ->
-      val selectedName = nameSpinner.selectedItem.toString()
-
-      val name = if (!nameSpinner.visible || selectedName == getString(R.string.other)) {
-        nameInput.text.toString()
-      } else {
-        selectedName
-      }
+      val name = getJobName()
       val date = dateInput.text.toString().toDateOrNull() ?: LocalDate.now()
       val miles = milesInput.text.toString().toInt()
       val cost = costInput.text.toString().removePrefix("$").toDoubleOrNull()
@@ -237,11 +229,21 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
       val addReminder = addReminderCheckbox.isChecked
       // null carId should auto generate an ID in Room
       val newCarWork = CarWork(
-          maintenanceViewModel.maintenanceId, carId,
+          maintenanceViewModel.workId, carId,
           name, type, date, cost, miles, notes)
 
       maintenanceViewModel.saveWork(newCarWork, addReminder)
     } ?: showToast(getString(R.string.error_occurred))
+  }
+
+  private fun getJobName(): String {
+    val selectedName = nameSpinner.selectedItem.toString()
+
+    return if (!nameSpinner.visible || selectedName == getString(R.string.other)) {
+      nameInput.text.toString()
+    } else {
+      selectedName
+    }
   }
 
   private fun showManualPreferenceInput(carWork: CarWork) {
