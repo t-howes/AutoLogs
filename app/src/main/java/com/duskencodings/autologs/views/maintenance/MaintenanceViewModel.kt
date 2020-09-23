@@ -29,6 +29,7 @@ class MaintenanceViewModel @Inject constructor(
   private lateinit var maintenanceObserver: Observer<List<CarWork>>
   var carId: Long? = null
   var workId: Long? = null
+  var previousWorkId: Long? = null
   var previousWork: CarWork? = null
 
   fun getLiveCarWorkRecords() {
@@ -59,14 +60,14 @@ class MaintenanceViewModel @Inject constructor(
   }
 
   fun getMaintenance() {
-    workId?.let {
+    (workId ?: previousWorkId)?.let {
       addSub(
         serviceRepo.getCarWork(it)
           .applySchedulers()
           .doOnSubscribe { state.value = State.loading() }
           .doAfterTerminate { state.value = State.idle() }
           .subscribe({ maintenance ->
-            state.value = State.successMaintenance(maintenance)
+            state.value = State.successMaintenance(maintenance, maintenance.id!! == previousWorkId)
           }, { error ->
             state.value = State.errorGetWork(error)
           })
@@ -168,12 +169,13 @@ class MaintenanceViewModel @Inject constructor(
   data class State(val status: Status,
                    val error: Throwable? = null,
                    val work: CarWork? = null,
+                   val isPreviousWork: Boolean = false,
                    val notes: String? = null) {
 
     companion object {
       fun idle() = State(Status.IDLE)
       fun loading() = State(Status.LOADING)
-      fun successMaintenance(work: CarWork) = State(Status.SUCCESS_MAINTENANCE, work = work)
+      fun successMaintenance(work: CarWork, isPreviousWork: Boolean) = State(Status.SUCCESS_MAINTENANCE, work = work, isPreviousWork = isPreviousWork)
       fun successSubmit(work: CarWork) = State(Status.SUCCESS_SUBMIT, work = work)
       fun errorSavePref(error: Throwable, carWork: CarWork) = State(Status.ERROR_SAVE_PREF, error = error, work = carWork)
       fun errorSaveReminder(error: Throwable) = State(Status.ERROR_SAVE_REMINDER, error = error)

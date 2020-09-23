@@ -11,9 +11,9 @@ import com.duskencodings.autologs.R
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.notifications.NotificationReceiver.Companion.ACTION_SNOOZE
 import com.duskencodings.autologs.notifications.NotificationReceiver.Companion.EXTRA_REMINDER
-import com.duskencodings.autologs.utils.log.Logger
 import com.duskencodings.autologs.utils.notificationManager
 import com.duskencodings.autologs.views.cars.details.CarDetailsActivity
+import com.duskencodings.autologs.views.maintenance.details.CarWorkDetailsActivity
 import java.util.*
 
 object NotificationService {
@@ -35,14 +35,18 @@ object NotificationService {
 
   private fun scheduleNotification(context: Context, notification: Notification, notificationId: Int, delivery: Calendar = Calendar.getInstance().apply { add(Calendar.SECOND, 10) }) {
     // Send an intent to trigger the NotificationReceiver that will publish the notification.
-    val notificationIntent = Intent(context, NotificationReceiver::class.java).apply {
-      putExtra(NotificationReceiver.NOTIFICATION_ID, notificationId)
-      putExtra(NotificationReceiver.NOTIFICATION, notification)
-    }
+    val notificationIntent = getNotificationIntent(context, notificationId, notification)
     val pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     alarmManager.set(AlarmManager.RTC_WAKEUP, delivery.timeInMillis, pendingIntent)
+  }
+
+  private fun getNotificationIntent(context: Context, notificationId: Int, notification: Notification): Intent {
+    return Intent(context, NotificationReceiver::class.java).apply {
+      putExtra(NotificationReceiver.NOTIFICATION_ID, notificationId)
+      putExtra(NotificationReceiver.NOTIFICATION, notification)
+    }
   }
 
   fun publishNotification(context: Context, notification: Notification, notificationId: Int) {
@@ -70,10 +74,14 @@ object NotificationService {
       putExtra(EXTRA_REMINDER, reminder)
     }
     val snoozePendingIntent = PendingIntent.getBroadcast(context, 0, snoozeIntent, 0)
-    val action = NotificationCompat.Action.Builder(
-          android.R.drawable.ic_lock_silent_mode, context.getString(R.string.remind_me_tomorrow), snoozePendingIntent
-        )
-        .build()
+    val snoozeAction = NotificationCompat.Action.Builder(
+        android.R.drawable.ic_lock_silent_mode, context.getString(R.string.remind_me_tomorrow), snoozePendingIntent
+      ).build()
+    val workDetailsIntent = CarWorkDetailsActivity.newIntent(context, reminder.carId, previousWorkId = reminder.carWorkId)
+    val detailsPendingIntent = PendingIntent.getBroadcast(context, 0, workDetailsIntent, 0)
+    val completeAction = NotificationCompat.Action.Builder(
+        android.R.drawable.ic_menu_save, context.getString(R.string.done_this), detailsPendingIntent
+      ).build()
 
     return NotificationCompat.Builder(context, reminder.name)
       .setContentTitle("${reminder.name} Reminder")
@@ -81,7 +89,8 @@ object NotificationService {
       .setSmallIcon(R.drawable.ic_launcher_foreground)
       .setColor(ContextCompat.getColor(context, R.color.colorAccent))
       .setContentIntent(notificationClickIntent(context, reminder))
-      .addAction(action)
+      .addAction(snoozeAction)
+      .addAction(completeAction)
       .setAutoCancel(true)
       .build()
   }

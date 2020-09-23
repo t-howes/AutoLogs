@@ -35,15 +35,19 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_maintenance_details)
     val carId = intent.extras?.getLong(CAR_ID, -1)
-    val id = intent.extras?.getLong(MAINTENANCE_ID, ID_DEFAULT)
+    val workId = intent.extras?.getLong(MAINTENANCE_ID, ID_DEFAULT)
+    val previousWorkId = intent.extras?.getLong(PREVIOUS_WORK_ID, ID_DEFAULT)
 
     maintenanceViewModel = getViewModel()
 
     if (carId != ID_DEFAULT) {
       maintenanceViewModel.carId = carId
     }
-    if (id != ID_DEFAULT) {
-      maintenanceViewModel.workId = id
+    if (workId != ID_DEFAULT) {
+      maintenanceViewModel.workId = workId
+    }
+    if (previousWorkId != ID_DEFAULT) {
+      maintenanceViewModel.previousWorkId = previousWorkId
     }
 
     initUi()
@@ -159,7 +163,7 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
       MaintenanceViewModel.Status.LOADING -> showLoading()
       MaintenanceViewModel.Status.SUCCESS_MAINTENANCE -> {
         state.work?.let {
-          showMaintenanceDetails(it)
+          showMaintenanceDetails(it, state.isPreviousWork)
         }
       }
       MaintenanceViewModel.Status.SUCCESS_SUBMIT -> finish()
@@ -186,7 +190,7 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
     }
   }
 
-  private fun showMaintenanceDetails(carWork: CarWork) {
+  private fun showMaintenanceDetails(carWork: CarWork, isPreviousWork: Boolean) {
     setTitle(carWork.name)
     val adapter = nameSpinner.adapter as ArrayAdapter<String>
     val positionOfName = adapter.getPosition(carWork.name)
@@ -201,10 +205,13 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
     }
 
     aftermarketModificationsCheckbox.isChecked = carWork.type == CarWork.Type.MODIFICATION
-    dateInput.setText(carWork.date.formatted())
-    costInput.setText(carWork.cost.formatMoney())
-    milesInput.setText(carWork.miles.toString())
     notesInput.setText(carWork.notes)
+
+    if (!isPreviousWork) {
+      dateInput.setText(carWork.date.formatted())
+      costInput.setText(carWork.cost.formatMoney())
+      milesInput.setText(carWork.miles.toString())
+    }
   }
 
   private fun validForm(): Boolean {
@@ -256,12 +263,14 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
 
   companion object {
     private const val CAR_ID = "carId"
-    private const val MAINTENANCE_ID = "maintenanceId"
+    private const val MAINTENANCE_ID = "carWorkId"
+    private const val PREVIOUS_WORK_ID = "previousCarWorkId"
     private const val ID_DEFAULT = -1L
 
-    fun newIntent(context: Context, carId: Long, carWorkId: Long? = null): Intent {
+    fun newIntent(context: Context, carId: Long, carWorkId: Long? = null, previousWorkId: Long? = null): Intent {
       return Intent(context, CarWorkDetailsActivity::class.java).apply {
         putExtra(MAINTENANCE_ID, carWorkId)
+        putExtra(PREVIOUS_WORK_ID, previousWorkId)
         putExtra(CAR_ID, carId)
       }
     }
