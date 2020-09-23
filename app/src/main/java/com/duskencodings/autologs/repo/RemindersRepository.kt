@@ -8,7 +8,9 @@ import com.duskencodings.autologs.models.CarWork
 import com.duskencodings.autologs.models.Preference
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.models.ReminderType
+import com.duskencodings.autologs.notifications.NotificationService
 import io.reactivex.Single
+import java.util.*
 
 class RemindersRepository(
     context: Context,
@@ -22,7 +24,7 @@ class RemindersRepository(
   fun getLiveUpcomingReminders(carId: Long): LiveData<List<Reminder>> = remindersDb.getLiveUpcomingReminders(carId)
   fun getNotificationReminders(): Single<List<Reminder>> = remindersDb.getNotificationReminders()
 
-  fun addReminder(carWork: CarWork, pref: Preference): Single<Reminder> {
+  fun saveOrCreateReminder(carWork: CarWork, pref: Preference): Single<Reminder> {
     return getReminder(carWork.id!!)
       .map { existingReminder ->
         // update the existing Reminder with new expiration fields
@@ -34,6 +36,24 @@ class RemindersRepository(
       .onErrorReturn {
         saveReminder(newReminder(carWork, pref))
       }
+      .map { reminder ->
+        cancelPreviousNotification(reminder)
+        scheduleNotification(reminder)
+        reminder
+      }
+  }
+
+  private fun cancelPreviousNotification(reminder: Reminder) {
+    // TODO: find previous carWork/reminder and cancel corresponding notification
+  }
+
+  private fun scheduleNotification(reminder: Reminder) {
+    val notificationId = reminder.id!!.toInt()
+    val delivery = Calendar.getInstance().apply {
+      // schedule at 8:00am
+      reminder.expireAtDate.let { set(it.year, it.monthValue, it.dayOfMonth, 8, 0) }
+    }
+    NotificationService.scheduleNotification(context, reminder, notificationId, delivery)
   }
 
   private fun newReminder(carWork: CarWork, pref: Preference): Reminder {

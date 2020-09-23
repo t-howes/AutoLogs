@@ -109,7 +109,7 @@ class MaintenanceViewModel @Inject constructor(
   }
 
   private fun addReminder(carWork: CarWork, pref: Preference) {
-    remindersRepo.addReminder(carWork, pref)
+    remindersRepo.saveOrCreateReminder(carWork, pref)
         .applySchedulers()
         .subscribe({
           Logger.i("Save Work -> Add Reminder", "Successfully saved car work and added reminder (if applicable)")
@@ -122,7 +122,7 @@ class MaintenanceViewModel @Inject constructor(
 
   fun addReminderFromManualPref(carWork: CarWork, miles: Int, months: Int) {
     val pref = Preference(null, carWork.carId, carWork.name, miles, months)
-    remindersRepo.addReminder(carWork, pref)
+    remindersRepo.saveOrCreateReminder(carWork, pref)
       .applySchedulers()
       .doOnError {
         state.value = State.errorSaveReminder(it)
