@@ -6,6 +6,8 @@ import io.reactivex.Single
 import com.duskencodings.autologs.base.BaseRepository
 import com.duskencodings.autologs.database.CarWorkDb
 import com.duskencodings.autologs.models.CarWork
+import io.reactivex.Completable
+import io.reactivex.schedulers.Schedulers
 
 class ServiceRepository(context: Context,
                         private val carWorkDb: CarWorkDb) : BaseRepository(context) {
@@ -24,5 +26,11 @@ class ServiceRepository(context: Context,
 
   fun getPreviousCarWork(name: String): Single<CarWork> {
     return carWorkDb.getPreviousWork(name)
+  }
+
+  fun deleteCarWork(carWorkId: Long): Completable {
+    return Completable.fromCallable {
+      carWorkDb.deleteWork(carWorkId)
+    }.subscribeOn(Schedulers.io())
   }
 }

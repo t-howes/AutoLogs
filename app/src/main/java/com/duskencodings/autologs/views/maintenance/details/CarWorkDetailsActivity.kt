@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_maintenance_details.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
@@ -71,7 +72,9 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
       dateInput.setText(nowFormatted())
     } else {
       copyNotesCheckbox.visible = false
+      addReminderCheckbox.visible = false
       submit.text = getString(R.string.save)
+      delete.visible = true
     }
 
     setupListeners()
@@ -116,16 +119,33 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
       }
     }
 
+    delete.setOnClickListener {
+      showDeleteDialog()
+    }
+
     dateSetListener = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
       calendar.set(Calendar.YEAR, year)
       calendar.set(Calendar.MONTH, monthOfYear)
       calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-      updateDateInput()
+      onDateSelected()
       milesInput.requestFocus()
     }
   }
 
-  private fun updateDateInput() {
+  private fun showDeleteDialog() {
+    AlertDialog.Builder(this)
+        .setTitle(R.string.delete_work)
+        .setMessage(R.string.confirm_delete_car_work)
+        .setPositiveButton(R.string.yes) { _, _ ->
+          maintenanceViewModel.deleteCarWork()
+        }
+        .setNegativeButton(R.string.cancel) { di, _ ->
+          di.dismiss()
+        }
+        .show()
+  }
+
+  private fun onDateSelected() {
     dateInput.setText(LocalDateTime.ofInstant(calendar.toInstant(), calendar.timeZone.toZoneId()).toLocalDate().formatted())
   }
 
@@ -187,6 +207,11 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
         copyNotesCheckbox.isChecked = false
         showToast(R.string.no_notes_found)
       }
+      MaintenanceViewModel.Status.SUCCESS_DELETE_WORK -> finish()
+      MaintenanceViewModel.Status.ERROR_DELETE_WORK -> state.error?.let {
+        Logger.d("DELETE WORK ERROR", "Failed to delete work.")
+        onError(it)
+      }
     }
   }
 
@@ -239,6 +264,7 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
           maintenanceViewModel.workId, carId,
           name, type, date, cost, miles, notes)
 
+      hideKeyboard()
       maintenanceViewModel.saveWork(newCarWork, addReminder)
     } ?: showToast(getString(R.string.error_occurred))
   }

@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import io.reactivex.Single
 import com.duskencodings.autologs.models.CarWork
-import io.reactivex.Maybe
 
 @Dao
 interface CarWorkDb {
@@ -23,6 +22,9 @@ interface CarWorkDb {
 
   @Update(onConflict = OnConflictStrategy.REPLACE)
   fun saveCarWork(work: CarWork)
+
+  @Query("DELETE FROM ${CarWork.TABLE} WHERE id = :carWorkId")
+  fun deleteWork(carWorkId: Long)
 
   @Delete
   fun deleteWork(work: CarWork)

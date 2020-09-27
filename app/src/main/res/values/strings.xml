@@ -15,6 +15,7 @@
     <string name="done">Done</string>
     <string name="add">Add</string>
     <string name="save">Save</string>
+    <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="my_cars">My Cars</string>
 
@@ -46,7 +47,11 @@
     <string name="edit">Edit</string>
     <string name="preferences">Preferences</string>
     <string name="delete">Delete</string>
-    <string name="confirm_delete">Are you sure you want to delete this car and all of its data?</string>
+    <string name="delete_reminder">Delete reminder</string>
+    <string name="delete_work">Delete work</string>
+    <string name="confirm_delete_car">Are you sure you want to delete this car and all of its data?</string>
+    <string name="confirm_delete_reminder">Are you sure you want to delete this reminder?</string>
+    <string name="confirm_delete_car_work">Are you sure you want to delete this work?</string>
     <string name="oil">Oil</string>
     <string name="months">Months</string>
     <string name="air_filter">Air Filter</string>
@@ -62,8 +67,11 @@
     <string name="maintenance_category.transmission">Transmission</string>
     <string name="add_reminder">Add reminder?</string>
     <string name="preference_name">Preference name:</string>
-    <string name="remind_me_tomorrow">Remind me tomorrow</string>
+    <string name="remind_me_next_week">Remind me next week</string>
     <string name="copy_notes">Copy notes from previous</string>
     <string name="no_notes_found">No previous notes found</string>
     <string name="done_this">I\'ve done this</string>
+    <string name="due_by">Due by</string>
+    <string name="change_date">Change date</string>
+
 </resources>

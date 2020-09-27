@@ -61,17 +61,15 @@ class MaintenanceViewModel @Inject constructor(
 
   fun getMaintenance() {
     (workId ?: previousWorkId)?.let {
-      addSub(
-        serviceRepo.getCarWork(it)
-          .applySchedulers()
-          .doOnSubscribe { state.value = State.loading() }
-          .doAfterTerminate { state.value = State.idle() }
-          .subscribe({ maintenance ->
-            state.value = State.successMaintenance(maintenance, maintenance.id!! == previousWorkId)
-          }, { error ->
-            state.value = State.errorGetWork(error)
-          })
-      )
+      serviceRepo.getCarWork(it)
+        .applySchedulers()
+        .doOnSubscribe { state.value = State.loading() }
+        .doAfterTerminate { state.value = State.idle() }
+        .subscribe({ maintenance ->
+          state.value = State.successMaintenance(maintenance, maintenance.id!! == previousWorkId)
+        }, { error ->
+          state.value = State.errorGetWork(error)
+        }).also { addSub(it) }
     }
   }
 
@@ -153,12 +151,30 @@ class MaintenanceViewModel @Inject constructor(
     }
   }
 
+  fun deleteCarWork() {
+    workId?.let {
+      serviceRepo.deleteCarWork(it)
+          .applySchedulers()
+          .doOnSubscribe { state.value = State.loading() }
+          .doAfterTerminate { state.value = State.idle() }
+          .subscribe({
+            state.value = State.successDeleteWork()
+          }, { error ->
+            state.value = State.errorDeleteWork(error)
+          })
+    } ?: run {
+      state.value = State.errorDeleteWork(NullPointerException("null carWorkId -- cannot delete job"))
+    }
+  }
+
   enum class Status {
     IDLE,
     LOADING,
     SUCCESS_MAINTENANCE,
     SUCCESS_SUBMIT,
     SUCCESS_PREVIOUS_NOTES,
+    SUCCESS_DELETE_WORK,
+    ERROR_DELETE_WORK,
     ERROR_SAVE_PREF,
     ERROR_SAVE_REMINDER,
     ERROR_GET_WORK,
@@ -183,6 +199,8 @@ class MaintenanceViewModel @Inject constructor(
       fun errorSaveWork(error: Throwable) = State(Status.ERROR_SAVE_WORK, error = error)
       fun successPreviousNotes(notes: String?) = State(Status.SUCCESS_PREVIOUS_NOTES, notes = notes)
       fun errorPreviousNotes() = State(Status.ERROR_PREVIOUS_NOTES)
+      fun successDeleteWork() = State(Status.SUCCESS_DELETE_WORK)
+      fun errorDeleteWork(error: Throwable) = State(Status.ERROR_DELETE_WORK, error = error)
     }
   }
 }

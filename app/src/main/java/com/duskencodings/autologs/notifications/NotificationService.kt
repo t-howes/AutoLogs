@@ -75,17 +75,19 @@ object NotificationService {
     }
     val snoozePendingIntent = PendingIntent.getBroadcast(context, 0, snoozeIntent, 0)
     val snoozeAction = NotificationCompat.Action.Builder(
-        android.R.drawable.ic_lock_silent_mode, context.getString(R.string.remind_me_tomorrow), snoozePendingIntent
+        android.R.drawable.ic_lock_silent_mode, context.getString(R.string.remind_me_next_week), snoozePendingIntent
       ).build()
     val workDetailsIntent = CarWorkDetailsActivity.newIntent(context, reminder.carId, previousWorkId = reminder.carWorkId)
     val detailsPendingIntent = PendingIntent.getBroadcast(context, 0, workDetailsIntent, 0)
     val completeAction = NotificationCompat.Action.Builder(
         android.R.drawable.ic_menu_save, context.getString(R.string.done_this), detailsPendingIntent
       ).build()
+    val pushNotificationText = reminder.pushNotificationText()
 
     return NotificationCompat.Builder(context, reminder.name)
+      .setStyle(NotificationCompat.BigTextStyle().bigText(pushNotificationText))
       .setContentTitle("${reminder.name} Reminder")
-      .setContentText(reminder.pushNotificationText())
+      .setContentText(pushNotificationText)
       .setSmallIcon(R.drawable.ic_launcher_foreground)
       .setColor(ContextCompat.getColor(context, R.color.colorAccent))
       .setContentIntent(notificationClickIntent(context, reminder))

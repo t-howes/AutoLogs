@@ -11,6 +11,7 @@ import com.duskencodings.autologs.views.cars.add.AddCarViewModel
 import com.duskencodings.autologs.views.cars.details.CarDetailsViewModel
 import com.duskencodings.autologs.views.cars.list.CarsViewModel
 import com.duskencodings.autologs.views.maintenance.MaintenanceViewModel
+import com.duskencodings.autologs.views.reminders.ReminderDetailsViewModel
 
 @Module
 abstract class ViewModelModule {
@@ -34,6 +35,11 @@ abstract class ViewModelModule {
   @IntoMap
   @ViewModelKey(MaintenanceViewModel::class)
   abstract fun bindCarWorkViewModel(workViewModel: MaintenanceViewModel): ViewModel
+
+  @Binds
+  @IntoMap
+  @ViewModelKey(ReminderDetailsViewModel::class)
+  abstract fun bindReminderDetailsViewModel(reminderViewModel: ReminderDetailsViewModel): ViewModel
 
   @Binds
   abstract fun bindViewModelFactory(factory: InjectingViewModelFactory): ViewModelProvider.Factory

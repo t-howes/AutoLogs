@@ -53,7 +53,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
           Logger.d("ReminderWorker", "Failed to schedule Reminders.")
         }).also { addSub(it) }
 
-    return Result.retry()
+    return Result.success()
   }
 
   private fun findRemindersForToday(): Single<List<Reminder>> {

@@ -5,6 +5,7 @@ import androidx.room.*
 import com.duskencodings.autologs.models.Reminder
 import com.duskencodings.autologs.models.Reminder.Companion.TABLE_NAME
 import io.reactivex.Single
+import java.time.LocalDate
 
 @Dao
 interface RemindersDb {
@@ -24,8 +25,8 @@ interface RemindersDb {
   @Query("SELECT * FROM $TABLE_NAME WHERE id = :id")
   fun getReminder(id: Long): Single<Reminder>
 
-  @Query("SELECT * FROM $TABLE_NAME WHERE carWorkId = :carWorkId")
-  fun getByCarWork(carWorkId: Long): Single<Reminder>
+  @Query("SELECT * FROM $TABLE_NAME WHERE name = :carWorkName")
+  fun getByCarWork(carWorkName: String): Single<Reminder>
 
   @Insert
   fun addReminder(reminder: Reminder): Long
@@ -43,6 +44,9 @@ interface RemindersDb {
       reminder
     }
   }
+
+  @Query("DELETE FROM $TABLE_NAME WHERE id = :reminderId")
+  fun deleteReminder(reminderId: Long)
 
   @Delete
   fun deleteReminder(reminder: Reminder)
@@ -91,4 +95,11 @@ interface RemindersDb {
     GROUP BY carId, name
   """)
   fun getNotificationReminders(): Single<List<Reminder>>
+
+  @Query("""
+    UPDATE $TABLE_NAME
+    SET expireAtDate = :date
+    WHERE id = :reminderId
+  """)
+  fun saveReminderDate(reminderId: Long, date: LocalDate)
 }

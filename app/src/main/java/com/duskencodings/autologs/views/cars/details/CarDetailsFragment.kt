@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseFragment
 import com.duskencodings.autologs.utils.formatMoney
-import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.models.*
 import com.duskencodings.autologs.utils.visible
 import com.duskencodings.autologs.views.maintenance.upcoming.ReminderAdapter
+import com.duskencodings.autologs.views.reminders.EditReminderDialogFragment
 import kotlinx.android.synthetic.main.fragment_car_details.*
 
 class CarDetailsFragment : BaseFragment() {
@@ -24,32 +24,24 @@ class CarDetailsFragment : BaseFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    val carId = arguments?.getLong(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
+    init(carId)
+  }
+
+  private fun init(carId: Long) {
     carDetailsViewModel = getViewModel(this)
-
-    carDetailsViewModel.carId = arguments?.getLong(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
-    initUi()
-
     carDetailsViewModel.state.subscribe {
       it?.let { state ->
-        updateCarState(state)
+        updateState(state)
       }
     }.also { addSub(it) }
 
-    carDetailsViewModel.loadScreen()
+    carDetailsViewModel.loadScreen(carId)
   }
 
-  private fun initUi() {
-    upcoming_reminders.apply {
-      carDetailsViewModel.reminderAdapter = ReminderAdapter(context) {
-        context.showToast("TODO: Reminder clicked")
-      }
-      layoutManager = LinearLayoutManager(context)
-      adapter = carDetailsViewModel.reminderAdapter
-    }
-  }
-
-  private fun updateCarState(state: CarDetailsViewModel.State) {
+  private fun updateState(state: CarDetailsViewModel.State) {
     when (state.status) {
+      CarDetailsViewModel.Status.INIT_UI -> initUi()
       CarDetailsViewModel.Status.LOADING_DETAILS -> showLoading(true)
       CarDetailsViewModel.Status.LOADING_REMINDERS -> { /* TODO */ }
       CarDetailsViewModel.Status.CAR -> state.car?.let { onCarReceived(it) }
@@ -57,6 +49,18 @@ class CarDetailsFragment : BaseFragment() {
       CarDetailsViewModel.Status.REMINDERS -> state.reminders?.let { onRemindersReceived(it) }
       CarDetailsViewModel.Status.ERROR_DETAILS,
       CarDetailsViewModel.Status.ERROR_REMINDERS -> state.error?.let { onError(it) }
+    }
+  }
+
+  private fun initUi() {
+    upcoming_reminders.apply {
+      carDetailsViewModel.reminderAdapter = ReminderAdapter(context) {
+        it.id?.let {  id ->
+          EditReminderDialogFragment.show(requireContext(), id)
+        } ?: onError(NullPointerException("Null reminderId"))
+      }
+      layoutManager = LinearLayoutManager(context)
+      adapter = carDetailsViewModel.reminderAdapter
     }
   }
 

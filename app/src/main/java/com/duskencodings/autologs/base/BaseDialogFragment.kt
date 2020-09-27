@@ -3,21 +3,20 @@ package com.duskencodings.autologs.base
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.duskencodings.autologs.R
+import com.duskencodings.autologs.dagger.injector.Injector
+import com.duskencodings.autologs.models.SubscriptionHandler
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import com.duskencodings.autologs.dagger.injector.Injector
-import com.duskencodings.autologs.utils.showToast
-import com.duskencodings.autologs.models.SubscriptionHandler
 import javax.inject.Inject
 
-abstract class BaseFragment : Fragment(), BaseView, SubscriptionHandler {
-  private var baseActivity: BaseActivity? = null
+abstract class BaseDialogFragment : DialogFragment(), BaseView, SubscriptionHandler {
+  private lateinit var baseActivity: BaseActivity
   private val disposables = CompositeDisposable()
 
   @Inject
@@ -38,19 +37,6 @@ abstract class BaseFragment : Fragment(), BaseView, SubscriptionHandler {
     Injector.component.inject(this)
   }
 
-  override fun onDestroy() {
-    clearDisposables()
-    super.onDestroy()
-  }
-
-  override fun showLoading(show: Boolean) {
-    baseActivity?.showLoading(show)
-  }
-
-  protected fun setTitle(title: String) {
-    baseActivity?.title = title
-  }
-
   override fun addSub(disposable: Disposable) {
     disposables.add(disposable)
   }
@@ -62,12 +48,8 @@ abstract class BaseFragment : Fragment(), BaseView, SubscriptionHandler {
   }
 
   protected open fun onError(error: Throwable) {
-    Log.e("BASE Fragment", "onError() called:", error)
-    showError(error)
-  }
-
-  protected open fun showError(error: Throwable) {
-    context.showToast(R.string.error_occurred)
+    Log.e("BASE DIALOG FRAG", "onError() called:", error)
+    baseActivity.onError(error)
   }
 
   protected inline fun <reified V : ViewModel> Fragment.getViewModel(fragment: Fragment, key: String = ""): V {

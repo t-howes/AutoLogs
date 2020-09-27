@@ -6,7 +6,6 @@ import androidx.lifecycle.Observer
 import android.os.Bundle
 import androidx.annotation.IdRes
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_car_list.*
 import com.duskencodings.autologs.R
@@ -104,7 +103,7 @@ class CarListActivity : BaseActivity(), CarClickListener {
       R.id.menu_delete -> {
         AlertDialog.Builder(this)
             .setTitle(R.string.delete)
-            .setMessage(R.string.confirm_delete)
+            .setMessage(R.string.confirm_delete_car)
             .setNegativeButton(R.string.cancel) { dialog, _ -> dialog?.cancel() }
             .setPositiveButton(R.string.delete) { _, _ -> carsViewModel.deleteCar(car) }
         true

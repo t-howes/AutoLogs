@@ -2,7 +2,10 @@ package com.duskencodings.autologs.dagger.module
 
 import androidx.room.Room
 import android.content.Context
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.duskencodings.autologs.database.*
+import com.duskencodings.autologs.models.Reminder
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -10,8 +13,16 @@ import javax.inject.Singleton
 @Module
 class DatabaseModule(val context: Context) {
 
-  private val db: AutoDatabase = Room.databaseBuilder(context,
-        AutoDatabase::class.java, "auto-service").fallbackToDestructiveMigration().build()
+  private val db: AutoDatabase = Room.databaseBuilder(context, AutoDatabase::class.java, "auto-service")
+      .fallbackToDestructiveMigration()
+//      .addMigrations(
+//          object : Migration(1, 2) {
+//            override fun migrate(database: SupportSQLiteDatabase) {
+//              database.execSQL("ALTER TABLE ${Reminder.TABLE_NAME} DROP COLUMN 'currentMiles', 'currentDate'")
+//            }
+//          }
+//      )
+      .build()
 
   @Singleton
   @Provides

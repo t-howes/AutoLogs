@@ -19,7 +19,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
                                               private val remindersRepo: RemindersRepository) : BaseViewModel() {
 
   var carId: Long? = null // will have a valid ID passed in args
-  var state: PublishSubject<State> = PublishSubject.create()
+  var state: PublishSubject<State> = PublishSubject.create() // trying this as an alt to LiveData
   lateinit var reminderAdapter: ReminderAdapter
   private lateinit var carLiveData: LiveData<Car>
   private lateinit var carObserver: Observer<Car>
@@ -28,35 +28,33 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
   private lateinit var remindersLiveData: LiveData<List<Reminder>>
   private lateinit var remindersObserver: Observer<List<Reminder>>
 
-  fun loadScreen() {
-    carId?.let { id ->
-      observeReminders(id)
+  fun loadScreen(carId: Long) {
+    this.carId = carId
+    state.onNext(State.initUi())
+    observeReminders(carId)
 
-      carLiveData = carRepo.getLiveCar(id)
-      carObserver = Observer { car ->
-        car?.let {
-          Single.just(car)
-              .applySchedulers()
-              .doOnSubscribe { state.onNext(State.loadingDetails()) }
-              .doAfterSuccess {
-                // if we fail to fetch car work, then the lateinit live data and observer will crash.
-                observeCarWork(it.id!!)
-              }
-              .subscribe({
-                state.onNext(State.successCar(car))
-              }, { error ->
-                state.onNext(State.error(error))
-              })
-              .also { addSub(it) }
-        } ?: run {
-          state.onNext(State.error(NullPointerException("null car from Room")))
-        }
+    carLiveData = carRepo.getLiveCar(carId)
+    carObserver = Observer { car ->
+      car?.let {
+        Single.just(car)
+            .applySchedulers()
+            .doOnSubscribe { state.onNext(State.loadingDetails()) }
+            .doAfterSuccess {
+              // if we fail to fetch car work, then the lateinit live data and observer will crash.
+              observeCarWork(it.id!!)
+            }
+            .subscribe({
+              state.onNext(State.successCar(car))
+            }, { error ->
+              state.onNext(State.error(error))
+            })
+            .also { addSub(it) }
+      } ?: run {
+        state.onNext(State.error(NullPointerException("null car from Room")))
       }
-
-      carLiveData.observeForever(carObserver)
-    } ?: run {
-      state.onNext(State.error(NullPointerException("null car ID")))
     }
+
+    carLiveData.observeForever(carObserver)
   }
 
   private fun observeCarWork(carId: Long) {
@@ -98,6 +96,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
   }
 
   enum class Status {
+    INIT_UI,
     LOADING_DETAILS,
     LOADING_REMINDERS,
     CAR,
@@ -114,6 +113,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
                    val reminders: List<Reminder>? = null) {
 
     companion object {
+      fun initUi() = State(Status.INIT_UI)
       fun loadingDetails() = State(Status.LOADING_DETAILS)
       fun loadingReminders() = State(Status.LOADING_REMINDERS)
       fun successCar(car: Car) = State(Status.CAR, car = car)
