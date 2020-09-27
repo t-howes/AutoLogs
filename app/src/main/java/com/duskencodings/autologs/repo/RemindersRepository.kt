@@ -37,8 +37,8 @@ class RemindersRepository(
         saveReminder(newReminder(carWork, pref))
       }
       .map { reminder ->
-        cancelPreviousNotification(reminder)
-        scheduleNotification(reminder)
+//        cancelPreviousNotification(reminder)
+//        scheduleNotification(reminder)
         reminder
       }
   }

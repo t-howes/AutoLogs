@@ -87,6 +87,7 @@ interface RemindersDb {
    */
   @Query("""
     SELECT *, MAX(expireAtMiles) FROM $TABLE_NAME
+    WHERE expireAtDate <= CURRENT_DATE
     GROUP BY carId, name
   """)
   fun getNotificationReminders(): Single<List<Reminder>>

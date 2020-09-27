@@ -53,14 +53,14 @@ class ReminderWorker(context: Context, params: WorkerParameters) : Worker(contex
           Logger.d("ReminderWorker", "Failed to schedule Reminders.")
         }).also { addSub(it) }
 
-    return Result.success()
+    return Result.retry()
   }
 
   private fun findRemindersForToday(): Single<List<Reminder>> {
     return remindersRepo.getNotificationReminders()
-//        .map { reminders ->
-//          reminders.filter { it.expireAtDate?.isBefore(now()) == false } // TODO: check miles
-//        }
+        .map { reminders ->
+          reminders.filter { !it.expireAtDate.isAfter(now()) } // TODO: check miles
+        }
   }
 
   private fun addSub(disposable: Disposable?) {

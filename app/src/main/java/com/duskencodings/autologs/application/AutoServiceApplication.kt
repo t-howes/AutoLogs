@@ -10,7 +10,9 @@ import com.duskencodings.autologs.dagger.injector.Injector
 import com.duskencodings.autologs.dagger.module.AppModule
 import com.duskencodings.autologs.dagger.module.DatabaseModule
 import com.duskencodings.autologs.dagger.module.RepositoryModule
+import com.duskencodings.autologs.workers.ReminderWorker
 import io.fabric.sdk.android.Fabric
+import java.util.concurrent.TimeUnit
 
 class AutoServiceApplication : Application() {
 
@@ -31,7 +33,7 @@ class AutoServiceApplication : Application() {
   }
 
   private fun startReminders() {
-//    val work = PeriodicWorkRequest.Builder(ReminderWorker::class.java, 3, TimeUnit.MINUTES).build()
-//    WorkManager.getInstance(this).enqueueUniquePeriodicWork("carServiceReminders", ExistingPeriodicWorkPolicy.KEEP, work)
+    val work = PeriodicWorkRequest.Builder(ReminderWorker::class.java, 8, TimeUnit.HOURS).build()
+    WorkManager.getInstance(this).enqueueUniquePeriodicWork("carServiceReminders", ExistingPeriodicWorkPolicy.REPLACE, work)
   }
 }
