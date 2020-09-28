@@ -231,6 +231,7 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
 
     aftermarketModificationsCheckbox.isChecked = carWork.type == CarWork.Type.MODIFICATION
     notesInput.setText(carWork.notes)
+    merchantInput.setText(carWork.merchant)
 
     if (!isPreviousWork) {
       dateInput.setText(carWork.date.formatted())
@@ -256,13 +257,14 @@ class CarWorkDetailsActivity : BaseActivity(), PreferenceInputListener {
       val date = dateInput.text.toString().toDateOrNull() ?: LocalDate.now()
       val miles = milesInput.text.toString().toInt()
       val cost = costInput.text.toString().removePrefix("$").toDoubleOrNull()
+      val merchant = merchantInput.text.toString().trim()
       val notes = notesInput.text.toString()
       val type = if (aftermarketModificationsCheckbox.isChecked) CarWork.Type.MODIFICATION else CarWork.Type.MAINTENANCE
-      val addReminder = addReminderCheckbox.isChecked
+      val addReminder = addReminderCheckbox.isChecked && addReminderCheckbox.visible
       // null carId should auto generate an ID in Room
       val newCarWork = CarWork(
           maintenanceViewModel.workId, carId,
-          name, type, date, cost, miles, notes)
+          name, type, date, cost, miles, merchant, notes)
 
       hideKeyboard()
       maintenanceViewModel.saveWork(newCarWork, addReminder)

@@ -43,6 +43,7 @@ data class CarWork(@PrimaryKey(autoGenerate = true)
                    var date: LocalDate,
                    var cost: Double? = 0.0,
                    var miles: Int,
+                   var merchant: String?,
                    var notes: String? = null) : Parcelable{
 
   enum class Type(val value: Int) {

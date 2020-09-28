@@ -111,6 +111,23 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/merchantLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:hint="@string/merchant">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/merchantInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:inputType="textCapWords"
+                    android:maxLength="150" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/notesLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="top"
                     android:maxLines="3"
-                    android:maxLength="400" />
+                    android:maxLength="500" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
