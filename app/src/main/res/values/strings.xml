@@ -73,5 +73,6 @@
     <string name="done_this">I\'ve done this</string>
     <string name="due_by">Due by</string>
     <string name="change_date">Change date</string>
+    <string name="merchant">Merchant</string>
 
 </resources>
