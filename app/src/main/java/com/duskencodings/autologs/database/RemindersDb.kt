@@ -25,8 +25,11 @@ interface RemindersDb {
   @Query("SELECT * FROM $TABLE_NAME WHERE id = :id")
   fun getReminder(id: Long): Single<Reminder>
 
-  @Query("SELECT * FROM $TABLE_NAME WHERE name = :carWorkName")
-  fun getByCarWork(carWorkName: String): Single<Reminder>
+  @Query("SELECT * FROM $TABLE_NAME WHERE name = :carWorkName AND carId = :carId")
+  fun getSingleByCarWorkName(carWorkName: String, carId: Long): Single<Reminder>
+
+  @Query("SELECT * FROM $TABLE_NAME WHERE name = :carWorkName AND carId = :carId")
+  fun getByCarWorkName(carWorkName: String, carId: Long): Reminder?
 
   @Insert
   fun addReminder(reminder: Reminder): Long
@@ -55,6 +58,7 @@ interface RemindersDb {
     SELECT *, MAX(expireAtMiles) FROM $TABLE_NAME
     WHERE carId = :carId
     GROUP BY name
+    ORDER BY expireAtDate
   """)
   fun getLiveUpcomingReminders(carId: Long): LiveData<List<Reminder>>
 

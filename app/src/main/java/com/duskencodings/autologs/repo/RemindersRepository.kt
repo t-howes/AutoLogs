@@ -21,16 +21,18 @@ class RemindersRepository(
   fun getAllReminders(): Single<List<Reminder>> = remindersDb.getAllReminders()
   fun getReminders(carId: Long): Single<List<Reminder>> = remindersDb.getReminders(carId)
   fun getReminder(reminderId: Long): Single<Reminder> = remindersDb.getReminder(reminderId)
-  private fun getReminderFromCarWork(carWorkName: String): Single<Reminder> = remindersDb.getByCarWork(carWorkName)
+  private fun getSingleReminderFromCarWorkName(carWorkName: String, carId: Long): Single<Reminder> = remindersDb.getSingleByCarWorkName(carWorkName, carId)
+  fun getReminderFromCarWorkName(carWorkName: String, carId: Long): Reminder? = remindersDb.getByCarWorkName(carWorkName, carId)
   private fun saveReminder(reminder: Reminder): Reminder = remindersDb.insertOrUpdate(reminder)
   fun getLiveUpcomingReminders(carId: Long): LiveData<List<Reminder>> = remindersDb.getLiveUpcomingReminders(carId)
   fun getNotificationReminders(): Single<List<Reminder>> = remindersDb.getNotificationReminders()
 
   fun saveOrCreateReminder(carWork: CarWork, pref: Preference): Single<Reminder> {
-    return getReminderFromCarWork(carWork.name)
+    return getSingleReminderFromCarWorkName(carWork.name, carWork.carId)
       .map { existingReminder ->
         // update the existing Reminder with new expiration fields
         saveReminder(existingReminder.copy(
+            carWorkId = carWork.id!!,
             currentMiles = carWork.miles,
             currentDate = carWork.date,
             expireAtMiles = carWork.miles + pref.miles,

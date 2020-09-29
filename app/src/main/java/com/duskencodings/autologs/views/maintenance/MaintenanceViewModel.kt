@@ -79,11 +79,19 @@ class MaintenanceViewModel @Inject constructor(
       .map {
         serviceRepo.saveCarWork(carWork)
       }
+      .map {
+        // if we're adding new work or saving existing work that has a reminder AND is the most recent entry.
+        val hasReminder = remindersRepo.getReminderFromCarWorkName(it.name, it.carId) != null
+        val canUpdateReminder = hasReminder && serviceRepo.getMostRecentWork(it.name, it.carId)?.id == it.id
+        Pair(it, addReminder || canUpdateReminder)
+      }
       .applySchedulers()
       .doOnSubscribe { state.value = State.loading() }
       .doAfterTerminate { state.value = State.idle() }
-      .doOnSuccess { work ->
-        if (addReminder) {
+      .doOnSuccess { pair ->
+        val work = pair.first
+
+        if (pair.second) {
           fetchPrefAndAddReminder(work)
         } else {
           state.value = State.successSubmit(work)
@@ -136,13 +144,17 @@ class MaintenanceViewModel @Inject constructor(
 
   fun copyNotesFromPrevious(jobName: String) {
     if (previousWork == null || !previousWork!!.name.equals(jobName, true)) {
-      serviceRepo.getPreviousCarWork(jobName)
+      Single.just(carId!!)
+        .subscribeOn(Schedulers.io())
+        .map { carId ->
+          serviceRepo.getMostRecentWork(jobName, carId)
+        }
         .applySchedulers()
         .doOnSubscribe { state.value = State.loading() }
         .doAfterTerminate { state.value = State.idle() }
         .subscribe({ job ->
           previousWork = job
-          state.value = State.successPreviousNotes(job.notes)
+          state.value = State.successPreviousNotes(job?.notes)
         }, {
           state.value = State.errorPreviousNotes()
         }).also { addSub(it) }

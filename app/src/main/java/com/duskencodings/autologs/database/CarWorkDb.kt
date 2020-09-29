@@ -43,8 +43,8 @@ interface CarWorkDb {
   @Query(
     """
       SELECT *, MAX(miles) FROM ${CarWork.TABLE}
-      WHERE name = :name
+      WHERE name = :name AND carId = :carId
     """
   )
-  fun getPreviousWork(name: String): Single<CarWork>
+  fun getMostRecentWork(name: String, carId: Long): CarWork?
 }

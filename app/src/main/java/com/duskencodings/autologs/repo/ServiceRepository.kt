@@ -24,9 +24,7 @@ class ServiceRepository(context: Context,
     return carWorkDb.insertOrUpdateCarWork(carWork)
   }
 
-  fun getPreviousCarWork(name: String): Single<CarWork> {
-    return carWorkDb.getPreviousWork(name)
-  }
+  fun getMostRecentWork(name: String, carId: Long): CarWork? = carWorkDb.getMostRecentWork(name, carId)
 
   fun deleteCarWork(carWorkId: Long): Completable {
     return Completable.fromCallable {
