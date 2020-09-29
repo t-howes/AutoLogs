@@ -13,15 +13,17 @@ import javax.inject.Singleton
 @Module
 class DatabaseModule(val context: Context) {
 
+  private val migrations: Array<Migration> = arrayOf(
+      object : Migration(1, 2) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+          database.execSQL("ALTER TABLE ${CarWork.TABLE} ADD COLUMN merchant TEXT")
+        }
+      }
+  )
+
   private val db: AutoDatabase = Room.databaseBuilder(context, AutoDatabase::class.java, "auto-service")
       .fallbackToDestructiveMigration()
-      .addMigrations(
-          object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-              database.execSQL("ALTER TABLE ${CarWork.TABLE} ADD COLUMN merchant")
-            }
-          }
-      )
+      .addMigrations(*migrations)
       .build()
 
   @Singleton

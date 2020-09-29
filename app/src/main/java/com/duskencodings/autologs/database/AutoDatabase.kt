@@ -5,13 +5,13 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.duskencodings.autologs.models.*
 
-@Database(entities = arrayOf(
+@Database(entities = [
     Car::class,
     CarWork::class,
     Preference::class,
     Reminder::class
-  ),
-  version = 1, exportSchema = false)
+  ],
+  version = 2, exportSchema = false)
 @TypeConverters(ReminderTypeConverter::class, CarWorkTypeConverter::class, DateConverter::class)
 abstract class AutoDatabase : RoomDatabase() {
   abstract fun carDb(): CarDb
