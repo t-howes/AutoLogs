@@ -67,18 +67,20 @@
         style="@style/TextBody_Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="@dimen/padding_extra_small"
         android:text="@string/change_date"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@drawable/link_text_selector"
         app:layout_constraintTop_toBottomOf="@id/date_layout"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
+    <Button
+        style="@style/PrimaryButton"
         android:id="@+id/delete"
-        android:layout_width="@dimen/icon_size_48"
-        android:layout_height="@dimen/icon_size_48"
-        android:background="@drawable/ic_delete_white"
-        android:backgroundTint="@android:color/holo_red_dark"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding_medium"
+        android:drawableStart="@drawable/ic_delete_white"
+        android:text="@string/delete"
         app:layout_constraintTop_toBottomOf="@id/change_date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

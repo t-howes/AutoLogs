@@ -85,6 +85,7 @@ class CarDetailsFragment : BaseFragment() {
     reminders_label.text = getString(
         if (reminders.isEmpty()) R.string.no_upcoming_maintenance else R.string.upcoming_maintenance
     )
+    due_on_label.visible = reminders.isNotEmpty()
     carDetailsViewModel.reminderAdapter.setReminders(reminders)
   }
 

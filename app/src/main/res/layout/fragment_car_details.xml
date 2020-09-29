@@ -32,8 +32,8 @@
         style="@style/TextTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/mods_spent_label"
-        app:layout_constraintEnd_toStartOf="@id/maintenance_spent_label"
+        android:textAlignment="textEnd"
+        app:layout_constraintEnd_toEndOf="@id/mods_spent_label"
         app:layout_constraintTop_toBottomOf="@id/total_spent_label"
         android:text="@string/zero_dollars" />
 
@@ -54,8 +54,7 @@
         style="@style/TextTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/mods_spent_label"
-        app:layout_constraintEnd_toEndOf="@id/maintenance_spent_label"
+        app:layout_constraintStart_toStartOf="@id/maintenance_spent_label"
         app:layout_constraintTop_toBottomOf="@id/total_spent_label"
         android:text="@string/zero_dollars" />
 
@@ -127,11 +126,22 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding_extra_large"
-        android:layout_marginStart="6dp"
+        android:layout_marginStart="@dimen/padding_extra_small"
+        android:layout_marginEnd="@dimen/padding_extra_small"
         app:layout_constraintTop_toBottomOf="@id/notes_bottom_divider"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/due_on_label"
         android:text="@string/no_upcoming_maintenance"/>
+
+    <TextView
+        android:id="@+id/due_on_label"
+        style="@style/TextBody_Medium"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/padding_extra_small"
+        app:layout_constraintTop_toTopOf="@id/reminders_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/due_by"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/upcoming_reminders"
