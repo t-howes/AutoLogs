@@ -3,6 +3,8 @@ package com.duskencodings.autologs.views.cars.add
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
@@ -11,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_add_car.*
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseActivity
 import com.duskencodings.autologs.models.*
+import com.duskencodings.autologs.utils.formatted
 import com.duskencodings.autologs.utils.visible
 import com.duskencodings.autologs.validation.FormValidator
 
@@ -39,6 +42,21 @@ class AddCarActivity : BaseActivity() {
     }.also { addSub(it) }
 
     carViewModel.loadScreen()
+  }
+
+  override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    menuInflater.inflate(R.menu.menu_add_car, menu)
+    return super.onCreateOptionsMenu(menu)
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    return when(item?.itemId) {
+      R.id.menu_add_photo -> {
+
+        true
+      }
+      else -> super.onOptionsItemSelected(item)
+    }
   }
 
   private fun initUi() {
@@ -81,6 +99,7 @@ class AddCarActivity : BaseActivity() {
   private fun updateFromState(state: AddCarViewModel.State) {
     when (state.status) {
       AddCarViewModel.Status.LOADING -> showLoading(true)
+      AddCarViewModel.Status.IDLE -> showLoading(false)
       AddCarViewModel.Status.CAR_DETAILS -> state.car?.let { showCarDetails(it) }
       AddCarViewModel.Status.SAVED -> finish()
       AddCarViewModel.Status.ERROR -> state.error?.let { onError(it) }
@@ -90,13 +109,13 @@ class AddCarActivity : BaseActivity() {
   private fun showCarDetails(car: Car) {
     val name = car.name
     setTitle(name)
-    nameInput.setText(car.name)
+    nameInput.setText(car.nickname)
     yearInput.setText(car.year.toString())
     makeInput.setText(car.make)
     modelInput.setText(car.model)
     notesInput.setText(car.notes)
     lastUpdate.visible = true
-    lastUpdate.text = getString(R.string.last_updated, car.lastUpdate)
+    lastUpdate.text = getString(R.string.last_updated, car.lastUpdate.formatted())
   }
 
   private fun validForm(): Boolean {
@@ -106,7 +125,7 @@ class AddCarActivity : BaseActivity() {
   }
 
   private fun saveCar() {
-    val name = nameInput.text.toString()
+    val name = nameInput.text.toString().let { if (it.isBlank()) null else it }
     val year = yearInput.text.toString().toInt()
     val make = makeInput.text.toString()
     val model = modelInput.text.toString()

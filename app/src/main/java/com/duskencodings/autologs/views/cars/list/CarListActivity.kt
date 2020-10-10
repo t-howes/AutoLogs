@@ -106,6 +106,7 @@ class CarListActivity : BaseActivity(), CarClickListener {
             .setMessage(R.string.confirm_delete_car)
             .setNegativeButton(R.string.cancel) { dialog, _ -> dialog?.cancel() }
             .setPositiveButton(R.string.delete) { _, _ -> carsViewModel.deleteCar(car) }
+            .show()
         true
       }
       else -> false

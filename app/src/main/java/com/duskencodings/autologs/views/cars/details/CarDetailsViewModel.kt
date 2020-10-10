@@ -9,6 +9,7 @@ import com.duskencodings.autologs.models.*
 import com.duskencodings.autologs.repo.CarRepository
 import com.duskencodings.autologs.repo.RemindersRepository
 import com.duskencodings.autologs.repo.ServiceRepository
+import com.duskencodings.autologs.utils.log.Logger
 import com.duskencodings.autologs.views.maintenance.upcoming.ReminderAdapter
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -95,11 +96,25 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
     remindersLiveData.observeForever(remindersObserver)
   }
 
+  fun deleteCar() {
+    carRepo.deleteCar(carId!!)
+      .applySchedulers()
+      .doOnSubscribe { state.onNext(State.loadingDetails()) }
+      .subscribe({
+        carLiveData.removeObserver(carObserver)
+        state.onNext(State.successDelete())
+      }, {
+        Logger.e("CAR DELETE", "Failed to delete car", it)
+        state.onNext(State.error(RuntimeException("Unable to delete car at this time")))
+      }).also { addSub(it) }
+  }
+
   enum class Status {
     INIT_UI,
     LOADING_DETAILS,
     LOADING_REMINDERS,
     CAR,
+    CAR_DELETED,
     SPENDING,
     REMINDERS,
     ERROR_DETAILS,
@@ -117,6 +132,7 @@ class CarDetailsViewModel @Inject constructor(private val carRepo: CarRepository
       fun loadingDetails() = State(Status.LOADING_DETAILS)
       fun loadingReminders() = State(Status.LOADING_REMINDERS)
       fun successCar(car: Car) = State(Status.CAR, car = car)
+      fun successDelete() = State(Status.CAR_DELETED)
       fun successSpending(spending: SpendingBreakdown) = State(Status.SPENDING, spendingBreakdown = spending)
       fun successReminders(reminders: List<Reminder>) = State(Status.REMINDERS, reminders = reminders)
       fun error(error: Throwable) = State(Status.ERROR_DETAILS, error = error)

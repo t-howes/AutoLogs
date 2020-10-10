@@ -1,9 +1,11 @@
 package com.duskencodings.autologs.models
 
+import android.net.Uri
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.duskencodings.autologs.utils.now
 import kotlinx.android.parcel.Parcelize
@@ -17,10 +19,18 @@ data class Car(@PrimaryKey(autoGenerate = true)
                var model: String,
                var nickname: String? = null,
                var notes: String? = null,
-               var lastUpdate: LocalDate = now()) {
+               var lastUpdate: LocalDate = now(),
+               var imageUriString: String? = null) {
 
-  val name: String
-    get() = if (nickname.isNullOrBlank()) yearMakeModel() else nickname!!
+  @Ignore
+  val name: String = "${nickname.let { if (it.isNullOrBlank()) null else "$it - " } ?: ""}${yearMakeModel()}"
+
+  @Ignore
+  val imageUri: Uri? = try {
+    Uri.parse(imageUriString)
+  } catch (e: Exception) {
+    null
+  }
 
   companion object {
     const val TABLE_NAME = "cars"

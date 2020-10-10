@@ -15,7 +15,13 @@
         android:orientation="horizontal"
         android:padding="15dp">
 
-        <!-- include round imageview of car -->
+        <ImageView
+            android:id="@+id/photo"
+            android:layout_width="@dimen/icon_size_36"
+            android:layout_height="@dimen/icon_size_36"
+            android:layout_marginEnd="@dimen/padding_extra_small"
+            android:background="@drawable/ic_car_default_black_24"
+            android:backgroundTint="@color/colorPrimary"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -27,15 +33,13 @@
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:text="Name"
-                tools:visibility="visible" />
+                tools:text="Name"/>
 
             <TextView
-                android:id="@+id/yearMakeModel"
+                android:id="@+id/lastUpdate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Year" />
+                tools:text="@string/last_updated" />
 
         </LinearLayout>
 

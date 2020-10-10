@@ -11,7 +11,7 @@ import com.duskencodings.autologs.models.*
     Preference::class,
     Reminder::class
   ],
-  version = 2, exportSchema = false)
+  version = 3, exportSchema = false)
 @TypeConverters(ReminderTypeConverter::class, CarWorkTypeConverter::class, DateConverter::class)
 abstract class AutoDatabase : RoomDatabase() {
   abstract fun carDb(): CarDb

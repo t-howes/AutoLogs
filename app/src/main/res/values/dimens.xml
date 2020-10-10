@@ -9,5 +9,6 @@
     <dimen name="padding_extra_large">26dp</dimen>
     <dimen name="padding_uber_large">48dp</dimen>
 
+    <dimen name="icon_size_36">36dp</dimen>
     <dimen name="icon_size_48">48dp</dimen>
 </resources>

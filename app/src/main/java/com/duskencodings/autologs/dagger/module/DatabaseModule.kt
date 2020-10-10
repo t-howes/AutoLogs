@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.duskencodings.autologs.database.*
+import com.duskencodings.autologs.models.Car
 import com.duskencodings.autologs.models.CarWork
 import dagger.Module
 import dagger.Provides
@@ -17,6 +18,11 @@ class DatabaseModule(val context: Context) {
       object : Migration(1, 2) {
         override fun migrate(database: SupportSQLiteDatabase) {
           database.execSQL("ALTER TABLE ${CarWork.TABLE} ADD COLUMN merchant TEXT")
+        }
+      },
+      object : Migration(2, 3) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+          database.execSQL("ALTER TABLE ${Car.TABLE_NAME} ADD COLUMN imageUriString TEXT")
         }
       }
   )

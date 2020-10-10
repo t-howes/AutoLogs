@@ -74,6 +74,8 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
     implementation "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
 
+    implementation 'com.github.yalantis:ucrop:2.2.6-native'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

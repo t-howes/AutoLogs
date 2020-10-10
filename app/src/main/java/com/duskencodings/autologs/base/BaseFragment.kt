@@ -17,7 +17,7 @@ import com.duskencodings.autologs.models.SubscriptionHandler
 import javax.inject.Inject
 
 abstract class BaseFragment : Fragment(), BaseView, SubscriptionHandler {
-  private var baseActivity: BaseActivity? = null
+  protected lateinit var baseActivity: BaseActivity
   private val disposables = CompositeDisposable()
 
   @Inject
@@ -25,12 +25,7 @@ abstract class BaseFragment : Fragment(), BaseView, SubscriptionHandler {
 
   override fun onAttach(context: Context) {
     super.onAttach(context)
-
-    if (context is BaseActivity) {
-      baseActivity = context
-    } else {
-      throw IllegalStateException("BaseFragment must attach to a BaseActivity")
-    }
+    baseActivity = context as BaseActivity // throw if not
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {

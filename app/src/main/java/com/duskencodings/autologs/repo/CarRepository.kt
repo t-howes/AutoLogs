@@ -35,4 +35,10 @@ class CarRepository(context: Context,
       carDb.deleteCar(car)
     }.subscribeOn(Schedulers.io())
   }
+
+  fun deleteCar(carId: Long): Completable {
+    return Completable.fromCallable {
+      carDb.deleteCar(carId)
+    }.subscribeOn(Schedulers.io())
+  }
 }

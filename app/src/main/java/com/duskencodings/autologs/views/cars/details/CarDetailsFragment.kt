@@ -1,15 +1,16 @@
 package com.duskencodings.autologs.views.cars.details
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.duskencodings.autologs.R
 import com.duskencodings.autologs.base.BaseFragment
 import com.duskencodings.autologs.utils.formatMoney
 import com.duskencodings.autologs.models.*
+import com.duskencodings.autologs.utils.showToast
 import com.duskencodings.autologs.utils.visible
+import com.duskencodings.autologs.views.cars.add.AddCarActivity
 import com.duskencodings.autologs.views.maintenance.upcoming.ReminderAdapter
 import com.duskencodings.autologs.views.reminders.EditReminderDialogFragment
 import kotlinx.android.synthetic.main.fragment_car_details.*
@@ -17,6 +18,11 @@ import kotlinx.android.synthetic.main.fragment_car_details.*
 class CarDetailsFragment : BaseFragment() {
 
   private lateinit var carDetailsViewModel: CarDetailsViewModel
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setHasOptionsMenu(true)
+  }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_car_details, container, false)
@@ -26,6 +32,36 @@ class CarDetailsFragment : BaseFragment() {
     super.onViewCreated(view, savedInstanceState)
     val carId = arguments?.getLong(CAR_ID, CAR_ID_DEFAULT) ?: CAR_ID_DEFAULT
     init(carId)
+  }
+
+  override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    inflater.inflate(R.menu.car_actions, menu)
+    super.onCreateOptionsMenu(menu, inflater)
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    return when(item.itemId) {
+      R.id.menu_edit -> {
+        carDetailsViewModel.carId?.let { carId ->
+          baseActivity.startActivity(AddCarActivity.newIntent(requireContext(), carId))
+        } ?: showError(NullPointerException("Null carId! RIPPERONNI"))
+        true
+      }
+      R.id.menu_preferences -> {
+        context.showToast("feature coming soon!")
+        true
+      }
+      R.id.menu_delete -> {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.delete)
+            .setMessage(R.string.confirm_delete_car)
+            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog?.cancel() }
+            .setPositiveButton(R.string.delete) { _, _ -> carDetailsViewModel.deleteCar() }
+            .show()
+        true
+      }
+      else -> super.onOptionsItemSelected(item)
+    }
   }
 
   private fun init(carId: Long) {
@@ -45,6 +81,7 @@ class CarDetailsFragment : BaseFragment() {
       CarDetailsViewModel.Status.LOADING_DETAILS -> showLoading(true)
       CarDetailsViewModel.Status.LOADING_REMINDERS -> { /* TODO */ }
       CarDetailsViewModel.Status.CAR -> state.car?.let { onCarReceived(it) }
+      CarDetailsViewModel.Status.CAR_DELETED -> requireActivity().finish()
       CarDetailsViewModel.Status.SPENDING -> state.spendingBreakdown?.let { onSpendingBreakdownReceived(it) }
       CarDetailsViewModel.Status.REMINDERS -> state.reminders?.let { onRemindersReceived(it) }
       CarDetailsViewModel.Status.ERROR_DETAILS,
@@ -69,10 +106,6 @@ class CarDetailsFragment : BaseFragment() {
     val hasNotes = !car.notes.isNullOrBlank()
     notes_group.visible = hasNotes
     notes.text = car.notes
-    // TODO
-//    Picasso.get().load("file: some file")
-//        .transform(Crop())
-//        .into(someImageView)
   }
 
   private fun onSpendingBreakdownReceived(breakdown: SpendingBreakdown) {
