@@ -10,7 +10,6 @@ import androidx.room.Transaction
 import androidx.room.Update
 import io.reactivex.Single
 import com.duskencodings.autologs.models.Car
-import com.duskencodings.autologs.models.Reminder
 
 @Dao
 interface CarDb {
@@ -48,4 +47,11 @@ interface CarDb {
 
   @Query("DELETE FROM ${Car.TABLE_NAME} WHERE id = :carId")
   fun deleteCar(carId: Long)
+
+  @Query("""
+    UPDATE ${Car.TABLE_NAME}
+    SET imageUriString = :image
+    WHERE id = :carId
+  """)
+  fun saveCarImage(carId: Long, image: String?)
 }

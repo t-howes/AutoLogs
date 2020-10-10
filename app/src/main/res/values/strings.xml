@@ -44,6 +44,11 @@
 
     <!-- Errors -->
     <string name="error_occurred">An error has occurred. Try again later.</string>
+    <string name="error.starting_camera">There was a problem with starting the camera</string>
+    <string name="error.selecting_photo">There was a problem with selecting your photo</string>
+    <string name="error.select_photo_from_device">Select a photo on the device (not backed up on the cloud)</string>
+    <string name="error.taking_photo">There was a problem with taking a photo</string>
+    <string name="error.photo_permissions">This app requires all requested permissions for taking a photo</string>
     <string name="edit">Edit</string>
     <string name="preferences">Preferences</string>
     <string name="delete">Delete</string>
@@ -77,5 +82,6 @@
     <string name="set_photo">Set photo</string>
     <string name="take_photo">Take photo</string>
     <string name="select_from_gallery">Select from gallery</string>
+    <string name="delete_photo">Delete photo</string>
 
 </resources>

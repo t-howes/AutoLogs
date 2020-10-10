@@ -13,14 +13,18 @@
                 android:id="@+id/menu_select_photo"
                 android:title="@string/select_from_gallery"
                 android:icon="@drawable/ic_add_photo_black_24"
-                app:showAsAction="withText"
-                android:iconTint="@color/colorPrimary"/>
+                app:showAsAction="withText"/>
             <item
                 android:id="@+id/menu_take_photo"
                 android:title="@string/take_photo"
                 android:icon="@drawable/ic_add_photo_camera_black_24"
+                app:showAsAction="withText"/>
+            <item
+                android:id="@+id/menu_delete_photo"
+                android:title="@string/delete_photo"
+                android:icon="@drawable/ic_delete_white"
                 app:showAsAction="withText"
-                android:iconTint="@color/colorPrimary"/>
+                android:visible="false"/>
         </menu>
     </item>
 </menu>

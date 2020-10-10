@@ -42,7 +42,7 @@ class CarAdapter(context: Context, private val cars: MutableList<Car>) : Recycle
       val context = itemView.context
       itemView.photo.apply {
         Picasso.get().load(car.imageUri)
-            .centerCrop()
+//            .centerCrop()
             .placeholder(ResourcesCompat.getDrawable(resources, R.drawable.ic_car_default_black_24, null)!!.apply {
               DrawableCompat.setTint(this, ContextCompat.getColor(context, getDefaultCarColor(position)))
             })

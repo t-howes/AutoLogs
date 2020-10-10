@@ -1,6 +1,7 @@
 package com.duskencodings.autologs.repo
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
@@ -39,6 +40,12 @@ class CarRepository(context: Context,
   fun deleteCar(carId: Long): Completable {
     return Completable.fromCallable {
       carDb.deleteCar(carId)
+    }.subscribeOn(Schedulers.io())
+  }
+
+  fun saveCarImage(carId: Long, imageUri: Uri?): Completable {
+    return Completable.fromCallable {
+      carDb.saveCarImage(carId, imageUri?.toString())
     }.subscribeOn(Schedulers.io())
   }
 }
