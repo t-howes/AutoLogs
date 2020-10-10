@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.functions.Function3
@@ -46,12 +48,25 @@ class AddCarActivity : BaseActivity() {
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     menuInflater.inflate(R.menu.menu_add_car, menu)
+    menu?.getItem(0)?.subMenu?.let { submenu ->
+      submenu.size().let { size ->
+        for (i in 0 until size) {
+          submenu.getItem(i)?.icon?.apply {
+            DrawableCompat.setTint(this, ContextCompat.getColor(this@AddCarActivity, R.color.colorAccent))
+          }
+        }
+      }
+    }
     return super.onCreateOptionsMenu(menu)
   }
 
   override fun onOptionsItemSelected(item: MenuItem?): Boolean {
     return when(item?.itemId) {
-      R.id.menu_add_photo -> {
+      R.id.menu_select_photo -> {
+
+        true
+      }
+      R.id.menu_take_photo -> {
 
         true
       }

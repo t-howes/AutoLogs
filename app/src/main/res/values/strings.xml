@@ -74,6 +74,8 @@
     <string name="due_by">Due by</string>
     <string name="change_date">Change date</string>
     <string name="merchant">Merchant</string>
-    <string name="add_photo">Add photo</string>
+    <string name="set_photo">Set photo</string>
+    <string name="take_photo">Take photo</string>
+    <string name="select_from_gallery">Select from gallery</string>
 
 </resources>
